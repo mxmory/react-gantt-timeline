@@ -1,49 +1,125 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stage, Layer, Star, Text, Group, Rect, Line } from 'react-konva';
 import styles from './App.module.scss';
 import cn from 'classnames';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { maxBy, minBy, range } from 'lodash';
+import { Rectangle } from './components/Rectangle/Rectangle';
+import { width, height, padding } from './constants';
 
 const initialData = {
 	stages: [
 		{
 			id: 0,
 			name: 'Stage #1',
-			color: '#7A5C58',
-			length: 4,
+			color: '#999',
+			length: 10,
 			start_at: 3,
+			percent: 30,
+			tasks: [
+				{
+					id: 11,
+					name: 'Task #11',
+					start_at: 3,
+					length: 3,
+					color: '#A9E5BB',
+				},
+				{
+					id: 12,
+					name: 'Task #12',
+					start_at: 6,
+					length: 3,
+					color: '#F72C25',
+				},
+			],
 		},
 		{
 			id: 1,
 			name: 'Stage #2',
-			color: '#8d80ad',
+			color: '#999',
 			length: 6,
 			start_at: 5,
+			percent: 50,
+			tasks: [
+				{
+					id: 21,
+					name: 'Task #21',
+					start_at: 7,
+					length: 3,
+					color: '#A76D60',
+				},
+				{
+					id: 22,
+					name: 'Task #22',
+					start_at: 9,
+					length: 12,
+					color: '#601700',
+				},
+			],
 		},
 		{
 			id: 2,
 			name: 'Stage #3',
-			color: '#99B2DD',
-			length: 2,
+			color: '#999',
+			length: 7,
 			start_at: 6,
+			percent: 60,
+			tasks: [
+				{
+					id: 31,
+					name: 'Task #31',
+					start_at: 10,
+					length: 5,
+					color: '#96CDFF',
+				},
+				{
+					id: 32,
+					name: 'Task #32',
+					start_at: 15,
+					length: 3,
+					color: '#DBBADD',
+				},
+				{
+					id: 33,
+					name: 'Task #33',
+					start_at: 20,
+					length: 6,
+					color: '#BE92A2',
+				},
+			],
 		},
 		{
 			id: 3,
 			name: 'Stage #4',
-			color: '#9DFFF9',
+			color: '#999',
 			length: 9,
-			start_at: 7,
+			start_at: 9,
+			percent: 90,
+			tasks: [
+				{
+					id: 41,
+					name: 'Task #41',
+					start_at: 21,
+					length: 3,
+					color: '#88B7B5',
+				},
+				{
+					id: 42,
+					name: 'Task #42',
+					start_at: 25,
+					length: 6,
+					color: '#449DD1',
+				},
+			],
 		},
 	],
 };
 
-const width = 4000;
-const height = 3000;
-const padding = 30;
-
 const App = () => {
 	const [listOpen, setListOpen] = useState(false);
 	const [data, setData] = useState(initialData.stages);
+	const [selectedId, selectShape] = useState(null);
+	const [isTransforming, setIsTransforming] = useState(false);
 
 	const toggleList = () => {
 		setListOpen((prev) => !prev);
@@ -59,241 +135,181 @@ const App = () => {
 
 	const onListStageDragEnd = (values) => {
 		const { destination, source } = values;
-		const newCommands = reorder([...data], source.index, destination.index);
-		setData(newCommands);
+		if (destination) {
+			const newCommands = reorder([...data], source.index, destination.index);
+			setData(newCommands);
+		}
 	};
 
-	const onGridStageDragEnd = (...args) => {
-		console.log(args);
+	const onGridStageDragEnd = (e) => {
+		const {
+			attrs: { x, id },
+		} = e.target;
+
+		const newData = data.map((el) => {
+			if (el.id === id) {
+				return { ...el, start_at: Math.round(x / padding) };
+			}
+			return el;
+		});
+
+		setData(newData);
 	};
 
-	const Rectangle = ({ x = 0, y = 0, width = 1, color = '#aaa', text = 'test' }) => {
-		return (
-			<Group
-				x={x}
-				y={y}
-				width={padding * width}
-				height={padding}
-				draggable={true}
-				dragBoundFunc={(pos) => {
-					return {
-						x: pos.x,
-						y: y,
-					};
-				}}
-				onDragEnd={onGridStageDragEnd}
-			>
-				<Rect width={padding * width} height={padding} fill={color} cornerRadius={5} strokeWidth={1} />
-				<Text text={text} fontSize={14} fontStyle="italic" fill="#222" padding={9} />
-			</Group>
-		);
+	const onGridStageTransformStart = () => {
+		setIsTransforming(true);
 	};
+
+	const onGridStageTransformEnd = (e) => {
+		setIsTransforming(false);
+		selectShape(null);
+	};
+
+	const onDeselect = (e) => {
+		if (!isTransforming) {
+			selectShape(null);
+		}
+	};
+
+	let line = -1;
 
 	return (
-		<div className={styles.flex}>
-			<div className={cn(styles.list, { [styles.open]: listOpen })}>
-				<div className={styles.toggle} onClick={toggleList}>
-					{listOpen ? '<' : '>'}
-				</div>
-				<DragDropContext onDragEnd={onListStageDragEnd}>
-					<Droppable droppableId="droppable">
-						{(provided) => (
-							<div {...provided.droppableProps} ref={provided.innerRef} className={styles.reagentsList}>
-								{data.map((stage, index) => {
-									return (
-										<Draggable key={'_test_' + stage.id} draggableId={stage.id + ''} index={index}>
-											{(provided) => (
-												<div
-													key={stage.id}
-													ref={provided.innerRef}
-													{...provided.draggableProps}
-													{...provided.dragHandleProps}
-													className={styles.item}
-												>
-													<div className={styles.name}>{stage.name}</div>
-												</div>
-											)}
-										</Draggable>
-									);
-								})}
-							</div>
-						)}
-					</Droppable>
-				</DragDropContext>
-			</div>
-			<div className={styles.grid}>
-				<Stage width={width} height={height}>
-					{/* [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, height] */}
+		<div className={styles.main}>
+			<h1>Gantt</h1>
+			<div className={styles.flex}>
+				<div className={cn(styles.list, { [styles.open]: listOpen })}>
+					<div className={styles.toggle} onClick={toggleList}>
+						{listOpen ? '<' : '>'}
+					</div>
+					<DragDropContext onDragEnd={onListStageDragEnd}>
+						<Droppable droppableId="droppable">
+							{(provided) => (
+								<div
+									{...provided.droppableProps}
+									ref={provided.innerRef}
+									className={styles.reagentsList}
+								>
+									{data.map((stage, index) => {
+										return (
+											<Draggable
+												key={'_test_' + stage.id}
+												draggableId={stage.id + ''}
+												index={index}
+											>
+												{(provided) => (
+													<div
+														key={stage.id}
+														ref={provided.innerRef}
+														{...provided.draggableProps}
+														{...provided.dragHandleProps}
+														className={styles.item}
+													>
+														<div className={styles.stage}>{stage.name}</div>
 
-					<Layer>
-						<Line
-							points={[Math.round(2 * padding) + 0.5, 0, Math.round(2 * padding) + 0.5, height]}
-							stroke="#aaa"
-							strokeWidth={0.5}
-						/>
-						<Line
-							points={[Math.round(4 * padding) + 0.5, 0, Math.round(4 * padding) + 0.5, height]}
-							stroke="#aaa"
-							strokeWidth={0.5}
-						/>
-						{data.map((stage, index) => {
-							const { start_at, color, name, length } = stage;
-							return (
-								<React.Fragment key={'__s_' + stage.id}>
-									<Line
-										points={[
-											0,
-											Math.round((index + 1) * padding) - 0.5,
-											width,
-											Math.round((index + 1) * padding) - 0.5,
-										]}
-										stroke="#aaa"
-										strokeWidth={0.5}
-									/>
-									<Rectangle
-										x={padding * start_at}
-										y={padding * index}
-										width={length}
-										color={color}
-										text={name}
-									/>
-								</React.Fragment>
-							);
-						})}
-					</Layer>
-				</Stage>
+														<div className={styles.subList}>
+															{stage.tasks?.map((el) => (
+																<div key={'tasK__' + el.id} className={styles.task}>
+																	{el.name}
+																</div>
+															))}
+														</div>
+													</div>
+												)}
+											</Draggable>
+										);
+									})}
+								</div>
+							)}
+						</Droppable>
+					</DragDropContext>
+				</div>
+				<div className={styles.grid}>
+					<Stage width={width} height={height} onMouseUp={onDeselect}>
+						<Layer>
+							{range(Math.round(width / padding)).map((n) => (
+								<Line
+									key={'_vert_line_' + n}
+									points={[Math.round(n * padding) + 0.5, 0, Math.round(n * padding) + 0.5, height]}
+									stroke="#aaa"
+									strokeWidth={0.5}
+								/>
+							))}
+
+							{range(Math.round(height / padding)).map((n) => (
+								<Line
+									key={'_horz_line_' + n}
+									points={[
+										0,
+										Math.round((n + 1) * padding) - 0.5,
+										width,
+										Math.round((n + 1) * padding) - 0.5,
+									]}
+									stroke="#aaa"
+									strokeWidth={0.5}
+								/>
+							))}
+
+							{data.map((stage) => {
+								const { start_at, color, name, length, percent, tasks } = stage;
+								line++;
+
+								const firstTaskInStage = minBy(tasks, 'start_at');
+								const lastTaskInStage = maxBy(tasks, (task) => task.start_at + task.length);
+								const stageStartAt = firstTaskInStage.start_at;
+								const stageLength = lastTaskInStage.start_at + lastTaskInStage.length;
+
+								return (
+									<React.Fragment key={'__s_' + stage.id}>
+										<Rectangle
+											onSelect={() => {
+												selectShape(stage.id);
+											}}
+											onDeselect={onDeselect}
+											onDragEnd={onGridStageDragEnd}
+											onTransformEnd={onGridStageTransformEnd}
+											onTransformStart={onGridStageTransformStart}
+											isSelected={selectedId === stage.id}
+											id={stage.id}
+											x={padding * stageStartAt}
+											y={padding * line}
+											width={stageLength - stageStartAt}
+											color={color}
+											text={name}
+											percent={percent}
+										/>
+										{tasks?.map((task) => {
+											line++;
+											return (
+												<React.Fragment key={'_task_' + task.id}>
+													<Rectangle
+														onSelect={() => {
+															selectShape(task.id);
+														}}
+														onDeselect={onDeselect}
+														onDragEnd={onGridStageDragEnd}
+														onTransformEnd={onGridStageTransformEnd}
+														onTransformStart={onGridStageTransformStart}
+														isSelected={selectedId === task.id}
+														id={task.id}
+														x={padding * task.start_at}
+														y={padding * line}
+														width={task.length}
+														color={task.color}
+														text={task.name}
+														// percent={percent}
+													/>
+												</React.Fragment>
+											);
+										})}
+									</React.Fragment>
+								);
+							})}
+						</Layer>
+					</Stage>
+				</div>
 			</div>
 		</div>
 	);
 };
 
 export default App;
-
-// const shadowRectangle = new Konva.Rect({
-// 	x: 0,
-// 	y: 0,
-// 	width: blockSnapSize,
-// 	height: blockSnapSize,
-// 	fill: '#aaa',
-// 	opacity: 0.3,
-// 	stroke: '#ddd',
-// 	strokeWidth: 3,
-// 	dash: [20, 2],
-// });
-
-// function newRectangle(x, y, layer, stage, width, color, text) {
-// 	var rectangleGroup = new Konva.Group({
-// 		x: x,
-// 		y: y,
-// 		width: blockSnapSize * width,
-// 		height: blockSnapSize,
-// 		draggable: true,
-// 		dragBoundFunc: (pos) => {
-// 			return {
-// 				x: pos.x,
-// 				y: y,
-// 			};
-// 		},
-// 	});
-
-// 	let rectangle = new Konva.Rect({
-// 		width: blockSnapSize * width,
-// 		height: blockSnapSize,
-// 		fill: color,
-// 		stroke: '#ddd',
-// 		cornerRadius: 5,
-// 		strokeWidth: 1,
-// 	});
-
-// 	let progressRectangle = new Konva.Rect({
-// 		width: blockSnapSize * width - 100,
-// 		height: blockSnapSize,
-// 		fill: '#444',
-// 		opacity: 0.3,
-// 		cornerRadius: 5,
-// 		strokeWidth: 1,
-// 	});
-
-// 	rectangleGroup.on('dragstart', (e) => {
-// 		shadowRectangle.show();
-// 		shadowRectangle.moveToTop();
-// 		rectangleGroup.moveToTop();
-// 	});
-// 	rectangleGroup.on('dragend', (e) => {
-// 		rectangleGroup.position({
-// 			x: Math.round(rectangleGroup.x() / blockSnapSize) * blockSnapSize,
-// 			y: Math.round(rectangleGroup.y() / blockSnapSize) * blockSnapSize,
-// 		});
-// 		stage.batchDraw();
-// 		shadowRectangle.hide();
-// 	});
-// 	rectangleGroup.on('dragmove', (e) => {
-// 		shadowRectangle.position({
-// 			x: Math.round(rectangleGroup.x() / blockSnapSize) * blockSnapSize,
-// 			y: Math.round(rectangleGroup.y() / blockSnapSize) * blockSnapSize,
-// 		});
-// 		stage.batchDraw();
-// 	});
-// 	rectangleGroup.add(rectangle);
-// 	rectangleGroup.add(progressRectangle);
-// 	rectangleGroup.add(
-// 		new Konva.Text({
-// 			text: text,
-// 			fontSize: 14,
-// 			fontStyle: 'italic',
-// 			// fontFamily: 'sans-serif',
-// 			fill: '#fff',
-// 			// width: blockSnapSize * width,
-// 			// height: 30,
-// 			// lineHeight: blockSnapSize,
-// 			padding: 9,
-// 			align: 'center',
-// 			verticalAlign: 'middle',
-// 		})
-// 	);
-// 	layer.add(rectangleGroup);
-// }
-
-// var stage = new Konva.Stage({
-// 	container: 'container',
-// 	width: width,
-// 	height: height,
-// });
-
-// var gridLayer = new Konva.Layer();
-// var padding = blockSnapSize;
-// console.log(width, padding, width / padding);
-// for (var i = 0; i < width / padding; i++) {
-// 	const isHoliday = i % 7 === 0;
-// 	gridLayer.add(
-// 		new Konva.Line({
-// 			points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, height],
-// 			stroke: '#ddd',
-// 			strokeWidth: 1,
-// 		})
-// 	);
-// 	if (isHoliday) {
-// 		gridLayer.add(
-// 			new Konva.Rect({
-// 				x: blockSnapSize * i,
-// 				y: 0,
-// 				width: blockSnapSize * 2,
-// 				height: height,
-// 				fill: '#ddd',
-// 				opacity: 0.2,
-// 				stroke: '#ddd',
-// 				strokeWidth: 1,
-// 				dash: [20, 2],
-// 			})
-// 		);
-// 	}
-// }
-
-// var layer = new Konva.Layer();
-// shadowRectangle.hide();
-// layer.add(shadowRectangle);
-// newRectangle(blockSnapSize * 3, blockSnapSize * 3, layer, stage, 6, '#6a99f7', '#1');
-// newRectangle(blockSnapSize * 10, blockSnapSize * 7, layer, stage, 15, '#96de81', '#2');
-
-// stage.add(gridLayer);
-// stage.add(layer);

@@ -1,70 +1,93 @@
-.flex {
-	display: flex;
-	justify-content: space-between;
-	overflow-x: hidden;
+.main {
+	h1 {
+		text-align: center;
+	}
 
 	* {
 		box-sizing: border-box;
 	}
 
-	.list {
-		width: 200px;
-		flex-shrink: 0;
-		position: relative;
-		transition: 0.3s ease;
-		// border-right: 1px solid #aaa;
+	.flex {
+		display: flex;
+		justify-content: space-between;
+		overflow-x: hidden;
+		border-top: 1px solid #ddd;
 
-		&.open {
-			width: 600px;
-		}
+		.list {
+			width: 200px;
+			flex-shrink: 0;
+			position: relative;
+			transition: 0.3s ease;
+			// border-right: 1px solid #aaa;
 
-		.toggle {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-			position: absolute;
-			top: 10px;
-			right: 10px;
-			width: 40px;
-			height: 40px;
-			background-color: #fff;
-			border-radius: 5px;
-			border: 1px solid #ccc;
-			transition: transform 0.3s ease;
-
-			&:hover {
-				transform: scale(0.9);
+			&.open {
+				width: 600px;
 			}
-		}
 
-		.item {
-			display: flex;
-			align-items: center;
-			padding: 0 12px;
-			height: 30px;
-			border-bottom: 1px solid #ccc;
-
-			.handle {
-				width: 20px;
-				height: 20px;
-				background-color: red;
+			.toggle {
+				display: flex;
+				align-items: center;
+				justify-content: center;
 				cursor: pointer;
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				width: 40px;
+				height: 40px;
+				background-color: #fff;
+				border-radius: 5px;
+				border: 1px solid #ccc;
+				transition: transform 0.3s ease;
+
+				&:hover {
+					transform: scale(0.9);
+				}
 			}
+
+			.item {
+				display: flex;
+				flex-direction: column;
+				padding: 0 12px;
+				border-bottom: 1px solid #ccc;
+
+				.stage {
+					display: flex;
+					align-items: center;
+					height: 30px;
+				}
+
+				.task {
+					height: 30px;
+					display: flex;
+					align-items: center;
+
+					// &:first-child {
+					// 	border-top: 1px solid #bbb;
+					// }
+
+					// &:not(:last-child) {
+					// 	border-bottom: 1px solid #bbb;
+					// }
+				}
+			}
+
+			.subList {
+				padding-left: 15px;
+			}
+		}
+
+		.grid {
+			overflow-x: scroll;
+			background-color: #eaeaea;
+		}
+
+		::-webkit-scrollbar {
+			display: none;
 		}
 	}
 
-	.grid {
-		overflow-x: scroll;
-		background-color: #eaeaea;
+	.draggableContainer {
+		display: flex;
+		align-items: center;
 	}
-
-	::-webkit-scrollbar {
-		display: none;
-	}
-}
-
-.draggableContainer {
-	display: flex;
-	align-items: center;
 }
