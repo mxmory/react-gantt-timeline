@@ -1,151 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Stage, Layer, Star, Text, Group, Rect, Line } from 'react-konva';
+import React, { useState, useRef, useEffect } from 'react';
+import { Stage, Layer, Line } from 'react-konva';
 import styles from './App.module.scss';
-import cn from 'classnames';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { maxBy, minBy, range } from 'lodash';
-import { Rectangle } from './components/Rectangle/Rectangle';
-import { width, height, padding } from './constants';
-
-const initialData = {
-	stages: [
-		{
-			id: 0,
-			name: 'Stage #1',
-			color: '#999',
-			length: 10,
-			start_at: 3,
-			percent: 30,
-			tasks: [
-				{
-					id: 11,
-					name: 'Task #11',
-					start_at: 3,
-					length: 3,
-					color: '#A9E5BB',
-				},
-				{
-					id: 12,
-					name: 'Task #12',
-					start_at: 6,
-					length: 3,
-					color: '#F72C25',
-				},
-			],
-		},
-		{
-			id: 1,
-			name: 'Stage #2',
-			color: '#999',
-			length: 6,
-			start_at: 5,
-			percent: 50,
-			tasks: [
-				{
-					id: 21,
-					name: 'Task #21',
-					start_at: 7,
-					length: 3,
-					color: '#A76D60',
-				},
-				{
-					id: 22,
-					name: 'Task #22',
-					start_at: 9,
-					length: 12,
-					color: '#601700',
-				},
-			],
-		},
-		{
-			id: 2,
-			name: 'Stage #3',
-			color: '#999',
-			length: 7,
-			start_at: 6,
-			percent: 60,
-			tasks: [
-				{
-					id: 31,
-					name: 'Task #31',
-					start_at: 10,
-					length: 5,
-					color: '#96CDFF',
-				},
-				{
-					id: 32,
-					name: 'Task #32',
-					start_at: 15,
-					length: 3,
-					color: '#DBBADD',
-				},
-				{
-					id: 33,
-					name: 'Task #33',
-					start_at: 20,
-					length: 6,
-					color: '#BE92A2',
-				},
-			],
-		},
-		{
-			id: 3,
-			name: 'Stage #4',
-			color: '#999',
-			length: 9,
-			start_at: 9,
-			percent: 90,
-			tasks: [
-				{
-					id: 41,
-					name: 'Task #41',
-					start_at: 21,
-					length: 3,
-					color: '#88B7B5',
-				},
-				{
-					id: 42,
-					name: 'Task #42',
-					start_at: 25,
-					length: 6,
-					color: '#449DD1',
-				},
-			],
-		},
-	],
-};
+import { range } from 'lodash';
+import { width, height, padding, initialData } from './constants';
+import { Sider } from './components/Sider/index';
+import { StageItemLine } from './components/StageItemLine';
+import { TaskItem } from './components/TaskItem';
+import { getStageProps } from './utils/funcs';
 
 const App = () => {
-	const [listOpen, setListOpen] = useState(false);
 	const [data, setData] = useState(initialData.stages);
 	const [selectedId, selectShape] = useState(null);
 	const [isTransforming, setIsTransforming] = useState(false);
-
-	const toggleList = () => {
-		setListOpen((prev) => !prev);
-	};
-
-	const reorder = (list, startIndex, endIndex) => {
-		const result = Array.from(list);
-		const [removed] = result.splice(startIndex, 1);
-		result.splice(endIndex, 0, removed);
-
-		return result;
-	};
-
-	const onListStageDragEnd = (values) => {
-		const { destination, source } = values;
-		if (destination) {
-			const newCommands = reorder([...data], source.index, destination.index);
-			setData(newCommands);
-		}
-	};
 
 	const onGridStageDragEnd = (e) => {
 		const {
 			attrs: { x, id },
 		} = e.target;
-
 		const newData = data.map((el) => {
 			if (el.id === id) {
 				return { ...el, start_at: Math.round(x / padding) };
@@ -156,16 +27,89 @@ const App = () => {
 		setData(newData);
 	};
 
-	const onGridStageTransformStart = () => {
+	const onGridTaskDragEnd = (e) => {
+		const node = e.target;
+		const {
+			attrs: { x, id, stageId },
+		} = node;
+
+		const stageGroup = node.getLayer().children.find((el) => el.attrs.id === stageId);
+		const [associatedStageNode] = stageGroup.children;
+
+		const newData = data.map((el) => {
+			if (el.id === stageId) {
+				const newTasks = el.tasks.map((task) => {
+					if (task.id === id) {
+						if (task.start_at === Math.round(x / padding)) {
+							node.to({ x: padding * task.start_at, duration: 0.2 });
+						} else {
+							node.to({ x: Math.round(x / padding) * padding, duration: 0.2 });
+						}
+						return { ...task, start_at: Math.round(x / padding) };
+					}
+					return task;
+				});
+
+				associatedStageNode.to({
+					width: getStageProps(newTasks).width * padding,
+					duration: 0.1,
+				});
+
+				stageGroup.to({
+					x: getStageProps(newTasks).x,
+					duration: 0.1,
+				});
+
+				return { ...el, tasks: [...newTasks] };
+			}
+			return el;
+		});
+
+		setTimeout(() => setData(newData), 200);
+	};
+
+	const onTransformStart = () => {
 		setIsTransforming(true);
 	};
 
-	const onGridStageTransformEnd = (e) => {
+	const onGridStageTransformEnd = () => {
 		setIsTransforming(false);
 		selectShape(null);
 	};
 
-	const onDeselect = (e) => {
+	const onGridTaskTransformEnd = (e) => {
+		const node = e.target;
+
+		const {
+			attrs: { id, stageId },
+		} = node;
+
+		const scaleX = node.scaleX();
+		node.scaleX(1);
+		const width = Math.round((node.width() * scaleX) / padding);
+
+		const newData = data.map((el) => {
+			if (el.id === stageId) {
+				const newTasks = el.tasks.map((task) => {
+					if (task.id === id) {
+						if (width !== task.length) {
+							node.width(padding * width);
+							return { ...task, length: width };
+						}
+					}
+					return task;
+				});
+
+				return { ...el, tasks: [...newTasks] };
+			}
+			return el;
+		});
+		setData(newData);
+		setIsTransforming(false);
+		selectShape(null);
+	};
+
+	const onDeselect = () => {
 		if (!isTransforming) {
 			selectShape(null);
 		}
@@ -177,52 +121,7 @@ const App = () => {
 		<div className={styles.main}>
 			<h1>Gantt</h1>
 			<div className={styles.flex}>
-				<div className={cn(styles.list, { [styles.open]: listOpen })}>
-					<div className={styles.toggle} onClick={toggleList}>
-						{listOpen ? '<' : '>'}
-					</div>
-					<DragDropContext onDragEnd={onListStageDragEnd}>
-						<Droppable droppableId="droppable">
-							{(provided) => (
-								<div
-									{...provided.droppableProps}
-									ref={provided.innerRef}
-									className={styles.reagentsList}
-								>
-									{data.map((stage, index) => {
-										return (
-											<Draggable
-												key={'_test_' + stage.id}
-												draggableId={stage.id + ''}
-												index={index}
-											>
-												{(provided) => (
-													<div
-														key={stage.id}
-														ref={provided.innerRef}
-														{...provided.draggableProps}
-														{...provided.dragHandleProps}
-														className={styles.item}
-													>
-														<div className={styles.stage}>{stage.name}</div>
-
-														<div className={styles.subList}>
-															{stage.tasks?.map((el) => (
-																<div key={'tasK__' + el.id} className={styles.task}>
-																	{el.name}
-																</div>
-															))}
-														</div>
-													</div>
-												)}
-											</Draggable>
-										);
-									})}
-								</div>
-							)}
-						</Droppable>
-					</DragDropContext>
-				</div>
+				<Sider data={data} setData={setData} />
 				<div className={styles.grid}>
 					<Stage width={width} height={height} onMouseUp={onDeselect}>
 						<Layer>
@@ -250,55 +149,36 @@ const App = () => {
 							))}
 
 							{data.map((stage) => {
-								const { start_at, color, name, length, percent, tasks } = stage;
+								const { tasks } = stage;
 								line++;
-
-								const firstTaskInStage = minBy(tasks, 'start_at');
-								const lastTaskInStage = maxBy(tasks, (task) => task.start_at + task.length);
-								const stageStartAt = firstTaskInStage.start_at;
-								const stageLength = lastTaskInStage.start_at + lastTaskInStage.length;
 
 								return (
 									<React.Fragment key={'__s_' + stage.id}>
-										<Rectangle
-											onSelect={() => {
-												selectShape(stage.id);
-											}}
-											onDeselect={onDeselect}
-											onDragEnd={onGridStageDragEnd}
-											onTransformEnd={onGridStageTransformEnd}
-											onTransformStart={onGridStageTransformStart}
-											isSelected={selectedId === stage.id}
+										<StageItemLine
+											select={selectShape}
 											id={stage.id}
-											x={padding * stageStartAt}
-											y={padding * line}
-											width={stageLength - stageStartAt}
-											color={color}
-											text={name}
-											percent={percent}
+											tasks={tasks}
+											line={line}
+											isSelected={selectedId === stage.id}
+											onDragEnd={onGridStageDragEnd}
+											onDeselect={onDeselect}
 										/>
+
 										{tasks?.map((task) => {
 											line++;
 											return (
-												<React.Fragment key={'_task_' + task.id}>
-													<Rectangle
-														onSelect={() => {
-															selectShape(task.id);
-														}}
-														onDeselect={onDeselect}
-														onDragEnd={onGridStageDragEnd}
-														onTransformEnd={onGridStageTransformEnd}
-														onTransformStart={onGridStageTransformStart}
-														isSelected={selectedId === task.id}
-														id={task.id}
-														x={padding * task.start_at}
-														y={padding * line}
-														width={task.length}
-														color={task.color}
-														text={task.name}
-														// percent={percent}
-													/>
-												</React.Fragment>
+												<TaskItem
+													key={'task_' + task.id}
+													select={selectShape}
+													task={task}
+													line={line}
+													stageId={stage.id}
+													isSelected={selectedId === task.id}
+													onDragEnd={onGridTaskDragEnd}
+													onTransformEnd={onGridTaskTransformEnd}
+													onTransformStart={onTransformStart}
+													onDeselect={onDeselect}
+												/>
 											);
 										})}
 									</React.Fragment>

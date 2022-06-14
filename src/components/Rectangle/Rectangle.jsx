@@ -72,12 +72,6 @@ export const Rectangle = ({
 			{isSelected && (
 				<Transformer
 					ref={trRef}
-					// boundBoxFunc={(oldBox, newBox) => {
-					// 	if (newBox.width < 5 || newBox.height < 5) {
-					// 		return oldBox;
-					// 	}
-					// 	return newBox;
-					// }}
 					rotateEnabled={false}
 					flipEnabled={false}
 					enabledAnchors={['middle-left', 'middle-right']}
