@@ -1,0 +1,32 @@
+.item {
+	display: flex;
+	flex-direction: column;
+	// padding: 0 12px;
+	// border-bottom: 1px solid #ccc;
+
+	.stage {
+		display: flex;
+		align-items: center;
+		height: 30px;
+		background-color: #eee;
+		padding: 0 12px 0 24px;
+		position: relative;
+
+		.stageToggle {
+			position: absolute;
+			top: 50%;
+			left: 5px;
+			transform: translateY(-50%);
+		}
+	}
+
+	.task {
+		height: 30px;
+		display: flex;
+		align-items: center;
+	}
+}
+
+.subList {
+	padding-left: 15px;
+}

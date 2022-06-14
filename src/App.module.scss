@@ -1,0 +1,30 @@
+.main {
+	h1 {
+		text-align: center;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	.flex {
+		display: flex;
+		justify-content: space-between;
+		overflow-x: hidden;
+		border-top: 1px solid #ddd;
+
+		.grid {
+			overflow-x: scroll;
+			background-color: #eaeaea;
+		}
+
+		::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	.draggableContainer {
+		display: flex;
+		align-items: center;
+	}
+}
