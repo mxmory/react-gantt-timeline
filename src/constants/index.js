@@ -4,6 +4,71 @@ export const padding = 30;
 export const STAGE_HEIGHT = 6;
 export const TASK_HEIGHT = 20;
 
+export const ACTUAL_DATA = {
+    stages: [
+        {
+            id: '0',
+            type: 'core',
+            name: 'Core stage 1',
+            color: '#ff00ff',
+            stages: [
+                {
+                    id: '00',
+                    type: 'stage',
+                    name: 'Aboba',
+                    tasks: [
+                        {
+                            id: 'task_01_1',
+                        },
+                    ],
+                    stages: [
+                        {
+                            id: '000',
+                            type: 'stage',
+                            name: 'Test stage',
+                        },
+                        {
+                            id: '001',
+                            type: 'milestone',
+                            name: 'Milestone 1',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            id: '1',
+            type: 'core',
+            name: 'Core stage 2',
+            color: '#ffff00',
+            stages: [
+                {
+                    id: '10',
+                    type: 'stage',
+                    name: 'Kak dela',
+                    stages: [
+                        {
+                            id: '100',
+                            type: 'stage',
+                            name: 'Tak vot',
+                            tasks: [
+                                {
+                                    id: 'task_100_1',
+                                },
+                            ],
+                        },
+                        {
+                            id: '101',
+                            type: 'milestone',
+                            name: 'Milestone #2',
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+};
+
 export const initialData = {
     stages: [
         {
@@ -102,7 +167,7 @@ export const initialData = {
                 },
                 {
                     id: 43,
-                    name: 'Task #42',
+                    name: 'Task #43',
                     start_at: 25,
                     length: 6,
                     color: '#449DD1',

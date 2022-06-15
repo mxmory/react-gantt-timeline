@@ -1,32 +1,36 @@
 .item {
-	display: flex;
-	flex-direction: column;
-	// padding: 0 12px;
-	// border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    // padding: 0 12px;
+    // border-bottom: 1px solid #ccc;
 
-	.stage {
-		display: flex;
-		align-items: center;
-		height: 30px;
-		background-color: #eee;
-		padding: 0 12px 0 24px;
-		position: relative;
+    .stage {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        background-color: #eee;
+        padding: 0 12px 0 12px;
+        position: relative;
 
-		.stageToggle {
-			position: absolute;
-			top: 50%;
-			left: 5px;
-			transform: translateY(-50%);
-		}
-	}
+        .stageToggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #666;
+            border-radius: 5px;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+    }
 
-	.task {
-		height: 30px;
-		display: flex;
-		align-items: center;
-	}
+    .task {
+        height: 30px;
+        display: flex;
+        align-items: center;
+    }
 }
 
 .subList {
-	padding-left: 15px;
+    padding-left: 15px;
 }

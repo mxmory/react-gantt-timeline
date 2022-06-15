@@ -1,30 +1,48 @@
 .main {
-	h1 {
-		text-align: center;
-	}
+    h1 {
+        text-align: center;
+    }
 
-	* {
-		box-sizing: border-box;
-	}
+    * {
+        box-sizing: border-box;
+    }
 
-	.flex {
-		display: flex;
-		justify-content: space-between;
-		overflow-x: hidden;
-		border-top: 1px solid #ddd;
+    .head {
+        // margin-left: 200px;
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background-color: #fff;
 
-		.grid {
-			overflow-x: scroll;
-			background-color: #eaeaea;
-		}
+        .funcs {
+            flex: 0 0 200px;
+        }
 
-		::-webkit-scrollbar {
-			display: none;
-		}
-	}
+        .dates {
+            border-left: 1px solid #aaa;
+        }
+    }
 
-	.draggableContainer {
-		display: flex;
-		align-items: center;
-	}
+    .flex {
+        display: flex;
+        position: relative;
+        justify-content: space-between;
+        overflow-x: hidden;
+        border-top: 1px solid #ddd;
+
+        .grid {
+            overflow-x: scroll;
+            background-color: #eaeaea;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .draggableContainer {
+        display: flex;
+        align-items: center;
+    }
 }
