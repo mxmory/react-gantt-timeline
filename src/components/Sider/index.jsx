@@ -33,13 +33,13 @@ export const Sider = ({ data, setData, toggleStageCollapse, visibleStages }) => 
                 <div className={styles.name}>{stage.name}</div>
                 {(stage.stages || stage.tasks) && (
                     <div className={styles.body}>
-                        {stage.stages?.map((stageEl) => (
-                            <StageItem key={stageEl.id} stage={stageEl} />
-                        ))}
                         {stage.tasks?.map((task) => (
                             <div className={styles.task} key={task.id}>
                                 {task.id}
                             </div>
+                        ))}
+                        {stage.stages?.map((stageEl) => (
+                            <StageItem key={stageEl.id} stage={stageEl} />
                         ))}
                     </div>
                 )}

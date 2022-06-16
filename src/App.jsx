@@ -6,9 +6,8 @@ import { width, height, padding, ACTUAL_DATA } from './constants';
 import { Sider } from './components/Sider/index';
 import { StageItemLine } from './components/StageItemLine';
 import { TaskItem } from './components/TaskItem';
-import { getStageProps } from './utils/funcs';
+import { getPrevStages, getStageProps } from './utils/funcs';
 import moment from 'moment';
-import { render } from 'react-dom';
 import { useRef } from 'react';
 
 const reduceStagesToShow = (data) => data.reduce((acc, stage) => ({ ...acc, [stage.id]: true }), {});
@@ -22,176 +21,131 @@ const App = () => {
     const stageRef = useRef();
     const containerRef = useRef();
 
-    const width = 200 * padding;
-
     const toggleStageCollapse = (stageId) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
     };
 
-    const renderHeaderRows = (top, middle, bottom) => {
-        // let result = { top: [], middle: [], bottom: [] };
-        // let lastLeft = {};
-        // let currentTop = '';
-        // let currentMiddle = '';
-        // let currentBottom = '';
-        // let currentDate = null;
-        // let box = null;
-
-        // let start = this.props.currentday;
-        // let end = this.props.currentday + this.props.numVisibleDays;
-        const BUFFER_DAYS = 100;
-        const today = moment(Date.now());
-        const bufferPrevDate = moment(today).subtract(BUFFER_DAYS, 'days');
-        const bufferNextDate = moment(today).add(BUFFER_DAYS, 'days');
-
-        // for (let i = start - BUFFER_DAYS; i < end + BUFFER_DAYS; i++) {
-        //     //The unit of iteration is day
-        //     // currentDate = moment().add(i, 'days');
-        //     // if (currentTop != currentDate.format(this.getFormat(top, 'top'))) {
-        //     //     currentTop = currentDate.format(this.getFormat(top, 'top'));
-        //     //     box = this.getBox(currentDate, top, lastLeft.top);
-        //     //     lastLeft.top = box.left + box.width;
-        //     //     result.top.push(<HeaderItem key={i} left={box.left} width={box.width} label={currentTop} />);
-        //     // }
-        //     // if (currentMiddle != currentDate.format(this.getFormat(middle))) {
-        //     //     currentMiddle = currentDate.format(this.getFormat(middle));
-        //     //     box = this.getBox(currentDate, middle, lastLeft.middle);
-        //     //     lastLeft.middle = box.left + box.width;
-        //     //     result.middle.push(<HeaderItem key={i} left={box.left} width={box.width} label={currentMiddle} />);
-        //     // }
-        //     // if (currentBottom != currentDate.format(this.getFormat(bottom))) {
-        //     //     currentBottom = currentDate.format(this.getFormat(bottom));
-        //     //     box = this.getBox(currentDate, bottom, lastLeft.bottom);
-        //     //     lastLeft.bottom = box.left + box.width;
-        //     //     if (bottom == 'shorttime' || bottom == 'fulltime') {
-        //     //         result.bottom.push(this.renderTime(box.left, box.width, bottom, i));
-        //     //     } else {
-        //     //         result.bottom.push(<HeaderItem key={i} left={box.left} width={box.width} label={currentBottom} />);
-        //     //     }
-        //     // }
-        // }
-    };
-
     useEffect(() => {
         // renderHeaderRows();
-        containerRef.current.addEventListener('scroll', repositionStage);
-        repositionStage();
+        // containerRef.current.addEventListener('scroll', repositionStage);
+        // repositionStage();
     }, []);
 
-    // const onGridStageDragEnd = (e) => {
-    //     const {
-    //         attrs: { x, id },
-    //     } = e.target;
-    //     const newData = data.map((el) => {
-    //         if (el.id === id) {
-    //             return { ...el, start_at: Math.round(x / padding) };
-    //         }
-    //         return el;
-    //     });
+    const onGridStageDragEnd = (e) => {
+        console.log(e);
+        const {
+            attrs: { x, id },
+        } = e.target;
+        // const newData = data.map((el) => {
+        //     if (el.id === id) {
+        //         return { ...el, start_at: Math.round(x / padding) };
+        //     }
+        //     return el;
+        // });
 
-    //     setData(newData);
-    // };
+        // setData(newData);
+    };
 
-    // const onGridTaskDragEnd = (e) => {
-    //     const node = e.target;
-    //     const {
-    //         attrs: { x, id, stageId },
-    //     } = node;
+    const onGridTaskDragEnd = (e) => {
+        const node = e.target;
+        const {
+            attrs: { x, id, stageId },
+        } = node;
 
-    //     const stageGroup = node.getLayer().children.find((el) => el.attrs.id === stageId);
-    //     const [associatedStageNode, percentStageNode] = stageGroup.children;
+        const stageGroup = node.getLayer().children.find((el) => el.attrs.id === stageId);
+        const [associatedStageNode, percentStageNode] = stageGroup.children;
 
-    //     const newData = data.map((el) => {
-    //         if (el.id === stageId) {
-    //             const newTasks = el.tasks.map((task) => {
-    //                 if (task.id === id) {
-    //                     if (task.start_at === Math.round(x / padding)) {
-    //                         node.to({
-    //                             x: padding * task.start_at,
-    //                             duration: 0.2,
-    //                         });
-    //                     } else {
-    //                         node.to({
-    //                             x: Math.round(x / padding) * padding,
-    //                             duration: 0.2,
-    //                         });
-    //                     }
-    //                     return { ...task, start_at: Math.round(x / padding) };
-    //                 }
-    //                 return task;
-    //             });
+        const newData = data.map((el) => {
+            if (el.id === stageId) {
+                const newTasks = el.tasks.map((task) => {
+                    if (task.id === id) {
+                        if (task.start_at === Math.round(x / padding)) {
+                            node.to({
+                                x: padding * task.start_at,
+                                duration: 0.2,
+                            });
+                        } else {
+                            node.to({
+                                x: Math.round(x / padding) * padding,
+                                duration: 0.2,
+                            });
+                        }
+                        return { ...task, start_at: Math.round(x / padding) };
+                    }
+                    return task;
+                });
 
-    //             // animating lines
+                // animating lines
 
-    //             associatedStageNode.to({
-    //                 width: getStageProps(newTasks).width * padding,
-    //                 duration: 0.1,
-    //             });
+                associatedStageNode.to({
+                    width: getStageProps(newTasks).width * padding,
+                    duration: 0.1,
+                });
 
-    //             percentStageNode.to({
-    //                 width: (getStageProps(newTasks).width * getStageProps(newTasks).percent * padding) / 100,
-    //                 x: 0,
-    //                 duration: 0.2,
-    //             });
+                percentStageNode.to({
+                    width: (getStageProps(newTasks).width * getStageProps(newTasks).percent * padding) / 100,
+                    x: 0,
+                    duration: 0.2,
+                });
 
-    //             stageGroup.to({
-    //                 x: getStageProps(newTasks).x,
-    //                 duration: 0.1,
-    //             });
+                stageGroup.to({
+                    x: getStageProps(newTasks).x,
+                    duration: 0.1,
+                });
 
-    //             return { ...el, tasks: [...newTasks] };
-    //         }
-    //         return el;
-    //     });
+                return { ...el, tasks: [...newTasks] };
+            }
+            return el;
+        });
 
-    //     setTimeout(() => setData(newData), 200);
-    // };
+        setTimeout(() => setData(newData), 200);
+    };
 
-    // const onTransformStart = () => {
-    //     setIsTransforming(true);
-    // };
+    const onTransformStart = () => {
+        setIsTransforming(true);
+    };
 
-    // const onGridTaskTransformEnd = (e) => {
-    //     const node = e.target;
+    const onGridTaskTransformEnd = (e) => {
+        const node = e.target;
 
-    //     const {
-    //         attrs: { id, stageId },
-    //     } = node;
+        const {
+            attrs: { id, stageId },
+        } = node;
 
-    //     const scaleX = node.scaleX();
-    //     node.scaleX(1);
-    //     const width = Math.round((node.width() * scaleX) / padding);
+        const scaleX = node.scaleX();
+        node.scaleX(1);
+        const width = Math.round((node.width() * scaleX) / padding);
 
-    //     const newData = data.map((el) => {
-    //         if (el.id === stageId) {
-    //             const newTasks = el.tasks.map((task) => {
-    //                 if (task.id === id) {
-    //                     if (width !== task.length) {
-    //                         node.width(padding * width);
-    //                         return { ...task, length: width };
-    //                     }
-    //                 }
-    //                 return task;
-    //             });
+        const newData = data.map((el) => {
+            if (el.id === stageId) {
+                const newTasks = el.tasks.map((task) => {
+                    if (task.id === id) {
+                        if (width !== task.length) {
+                            node.width(padding * width);
+                            return { ...task, length: width };
+                        }
+                    }
+                    return task;
+                });
 
-    //             return { ...el, tasks: [...newTasks] };
-    //         }
-    //         return el;
-    //     });
-    //     setData(newData);
-    //     setIsTransforming(false);
-    //     selectShape(null);
-    // };
+                return { ...el, tasks: [...newTasks] };
+            }
+            return el;
+        });
+        setData(newData);
+        setIsTransforming(false);
+        selectShape(null);
+    };
 
-    function repositionStage() {
-        const stage = stageRef.current;
-        const container = containerRef.current;
-        var dx = container.scrollLeft - padding;
-        var dy = container.scrollTop - padding;
-        stage.container().style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
-        stage.x(-dx);
-        stage.y(-dy);
-    }
+    // function repositionStage() {
+    //     const stage = stageRef.current;
+    //     const container = containerRef.current;
+    //     var dx = container.scrollLeft - padding;
+    //     var dy = container.scrollTop - padding;
+    //     stage.container().style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+    //     stage.x(-dx);
+    //     stage.y(-dy);
+    // }
 
     const onDeselect = () => {
         if (!isTransforming) {
@@ -220,66 +174,85 @@ const App = () => {
 
     const CoreStage = ({ stage, line }) => {
         const { tasks, type, length, start_at, stages } = stage;
-        const { x, width } = getStageProps(stages);
 
-        return (
-            <StageItemLine
-                select={selectShape}
-                id={stage.id}
-                tasks={tasks}
-                line={line}
-                isSelected={selectedId === stage.id}
-                length={width}
-                start_at={x / padding}
-                type="core"
-                // onDragEnd={onGridStageDragEnd}
-                onDeselect={onDeselect}
-            />
-        );
-    };
+        const innerStages = getPrevStages(stages);
+        const { x, width } = getStageProps(innerStages);
 
-    const GridLineItem = ({ stage, currentLine }) => {
-        const { tasks, start_at, stages, length } = stage;
-
-        console.log(stage.id, currentLine);
-
-        console.log(tasks);
         return (
             <>
                 <StageItemLine
                     select={selectShape}
                     id={stage.id}
                     tasks={tasks}
-                    line={currentLine}
+                    line={line}
+                    isSelected={selectedId === stage.id}
+                    length={width}
+                    start_at={x / padding}
+                    type="core"
+                    onDeselect={onDeselect}
+                />
+            </>
+        );
+    };
+
+    const getPrevItems = (stagesArr) => {
+        const resArr = stagesArr.reduce((acc, { stages = [], tasks = [] }) => {
+            const all = [...tasks, ...stages];
+            const inner = getPrevItems(stages);
+
+            return [...acc, ...all, ...inner];
+        }, []);
+        return resArr;
+    };
+
+    const GridLineItem = ({ stage, allStages, index, currentLine }) => {
+        const { tasks, start_at, stages, length, type } = stage;
+        const prevStages = [...allStages.slice(0, index)];
+        const prevItemsCount = getPrevItems(prevStages).length;
+
+        return (
+            <>
+                <StageItemLine
+                    select={selectShape}
+                    id={stage.id}
+                    tasks={tasks}
+                    line={currentLine + prevItemsCount}
                     isSelected={selectedId === stage.id}
                     length={length}
                     start_at={start_at}
+                    type={type}
                     // onDragEnd={onGridStageDragEnd}
                     onDeselect={onDeselect}
                 />
 
-                {stages &&
-                    stages.map((s, idx) => {
-                        return <GridLineItem key={s.id} stage={s} currentLine={currentLine + idx + 1} />;
-                    })}
-
                 {tasks &&
                     tasks.map((task, taskIdx) => {
                         const { id, length, start_at, tasks = [] } = task;
-                        console.log('currLine', stages?.length ?? 0 + currentLine);
                         return (
-                            <StageItemLine
+                            <TaskItem
                                 key={task.id}
                                 select={selectShape}
                                 id={id}
-                                tasks={tasks}
-                                line={4}
+                                task={task}
+                                line={currentLine + prevItemsCount + taskIdx + 1}
                                 isSelected={selectedId === id}
                                 length={length}
                                 start_at={start_at}
                                 // onDragEnd={onGridStageDragEnd}
                                 onDeselect={onDeselect}
-                                type="task"
+                            />
+                        );
+                    })}
+
+                {stages &&
+                    stages.map((s, idx) => {
+                        return (
+                            <GridLineItem
+                                key={s.id}
+                                allStages={stages}
+                                index={idx}
+                                stage={s}
+                                currentLine={currentLine + (tasks?.length || 0) + prevItemsCount + idx + 1}
                             />
                         );
                     })}
@@ -298,164 +271,126 @@ const App = () => {
                 />
 
                 <div className={styles.grid} ref={containerRef}>
-                    <div className={styles.innerGridContainer}>
-                        <Stage
-                            width={window.innerWidth + padding * 2}
-                            height={window.innerHeight + padding * 2}
-                            ref={stageRef}
-                            onMouseUp={onDeselect}
-                            listening
-                            // onWheel={(e) => console.log(e)}
-                        >
-                            <Layer y={0}>
-                                <Line
-                                    points={[0, 1 * padding - 0.5, width, 1 * padding - 0.5]}
-                                    stroke="#aaa"
-                                    strokeWidth={0.5}
-                                />
-                                <Line
-                                    points={[0, 2 * padding - 0.5, width, 2 * padding - 0.5]}
-                                    stroke="#aaa"
-                                    strokeWidth={0.5}
-                                />
-                                {getMonths().map((item, index) => {
-                                    const daysCount = getDaysInMonth(item);
-                                    const prevStages = [...getMonths().slice(0, index)];
-                                    const prevStagesDaysCount = prevStages.reduce((acc, curr) => {
-                                        return acc + getDaysInMonth(curr);
-                                    }, 0);
-
-                                    return (
-                                        <Group key={item} x={prevStagesDaysCount * padding} y={0} height={padding}>
-                                            <Rect
-                                                key={item}
-                                                width={padding * daysCount}
-                                                height={padding}
-                                                fill="#fff"
-                                                opacity={0.5}
-                                                stroke="#ccc"
-                                                strokeWidth={0.5}
-                                            />
-                                            <Text
-                                                width={padding * daysCount}
-                                                height={padding}
-                                                text={moment(item).format('MMMM')}
-                                                align="center"
-                                                verticalAlign="middle"
-                                            />
-                                        </Group>
-                                    );
-                                })}
-                            </Layer>
-                            <Layer y={padding * 2}>
-                                {range(Math.round(width / padding)).map((n) => (
-                                    <Line
-                                        key={'_vert_line_' + n}
-                                        points={[
-                                            Math.round(n * padding) + 0.5,
-                                            0,
-                                            Math.round(n * padding) + 0.5,
-                                            height,
-                                        ]}
-                                        stroke="#aaa"
-                                        strokeWidth={0.5}
-                                    />
-                                ))}
-
-                                {range(Math.round(height / padding)).map((n) => (
-                                    <Line
-                                        key={'_horz_line_' + n}
-                                        points={[
-                                            0,
-                                            Math.round((n + 1) * padding) - 0.5,
-                                            width,
-                                            Math.round((n + 1) * padding) - 0.5,
-                                        ]}
-                                        stroke="#aaa"
-                                        strokeWidth={0.5}
-                                    />
-                                ))}
-
-                                {data.map((stage, stageIdx) => {
-                                    const { stages } = stage;
-                                    const prevStages = [...data.slice(0, stageIdx)];
-                                    const getPrevItems = (prevStages) => {
-                                        const resArr = prevStages.reduce((acc, { id, stages = [], tasks = [] }) => {
-                                            const all = [...tasks, ...stages];
-                                            const inner = getPrevItems(stages);
-
-                                            // console.log('prev prev', prevCount, stages);
-                                            return [...all, ...inner];
-                                        }, []);
-                                        return resArr;
-                                    };
-
-                                    const currentLine = stageIdx + getPrevItems(prevStages).length;
-
-                                    return (
-                                        <React.Fragment key={stage.id}>
-                                            <CoreStage stage={stage} line={currentLine} />
-
-                                            {stages.map((el, idx) => {
-                                                return (
-                                                    <GridLineItem
-                                                        key={el.id}
-                                                        stage={el}
-                                                        currentLine={currentLine + idx + 1}
-                                                    />
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    );
-                                })}
-
-                                {/* {data.map((stage, stageIdx) => {
-                                const { tasks } = stage;
-
-                                const prevStages = [...data.slice(0, stageIdx)];
-
-                                // if tasks are visible/hidden
-                                const prevTasksCount = prevStages.reduce((acc, { id, tasks }) => {
-                                    return visibleStages[id] ? acc + tasks.length : acc;
+                    <div style={{ width, height: padding * 2, borderBottom: '1px solid #aaa' }}></div>
+                    {/* <div className={styles.innerGridContainer}> */}
+                    <Stage
+                        width={4000}
+                        height={3000}
+                        ref={stageRef}
+                        onMouseUp={onDeselect}
+                        listening
+                        // onWheel={(e) => console.log(e)}
+                    >
+                        {/* <Layer>
+                            <Line
+                                points={[0, 1 * padding - 0.5, width, 1 * padding - 0.5]}
+                                stroke="#aaa"
+                                strokeWidth={0.5}
+                            />
+                            <Line
+                                points={[0, 2 * padding - 0.5, width, 2 * padding - 0.5]}
+                                stroke="#aaa"
+                                strokeWidth={0.5}
+                            />
+                            {getMonths().map((item, index) => {
+                                const daysCount = getDaysInMonth(item);
+                                const prevStages = [...getMonths().slice(0, index)];
+                                const prevStagesDaysCount = prevStages.reduce((acc, curr) => {
+                                    return acc + getDaysInMonth(curr);
                                 }, 0);
 
-                                const currentLine = stageIdx + prevTasksCount;
+                                return (
+                                    <Group key={item} x={prevStagesDaysCount * padding} y={0} height={padding}>
+                                        <Rect
+                                            key={item}
+                                            width={padding * daysCount}
+                                            height={padding}
+                                            fill="#fff"
+                                            opacity={0.5}
+                                            stroke="#ccc"
+                                            strokeWidth={0.5}
+                                        />
+                                        <Text
+                                            width={padding * daysCount}
+                                            height={padding}
+                                            text={moment(item).format('MMMM')}
+                                            align="center"
+                                            verticalAlign="middle"
+                                        />
+                                    </Group>
+                                );
+                            })}
+                        </Layer> */}
+                        <Layer>
+                            {range(Math.round(width / padding)).map((n) => (
+                                <Line
+                                    key={'_vert_line_' + n}
+                                    points={[Math.round(n * padding) + 0.5, 0, Math.round(n * padding) + 0.5, height]}
+                                    stroke="#aaa"
+                                    strokeWidth={0.5}
+                                />
+                            ))}
+
+                            {range(Math.round(height / padding)).map((n) => (
+                                <Line
+                                    key={'_horz_line_' + n}
+                                    points={[
+                                        0,
+                                        Math.round((n + 1) * padding) - 0.5,
+                                        width,
+                                        Math.round((n + 1) * padding) - 0.5,
+                                    ]}
+                                    stroke="#aaa"
+                                    strokeWidth={0.5}
+                                />
+                            ))}
+
+                            {data.map((stage, stageIdx) => {
+                                const { stages, tasks } = stage;
+                                const prevStages = [...data.slice(0, stageIdx)];
+
+                                const currentLine = stageIdx + getPrevItems(prevStages).length;
 
                                 return (
-                                    <React.Fragment key={'__s_' + stage.id}>
-                                        <StageItemLine
-                                            select={selectShape}
-                                            id={stage.id}
-                                            tasks={tasks}
-                                            line={currentLine}
-                                            isSelected={selectedId === stage.id}
-                                            onDragEnd={onGridStageDragEnd}
-                                            onDeselect={onDeselect}
-                                        />
+                                    <React.Fragment key={stage.id}>
+                                        <CoreStage stage={stage} line={currentLine} />
 
-                                        {visibleStages[stage.id] &&
-                                            tasks?.map((task, taskIdx) => {
+                                        {tasks &&
+                                            tasks.map((task, taskIdx) => {
+                                                const { id, length, start_at, tasks = [] } = task;
                                                 return (
                                                     <TaskItem
-                                                        key={'task_' + task.id}
+                                                        key={task.id}
                                                         select={selectShape}
+                                                        id={id}
                                                         task={task}
                                                         line={currentLine + taskIdx + 1}
-                                                        stageId={stage.id}
-                                                        isSelected={selectedId === task.id}
-                                                        onDragEnd={onGridTaskDragEnd}
-                                                        onTransformEnd={onGridTaskTransformEnd}
-                                                        onTransformStart={onTransformStart}
+                                                        isSelected={selectedId === id}
+                                                        length={length}
+                                                        start_at={start_at}
+                                                        // onDragEnd={onGridStageDragEnd}
                                                         onDeselect={onDeselect}
                                                     />
                                                 );
                                             })}
+
+                                        {stages.map((el, idx) => {
+                                            return (
+                                                <GridLineItem
+                                                    key={el.id}
+                                                    allStages={stages}
+                                                    index={idx}
+                                                    stage={el}
+                                                    currentLine={currentLine + (tasks?.length || 0) + idx + 1}
+                                                />
+                                            );
+                                        })}
                                     </React.Fragment>
                                 );
-                            })} */}
-                            </Layer>
-                        </Stage>
-                    </div>
+                            })}
+                        </Layer>
+                    </Stage>
+                    {/* </div> */}
                 </div>
             </div>
         </div>

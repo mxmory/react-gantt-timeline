@@ -1,24 +1,29 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Group, Rect } from 'react-konva';
 import { padding, STAGE_HEIGHT } from '../../constants';
-import { getStageProps } from '../../utils/funcs';
 
 export const StageItemLine = ({
     select,
     id,
-    tasks = [],
     line,
     length,
     start_at,
     // percent = 0,
     onDeselect,
-    onDragEnd,
+    // onDragEnd,
     type,
 }) => {
     const shapeRef = React.useRef();
 
     const y = line * padding;
     const x = start_at * padding;
+
+    const colorMaps = {
+        milestone: '#ff00ff',
+        task: '#24a4f9',
+        stage: '#ccc',
+        core: '#000',
+    };
 
     return (
         <Group
@@ -27,9 +32,9 @@ export const StageItemLine = ({
             id={id}
             x={x}
             y={y + padding / 2 - STAGE_HEIGHT / 2}
-            width={padding * length}
+            width={type === 'milestone' ? STAGE_HEIGHT : padding * length}
             height={STAGE_HEIGHT}
-            // draggable={true}
+            // draggable={onDragEnd && true}
             // dragBoundFunc={(pos) => {
             //     return {
             //         x: pos.x,
@@ -41,12 +46,16 @@ export const StageItemLine = ({
             <Rect
                 id={id}
                 ref={shapeRef}
-                width={padding * length}
+                width={type === 'milestone' ? STAGE_HEIGHT : padding * length}
                 height={STAGE_HEIGHT}
-                fill={type === 'core' ? '#000' : '#bbb'}
+                fill={colorMaps[type]}
+                rotation={type === 'milestone' && 45}
+
                 // onTransformEnd={onTransformEnd}
                 // onTransformStart={onTransformStart}
             />
+            {/* {type !== 'milestone' && <Text width={padding * length} height={STAGE_HEIGHT} text={id + '_' + type} />} */}
+
             {/* <Rect
                 width={(padding * width * percent) / 100}
                 height={STAGE_HEIGHT}
