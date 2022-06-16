@@ -30,9 +30,20 @@
         justify-content: space-between;
         overflow-x: hidden;
         border-top: 1px solid #ddd;
+        height: 100vh;
 
         .grid {
-            overflow-x: scroll;
+            width: calc(100% - 22px);
+            height: calc(100% - 22px);
+            overflow: auto;
+            // margin: 10px;
+            border: 1px solid grey;
+        }
+
+        .innerGridContainer {
+            width: 3000px;
+            height: 3000px;
+            overflow: hidden;
             background-color: #eaeaea;
         }
 
