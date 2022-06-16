@@ -6,15 +6,19 @@ import { getStageProps } from '../../utils/funcs';
 export const StageItemLine = ({
     select,
     id,
-    tasks,
+    tasks = [],
     line,
+    length,
+    start_at,
     // percent = 0,
     onDeselect,
     onDragEnd,
+    type,
 }) => {
     const shapeRef = React.useRef();
 
-    const { x, y, width, percent } = getStageProps(tasks, line);
+    const y = line * padding;
+    const x = start_at * padding;
 
     return (
         <Group
@@ -23,34 +27,34 @@ export const StageItemLine = ({
             id={id}
             x={x}
             y={y + padding / 2 - STAGE_HEIGHT / 2}
-            width={padding * width}
+            width={padding * length}
             height={STAGE_HEIGHT}
-            draggable={true}
-            dragBoundFunc={(pos) => {
-                return {
-                    x: pos.x,
-                    y: y + padding / 2 - STAGE_HEIGHT / 2,
-                };
-            }}
-            onDragEnd={onDragEnd}
+            // draggable={true}
+            // dragBoundFunc={(pos) => {
+            //     return {
+            //         x: pos.x,
+            //         y: y + padding / 2 - STAGE_HEIGHT / 2,
+            //     };
+            // }}
+            // onDragEnd={onDragEnd}
         >
             <Rect
                 id={id}
                 ref={shapeRef}
-                width={padding * width}
+                width={padding * length}
                 height={STAGE_HEIGHT}
-                fill="#666"
+                fill={type === 'core' ? '#000' : '#bbb'}
                 // onTransformEnd={onTransformEnd}
                 // onTransformStart={onTransformStart}
             />
-            <Rect
+            {/* <Rect
                 width={(padding * width * percent) / 100}
                 height={STAGE_HEIGHT}
                 fill="#fff"
                 opacity={0.5}
                 // onTransformEnd={onTransformEnd}
                 // onTransformStart={onTransformStart}
-            />
+            /> */}
             {/* <Rect width={STAGE_HEIGHT / 2} height={STAGE_HEIGHT * 3} fill="#666" x={0} y={-STAGE_HEIGHT} />
 			<Rect
 				width={STAGE_HEIGHT / 2}
