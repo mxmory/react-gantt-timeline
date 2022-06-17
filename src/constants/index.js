@@ -9,7 +9,7 @@ export const ACTUAL_DATA = {
         {
             id: '0',
             type: 'core',
-            name: 'Core stage 1',
+            name: 'Main stage 1',
             color: '#ff00ff',
             start_at: 3,
             stages: [
@@ -99,7 +99,7 @@ export const ACTUAL_DATA = {
                                         {
                                             id: '000001',
                                             type: 'milestone',
-                                            name: 'Milestone 1',
+                                            name: 'Milestone 2',
                                             start_at: 12,
                                             length: 1,
                                         },
@@ -125,7 +125,7 @@ export const ACTUAL_DATA = {
                                 {
                                     id: '0001',
                                     type: 'milestone',
-                                    name: 'Milestone 1',
+                                    name: 'Milestone 3',
                                     start_at: 15,
                                     length: 1,
                                 },
@@ -145,7 +145,7 @@ export const ACTUAL_DATA = {
         {
             id: '1',
             type: 'core',
-            name: 'Core stage 2',
+            name: 'Main stage 2',
             color: '#ffff00',
             start_at: 9,
             stages: [

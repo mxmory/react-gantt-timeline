@@ -64,14 +64,19 @@ export const StageItemLine = ({
                 // onTransformEnd={onTransformEnd}
                 // onTransformStart={onTransformStart}
             /> */}
-            {/* <Rect width={STAGE_HEIGHT / 2} height={STAGE_HEIGHT * 3} fill="#666" x={0} y={-STAGE_HEIGHT} />
-			<Rect
-				width={STAGE_HEIGHT / 2}
-				height={STAGE_HEIGHT * 3}
-				fill="#666"
-				x={width * padding - STAGE_HEIGHT / 2}
-				y={-STAGE_HEIGHT}
-			/> */}
+
+            {type === 'core' && (
+                <>
+                    <Rect width={STAGE_HEIGHT / 2} height={STAGE_HEIGHT * 3} fill="#000" x={0} y={-STAGE_HEIGHT} />
+                    <Rect
+                        width={STAGE_HEIGHT / 2}
+                        height={STAGE_HEIGHT * 3}
+                        fill="#000"
+                        x={length * padding - STAGE_HEIGHT / 2}
+                        y={-STAGE_HEIGHT}
+                    />
+                </>
+            )}
         </Group>
     );
 };
