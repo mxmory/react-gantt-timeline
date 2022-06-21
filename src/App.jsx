@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Stage, Layer, Line, Rect, Group, Text } from 'react-konva';
 import styles from './App.module.scss';
-import { range } from 'lodash';
+import { isEqual, range, uniq, uniqWith } from 'lodash';
 import { width, height, padding, ACTUAL_DATA, STAGE_HEIGHT } from './constants';
 import { Sider } from './components/Sider/index';
 import { StageItemLine } from './components/StageItemLine';
@@ -10,30 +10,29 @@ import { getPrevStages, getStageProps } from './utils/funcs';
 import moment from 'moment';
 import { useRef } from 'react';
 import Konva from 'konva';
+import { HOLIDAYS } from './constants/index';
 
 const reduceStagesToShow = (data) => data.reduce((acc, stage) => ({ ...acc, [stage.id]: true }), {});
 21;
 
 const App = () => {
+    const today = moment();
+
     const [data, setData] = useState(ACTUAL_DATA.stages);
     const [selectedId, selectShape] = useState(null);
     const [isTransforming, setIsTransforming] = useState(false);
     const [visibleStages, setVisibleStages] = useState(reduceStagesToShow(data));
     const [dataRange, setDataRange] = useState([]);
 
-    const stageRef = useRef();
-    const mainLayerRef = useRef();
+    const timelineStageRef = useRef();
     const timelineLayerRef = useRef();
+    const mainStageRef = useRef();
+    const mainLayerRef = useRef();
     const containerRef = useRef();
 
     const toggleStageCollapse = (stageId) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
     };
-
-    const buffer = 500;
-    const projectStart = moment('22.05.2022', 'DD.MM.YYYY');
-    const projectEnd = moment('10.10.2023', 'DD.MM.YYYY');
-    const today = moment();
 
     // const onGridTaskDragEnd = (e) => {
     //     const node = e.target;
@@ -132,42 +131,24 @@ const App = () => {
         }
     };
 
-    const getMonths = () => {
-        const projectStart = moment('12-12-2011', 'MM-DD-YYYY');
-        const projectEnd = moment('12-12-2023', 'MM-DD-YYYY');
-        let result = [];
-
-        console.log(projectStart.isSameOrBefore(projectEnd));
-
-        console.log(result);
-
-        return result.reverse();
-    };
-
-    const getDaysInMonth = (value) => {
-        return moment(value, 'YYYY-MM').daysInMonth();
-    };
-
     const CoreStage = ({ stage, line }) => {
-        const { tasks, type, length, start_at, stages } = stage;
+        const { id, tasks, stages } = stage;
 
         const innerStages = getPrevStages(stages);
         const { x, width } = getStageProps(innerStages);
 
         return (
-            <>
-                <StageItemLine
-                    select={selectShape}
-                    id={stage.id}
-                    tasks={tasks}
-                    line={line}
-                    isSelected={selectedId === stage.id}
-                    length={width}
-                    start_at={x}
-                    type="core"
-                    onDeselect={onDeselect}
-                />
-            </>
+            <StageItemLine
+                select={selectShape}
+                id={id}
+                tasks={tasks}
+                line={line}
+                isSelected={selectedId === id}
+                length={width}
+                start_at={x}
+                type="core"
+                onDeselect={onDeselect}
+            />
         );
     };
 
@@ -182,14 +163,13 @@ const App = () => {
     };
 
     const GridLineItem = ({ stage, allStages, index, currentLine }) => {
-        const { tasks, start_at, stages, length, type } = stage;
+        const { tasks, start_at, stages, deadline, type } = stage;
         const prevStages = [...allStages.slice(0, index)];
         const prevItemsCount = getPrevItems(prevStages).length;
 
-        const start = moment(stage.start_at);
-        const deadline = moment(stage.deadline);
+        const start = moment(start_at);
         const x = start.diff(today, 'days', false);
-        const l = deadline.diff(start, 'days', false);
+        const l = moment(deadline).diff(start, 'days', false);
 
         return (
             <>
@@ -208,17 +188,13 @@ const App = () => {
 
                 {tasks &&
                     tasks.map((task, taskIdx) => {
-                        const { id, length, start_at, tasks = [] } = task;
                         return (
                             <TaskItem
                                 key={task.id}
                                 select={selectShape}
-                                id={id}
                                 task={task}
                                 line={currentLine + prevItemsCount + taskIdx + 1}
-                                isSelected={selectedId === id}
-                                length={length}
-                                start_at={start_at}
+                                isSelected={selectedId === task.id}
                                 // onDragEnd={onGridStageDragEnd}
                                 onDeselect={onDeselect}
                             />
@@ -242,57 +218,61 @@ const App = () => {
     };
 
     useEffect(() => {
+        const stage = mainStageRef.current;
+        const startIndex = Math.floor((-stage.x() - stage.width()) / padding);
+        const endIndex = Math.floor((-stage.x() + stage.width() * 2) / padding);
+        setDataRange([startIndex, endIndex]);
         checkShapes();
-        stageRef.current.batchDraw();
-        console.log(mainLayerRef);
+        stage.batchDraw();
     }, []);
 
-    function checkShapes() {
-        const stage = stageRef.current;
+    useEffect(() => {
+        timelineLayerRef?.current?.batchDraw();
+        mainLayerRef?.current?.batchDraw();
+    }, [dataRange]);
+
+    const onDragStage = (e) => {
+        const x = e.target.x();
+        timelineStageRef.current.x(x);
+    };
+
+    const onStageScroll = (e) => {
+        const { evt } = e;
+        if (evt.shiftKey) {
+            evt.preventDefault();
+            timelineStageRef.current.x(timelineStageRef.current.x() - evt.deltaY);
+            mainStageRef.current.x(mainStageRef.current.x() - evt.deltaY);
+            checkShapes();
+        }
+    };
+
+    const checkShapes = () => {
         const layer = mainLayerRef.current;
         const timelineLayer = timelineLayerRef.current;
 
         if (!layer || !timelineLayer) return;
 
-        layer.destroyChildren();
-        // layer.offsetY(-padding * 2);
-        timelineLayer.destroyChildren();
+        const stage = mainStageRef.current;
 
         const startIndex = Math.floor((-stage.x() - stage.width()) / padding);
         const endIndex = Math.floor((-stage.x() + stage.width() * 2) / padding);
 
-        const startX = startIndex * padding;
-        const endX = endIndex * padding;
-
         setDataRange([startIndex, endIndex]);
+    };
 
-        for (let y = 0; y < height; y += padding) {
-            layer.add(
-                new Konva.Line({
-                    points: [startX, Math.round(y) - 0.5, endX, Math.round(y) - 0.5],
-                    stroke: '#aaa',
-                    strokeWidth: 0.5,
-                })
-            );
-        }
+    const getMonths = () => {
+        return range(dataRange[0] * padding, dataRange[1] * padding, padding).map((n) => {
+            const day = moment(today).add(n / padding, 'days');
 
-        for (let x = startX; x < endX; x += padding) {
-            const indexX = x / padding;
+            const startDate = moment(day).startOf('month');
+            const endDate = moment(day).endOf('month');
 
-            timelineLayer.add(
-                new Konva.Text({
-                    fontSize: 10,
-                    text: moment(today).add(indexX, 'days').format('DD.MM.YYYY'),
-                    x,
-                    y: 0,
-                    width: padding,
-                    height: padding * 2,
-                    align: 'center',
-                    verticalAlign: 'middle',
-                })
-            );
-        }
-    }
+            const xStart = moment(startDate).diff(moment(today), 'days', false);
+            const xEnd = moment(endDate).diff(moment(today), 'days', false);
+
+            return { date: startDate, start: xStart + (xStart > 0 + 1), end: xEnd + (xEnd > 0 && 1) }; // Check why if > 0 need to add + 1
+        }, []);
+    };
 
     return (
         <div className={styles.main}>
@@ -306,39 +286,110 @@ const App = () => {
 
                 <div className={styles.grid} ref={containerRef}>
                     <div className={styles.innerGridContainer}>
-                        {/* <div
-                            style={{
-                                position: 'absolute',
-                                width,
-                                height: padding * 2,
-                                borderBottom: '1px solid #aaa',
-                                borderLeft: '1px solid #aaa',
-                                top: 0,
-                                background: '#fff',
-                                zIndex: 2,
-                            }}
-                        >
-                            <Stage width={window.innerWidth} height={padding * 2}>
-                                <Layer>
-                                    <Group x={0} y={0} height={padding * 2}>
-                                        <Line
-                                            points={[0, 1 * padding - 0.5, width, 1 * padding - 0.5]}
-                                            stroke="#aaa"
-                                            strokeWidth={0.5}
-                                        />
-                                        <Line
-                                            points={[0, 2 * padding - 0.5, width, 2 * padding - 0.5]}
-                                            stroke="#aaa"
-                                            strokeWidth={0.5}
-                                        />
-                                    </Group>
+                        <div className={styles.timelineContainer}>
+                            <Stage width={window.innerWidth} height={padding * 2} ref={timelineStageRef}>
+                                <Layer ref={timelineLayerRef}>
+                                    <Line
+                                        points={[
+                                            dataRange[0] * padding,
+                                            padding - 0.5,
+                                            dataRange[1] * padding,
+                                            padding - 0.5,
+                                        ]}
+                                        stroke="#aaa"
+                                        strokeWidth={0.5}
+                                    />
+                                    <Line
+                                        points={[
+                                            dataRange[0] * padding,
+                                            padding * 2 - 0.5,
+                                            dataRange[1] * padding,
+                                            padding * 2 - 0.5,
+                                        ]}
+                                        stroke="#aaa"
+                                        strokeWidth={0.5}
+                                    />
+                                    {uniqWith(getMonths(), isEqual).map((m) => {
+                                        const { date, start, end } = m;
+
+                                        const text = date.format('MMMM YYYY');
+                                        const length = (end - start) * padding;
+                                        return (
+                                            <Group key={text + start} x={start * padding} y={0}>
+                                                <Text
+                                                    y={0}
+                                                    fontSize={14}
+                                                    text={text}
+                                                    width={length}
+                                                    height={padding}
+                                                    align="center"
+                                                    verticalAlign="middle"
+                                                />
+                                                <Line
+                                                    points={[-0.5, 0, -0.5, padding * 2 - 0.5]}
+                                                    stroke="#aaa"
+                                                    strokeWidth={0.5}
+                                                />
+                                            </Group>
+                                        );
+                                    })}
+                                    {range(dataRange[0] * padding, dataRange[1] * padding, padding).map((n) => {
+                                        const weekdayNumber = moment(today)
+                                            .add(n / padding, 'days')
+                                            .format('d');
+
+                                        const day = moment(today).add(n / padding, 'days');
+
+                                        const isHoliday =
+                                            +weekdayNumber === 0 ||
+                                            +weekdayNumber === 6 ||
+                                            HOLIDAYS.includes(day.format('YYYY-MM-DD'));
+
+                                        return (
+                                            <Group key={n} x={n} y={padding}>
+                                                {day.isSame(today) && (
+                                                    <Rect
+                                                        width={padding}
+                                                        height={padding}
+                                                        cornerRadius={7}
+                                                        fill="#546678"
+                                                    />
+                                                )}
+
+                                                <Text
+                                                    fontSize={11}
+                                                    text={day.format('dd')}
+                                                    width={padding}
+                                                    height={padding}
+                                                    align="center"
+                                                    fill={isHoliday ? '#888' : day.isSame(today) ? '#fff' : '#000'}
+                                                    verticalAlign="top"
+                                                    padding={3}
+                                                />
+                                                <Text
+                                                    fontSize={11}
+                                                    text={day.format('DD')}
+                                                    width={padding}
+                                                    height={padding}
+                                                    align="center"
+                                                    fill={isHoliday ? '#888' : day.isSame(today) ? '#fff' : '#000'}
+                                                    verticalAlign="bottom"
+                                                    padding={3}
+                                                />
+
+                                                {isHoliday && (
+                                                    <Rect width={padding} height={padding} fill="#ccc" opacity={0.2} />
+                                                )}
+                                            </Group>
+                                        );
+                                    })}
                                 </Layer>
                             </Stage>
-                        </div> */}
+                        </div>
                         <Stage
                             width={window.innerWidth}
                             height={window.innerHeight}
-                            ref={stageRef}
+                            ref={mainStageRef}
                             onMouseUp={onDeselect}
                             listening
                             draggable
@@ -349,57 +400,61 @@ const App = () => {
                                 };
                             }}
                             onDragEnd={checkShapes}
-                            // onWheel={(e) => console.log(e)}
+                            onDragMove={onDragStage}
+                            onWheel={onStageScroll}
                         >
-                            <Layer ref={timelineLayerRef} y={0}>
-                                <Line
-                                    points={[0, 1 * padding - 0.5, window.innerWidth, 1 * padding - 0.5]}
-                                    stroke="#ff0000"
-                                    strokeWidth={0.5}
-                                />
-                                <Line
-                                    points={[0, 2 * padding - 0.5, window.innerWidth, 2 * padding - 0.5]}
-                                    stroke="#ff0000"
-                                    strokeWidth={0.5}
-                                />
-                            </Layer>
+                            <Layer ref={mainLayerRef}>
+                                {range(dataRange[0] * padding, dataRange[1] * padding, padding).map((n) => {
+                                    const weekdayNumber = moment(today)
+                                        .add(n / padding, 'days')
+                                        .format('d');
 
-                            <Layer ref={mainLayerRef} y={2 * padding}>
-                                {/* {range(Math.round(width / padding)).map((n) => (
-                                    <Line
-                                        key={'_vert_line_' + n}
-                                        points={[
-                                            Math.round(n * padding) + 0.5,
-                                            0,
-                                            Math.round(n * padding) + 0.5,
-                                            height,
-                                        ]}
-                                        stroke="#aaa"
-                                        strokeWidth={0.5}
-                                    />
-                                ))} */}
+                                    const day = moment(today).add(n / padding, 'days');
 
-                                {range(Math.round(height / padding)).map((n) => (
-                                    <Line
-                                        key={'_horz_line_' + n}
-                                        points={[
-                                            0,
-                                            Math.round((n + 1) * padding) - 0.5,
-                                            window.innerWidth,
-                                            Math.round((n + 1) * padding) - 0.5,
-                                        ]}
-                                        stroke="#aaa"
-                                        strokeWidth={0.5}
-                                    />
-                                ))}
+                                    const isHoliday =
+                                        +weekdayNumber === 0 ||
+                                        +weekdayNumber === 6 ||
+                                        HOLIDAYS.includes(day.format('YYYY-MM-DD'));
+
+                                    return (
+                                        <Group key={n} x={n} y={0}>
+                                            {isHoliday && (
+                                                <Rect
+                                                    width={padding}
+                                                    height={height + padding}
+                                                    fill="#ccc"
+                                                    opacity={0.2}
+                                                />
+                                            )}
+                                        </Group>
+                                    );
+                                })}
+                                <Line
+                                    points={[-0.5, -padding * 2, -0.5, height + padding * 2]}
+                                    stroke="#546678"
+                                    strokeWidth={0.5}
+                                    dashEnabled
+                                    dash={[7, 7]}
+                                />
+
+                                {range(0, height, padding).map((n) => {
+                                    return (
+                                        <Line
+                                            key={'_horz_line_' + n}
+                                            points={[
+                                                dataRange[0] * padding,
+                                                Math.round(n) - 0.5,
+                                                dataRange[1] * padding,
+                                                Math.round(n) - 0.5,
+                                            ]}
+                                            stroke="#aaa"
+                                            strokeWidth={0.5}
+                                        />
+                                    );
+                                })}
                             </Layer>
                             <Layer>
                                 {data.map((stage, stageIdx) => {
-                                    // const start = moment(stage.start_at);
-                                    // const deadline = moment(stage.deadline);
-                                    // const x = start.diff(today, 'days', false);
-                                    // const length = deadline.diff(start, 'days', false);
-
                                     const { stages, tasks } = stage;
                                     const prevStages = [...data.slice(0, stageIdx)];
 
@@ -407,12 +462,11 @@ const App = () => {
 
                                     return (
                                         <React.Fragment key={stage.id}>
-                                            <CoreStage stage={stage} line={currentLine + 2} />
-                                            {/*  2 is for header padding  */}
+                                            <CoreStage stage={stage} line={currentLine} />
 
-                                            {/* {tasks &&
+                                            {tasks &&
                                                 tasks.map((task, taskIdx) => {
-                                                    const { id, length, start_at, tasks = [] } = task;
+                                                    const { id, length, start_at } = task;
                                                     return (
                                                         <TaskItem
                                                             key={task.id}
@@ -427,7 +481,7 @@ const App = () => {
                                                             onDeselect={onDeselect}
                                                         />
                                                     );
-                                                })} */}
+                                                })}
 
                                             {stages.map((el, idx) => {
                                                 return (
@@ -436,9 +490,7 @@ const App = () => {
                                                         allStages={stages}
                                                         index={idx}
                                                         stage={el}
-                                                        currentLine={
-                                                            currentLine + (tasks?.length || 0) + idx + 1 + 2
-                                                        } /* 2 is for header padding */
+                                                        currentLine={currentLine + (tasks?.length || 0) + idx + 1}
                                                     />
                                                 );
                                             })}

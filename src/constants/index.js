@@ -1,5 +1,5 @@
 export const width = 300;
-export const height = 300;
+export const height = 3000;
 export const padding = 30;
 export const STAGE_HEIGHT = 6;
 export const TASK_HEIGHT = 20;
@@ -25,6 +25,8 @@ export const TASK_HEIGHT = 20;
 //     ],
 // };
 
+export const HOLIDAYS = ['2022-06-23', '2022-06-28'];
+
 export const ACTUAL_DATA = {
     stages: [
         {
@@ -38,13 +40,13 @@ export const ACTUAL_DATA = {
                     name: 'Aboba stage #1',
                     start_at: '2022-06-05',
                     deadline: '2022-06-19',
-                    // tasks: [
-                    //     {
-                    //         id: 'task_01_1',
-                    //         start_at: 3,
-                    //         length: 3,
-                    //     },
-                    // ],
+                    tasks: [
+                        {
+                            id: 'task_01_1',
+                            start_at: '2022-06-05',
+                            deadline: '2022-06-12',
+                        },
+                    ],
                     stages: [
                         {
                             id: '001',
@@ -67,23 +69,23 @@ export const ACTUAL_DATA = {
                                     start_at: '2022-06-10',
                                     deadline: '2022-06-21',
 
-                                    // tasks: [
-                                    //     {
-                                    //         id: 'task_0000_1',
-                                    //         start_at: 12,
-                                    //         length: 3,
-                                    //     },
-                                    //     {
-                                    //         id: 'task_0000_2',
-                                    //         start_at: 12,
-                                    //         length: 9,
-                                    //     },
-                                    //     {
-                                    //         id: 'task_0000_3',
-                                    //         start_at: 18,
-                                    //         length: 3,
-                                    //     },
-                                    // ],
+                                    tasks: [
+                                        {
+                                            id: 'task_0000_1',
+                                            start_at: '2022-06-10',
+                                            deadline: '2022-06-12',
+                                        },
+                                        {
+                                            id: 'task_0000_2',
+                                            start_at: '2022-06-11',
+                                            deadline: '2022-06-15',
+                                        },
+                                        {
+                                            id: 'task_0000_3',
+                                            start_at: '2022-06-9',
+                                            deadline: '2022-06-10',
+                                        },
+                                    ],
                                 },
                                 {
                                     id: '0001',
@@ -97,13 +99,13 @@ export const ACTUAL_DATA = {
                     ],
                 },
             ],
-            // tasks: [
-            //     {
-            //         id: 'task_0_1',
-            //         start_at: 3,
-            //         length: 5,
-            //     },
-            // ],
+            tasks: [
+                {
+                    id: 'task_0_1',
+                    start_at: '2022-06-11',
+                    deadline: '2022-06-16',
+                },
+            ],
         },
         {
             id: '1',

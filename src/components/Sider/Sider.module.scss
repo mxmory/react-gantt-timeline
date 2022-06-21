@@ -3,8 +3,9 @@
     flex-shrink: 0;
     position: relative;
     transition: 0.3s ease;
-    margin-top: 59px;
+    padding-top: 59px;
     border-top: 1px solid #ccc;
+    border-right: 1px solid #ccc;
 
     &.open {
         width: 600px;

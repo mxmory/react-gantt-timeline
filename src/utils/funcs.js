@@ -4,14 +4,12 @@ import { padding } from '../constants';
 
 export const getStageProps = (stages, line = 0) => {
     const today = moment();
-    const getStartAt = (start_at) => moment(start_at);
-    const getDeadline = (deadline) => moment(deadline);
     const getX = (start) => start.diff(today, 'days', false);
     const getLength = (deadline, start) => moment(deadline).diff(moment(start), 'days', false);
 
     const firstStageInCore = minBy(stages, 'start_at');
-    const lastStageInCore = maxBy(stages, (stage) => getDeadline(stage.deadline));
-    const stageStartAt = getStartAt(firstStageInCore.start_at);
+    const lastStageInCore = maxBy(stages, (stage) => moment(stage.deadline));
+    const stageStartAt = moment(firstStageInCore.start_at);
     const stageLength = getLength(lastStageInCore.deadline, stageStartAt);
 
     // const percentSum = stages.reduce((acc, { percent }) => {
@@ -29,4 +27,17 @@ export const getPrevStages = (stagesArr) => {
         return [...acc, ...stagesArr, ...stages, ...inner];
     }, []);
     return resArr;
+};
+
+export const getStage = (stages, id) => {
+    let o;
+    stages.some(function iter(a) {
+        console.log(a.id, id);
+        if (a.id === id) {
+            o = a;
+            return true;
+        }
+        return Array.isArray(a.stages) && a.stages.some(iter);
+    });
+    return o;
 };
