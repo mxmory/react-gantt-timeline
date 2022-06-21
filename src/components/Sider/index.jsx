@@ -28,9 +28,16 @@ export const Sider = ({ data, setData, toggleStageCollapse, visibleStages }) => 
     };
 
     const StageItem = ({ stage }) => {
+        const showStage = () => {
+            const { name, start_at, deadline } = stage;
+            alert(`Stage name: ${name}\nStarted at: ${start_at}\nDeadline: ${deadline}`);
+        };
+
         return (
             <div className={cn(styles.stageItem, { [styles.coreStage]: stage.type === 'core' })}>
-                <div className={styles.name}>{stage.name}</div>
+                <div className={styles.name} onClick={showStage}>
+                    {stage.name}
+                </div>
                 {(stage.stages || stage.tasks) && (
                     <div className={styles.body}>
                         {stage.tasks?.map((task) => (
@@ -49,9 +56,9 @@ export const Sider = ({ data, setData, toggleStageCollapse, visibleStages }) => 
 
     return (
         <div className={cn(styles.list, { [styles.open]: listOpen })}>
-            {/* <div className={styles.toggle} onClick={toggleList}>
+            <div className={styles.toggle} onClick={toggleList}>
                 {listOpen ? '<' : '>'}
-            </div> */}
+            </div>
             <DragDropContext onDragEnd={onListStageDragEnd}>
                 <Droppable droppableId="droppable">
                     {(provided) => (

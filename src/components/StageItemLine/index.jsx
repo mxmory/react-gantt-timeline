@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Group, Rect } from 'react-konva';
-import { padding, STAGE_HEIGHT } from '../../constants';
+import { ACTUAL_DATA, padding, STAGE_HEIGHT } from '../../constants';
+import { getStage } from '../../utils/funcs';
+
+const colorMaps = {
+    milestone: '#ff00ff',
+    task: '#24a4f9',
+    stage: '#ccc',
+    core: '#000',
+};
 
 export const StageItemLine = ({
     select,
@@ -18,11 +26,12 @@ export const StageItemLine = ({
     const y = line * padding;
     const x = start_at * padding;
 
-    const colorMaps = {
-        milestone: '#ff00ff',
-        task: '#24a4f9',
-        stage: '#ccc',
-        core: '#000',
+    const showStage = (e) => {
+        const {
+            attrs: { id },
+        } = e.target;
+        const { name, start_at, deadline } = getStage(ACTUAL_DATA.stages, id);
+        alert(`Stage name: ${name}\nStarted at: ${start_at}\nDeadline: ${deadline}`);
     };
 
     return (
@@ -34,6 +43,7 @@ export const StageItemLine = ({
             y={y + padding / 2 - STAGE_HEIGHT / 2}
             width={type === 'milestone' ? STAGE_HEIGHT : padding * length}
             height={STAGE_HEIGHT}
+            onClick={showStage}
             // draggable={onDragEnd && true}
             // dragBoundFunc={(pos) => {
             //     return {

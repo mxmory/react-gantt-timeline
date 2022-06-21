@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Text, Group, Rect, Transformer } from 'react-konva';
 import { padding, TASK_HEIGHT } from '../../constants';
@@ -13,9 +14,11 @@ export const TaskItem = ({
     onTransformEnd,
     onTransformStart,
 }) => {
-    const { id, name, percent = 0, start_at, length } = task;
+    const { id, percent = 0, start_at, deadline } = task;
     const shapeRef = React.useRef();
     const trRef = React.useRef();
+
+    const today = moment();
     // const progressRef = React.useRef();
 
     useEffect(() => {
@@ -25,8 +28,10 @@ export const TaskItem = ({
         }
     }, [isSelected]);
 
-    const x = start_at * padding;
+    const start = moment(start_at);
+    const x = start.diff(today, 'days', false);
     const y = line * padding;
+    const length = moment(deadline).diff(start, 'days', false);
 
     return (
         <Group
@@ -34,7 +39,7 @@ export const TaskItem = ({
             onMouseLeave={onDeselect}
             id={id}
             stageId={stageId}
-            x={x}
+            x={x * padding}
             y={y + padding / 2 - TASK_HEIGHT / 2}
             width={length * padding}
             height={TASK_HEIGHT}
@@ -73,7 +78,6 @@ export const TaskItem = ({
                 strokeWidth={1}
             />
 
-            <Text text={id} fontSize={12} fontStyle="italic" fill="#333" padding={5} />
             {isSelected && (
                 <Transformer
                     keepRatio={false}
