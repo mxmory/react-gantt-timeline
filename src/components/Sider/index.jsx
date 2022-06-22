@@ -2,15 +2,9 @@ import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styles from './Sider.module.scss';
 import cn from 'classnames';
-import { GanttStage } from './GanttStage';
+import { ListStageItem } from './ListStageItem';
 
-export const Sider = ({ data, setData, toggleStageCollapse, visibleStages }) => {
-    const [listOpen, setListOpen] = useState(false);
-
-    const toggleList = () => {
-        setListOpen((prev) => !prev);
-    };
-
+export const Sider = ({ data, setData, toggleStageCollapse, visibleStages, siderExpanded }) => {
     const onListStageDragEnd = (values) => {
         const { destination, source } = values;
         if (destination) {
@@ -27,44 +21,14 @@ export const Sider = ({ data, setData, toggleStageCollapse, visibleStages }) => 
         return result;
     };
 
-    const StageItem = ({ stage }) => {
-        const showStage = () => {
-            const { name, start_at, deadline } = stage;
-            alert(`Stage name: ${name}\nStarted at: ${start_at}\nDeadline: ${deadline}`);
-        };
-
-        return (
-            <div className={cn(styles.stageItem, { [styles.coreStage]: stage.type === 'core' })}>
-                <div className={styles.name} onClick={showStage}>
-                    {stage.name}
-                </div>
-                {(stage.stages || stage.tasks) && (
-                    <div className={styles.body}>
-                        {stage.tasks?.map((task) => (
-                            <div className={styles.task} key={task.id}>
-                                {task.id}
-                            </div>
-                        ))}
-                        {stage.stages?.map((stageEl) => (
-                            <StageItem key={stageEl.id} stage={stageEl} />
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
-    };
-
     return (
-        <div className={cn(styles.list, { [styles.open]: listOpen })}>
-            <div className={styles.toggle} onClick={toggleList}>
-                {listOpen ? '<' : '>'}
-            </div>
+        <div className={cn(styles.list, { [styles.open]: siderExpanded })}>
             <DragDropContext onDragEnd={onListStageDragEnd}>
                 <Droppable droppableId="droppable">
                     {(provided) => (
                         <div {...provided.droppableProps} ref={provided.innerRef} className={styles.reagentsList}>
                             {data.map((stage, index) => {
-                                return <StageItem key={stage.id} stage={stage} index={index} />;
+                                return <ListStageItem key={stage.id} stage={stage} index={index} />;
                             })}
                         </div>
                     )}

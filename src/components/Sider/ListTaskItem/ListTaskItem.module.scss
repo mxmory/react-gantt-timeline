@@ -1,0 +1,42 @@
+.task {
+    font-size: 12px;
+    min-height: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 20px;
+    position: relative;
+    color: #868f98;
+
+    .funcs {
+        width: 40px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #aeb5bb;
+        transition: background-color 0.3 ease;
+        cursor: pointer;
+        border-left: 1px solid #ebedee;
+
+        &:hover {
+            background-color: #ebedee;
+            color: #fff;
+        }
+    }
+
+    &:hover {
+        background-color: #eee;
+
+        &:before {
+            content: '';
+            position: absolute;
+            top: 0%;
+            right: 100%;
+            height: 100%;
+            width: 100%;
+            background-color: #eee;
+        }
+    }
+}

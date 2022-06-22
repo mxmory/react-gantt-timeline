@@ -1,7 +1,8 @@
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Text, Group, Rect, Transformer } from 'react-konva';
-import { padding, TASK_HEIGHT } from '../../constants';
+import { CELL_HEIGHT, TASK_HEIGHT } from '../../constants';
+import { CELL_WIDTH } from '../../constants/index';
 
 export const TaskItem = ({
     select,
@@ -30,7 +31,7 @@ export const TaskItem = ({
 
     const start = moment(start_at);
     const x = start.diff(today, 'days', false);
-    const y = line * padding;
+    const y = line * CELL_HEIGHT;
     const length = moment(deadline).diff(start, 'days', false);
 
     return (
@@ -39,15 +40,15 @@ export const TaskItem = ({
             onMouseLeave={onDeselect}
             id={id}
             stageId={stageId}
-            x={x * padding}
-            y={y + padding / 2 - TASK_HEIGHT / 2}
-            width={length * padding}
+            x={x * CELL_WIDTH}
+            y={y + CELL_HEIGHT / 2 - TASK_HEIGHT / 2}
+            width={length * CELL_WIDTH}
             height={TASK_HEIGHT}
             draggable={true}
             dragBoundFunc={(pos) => {
                 return {
                     x: pos.x,
-                    y: y + padding / 2 - TASK_HEIGHT / 2,
+                    y: y + CELL_HEIGHT / 2 - TASK_HEIGHT / 2,
                 };
             }}
             onDragEnd={(e) => {
@@ -59,9 +60,9 @@ export const TaskItem = ({
                 id={id}
                 stageId={stageId}
                 ref={shapeRef}
-                width={padding * length}
+                width={CELL_WIDTH * length}
                 height={TASK_HEIGHT}
-                fill="#8fd6ff"
+                fill="#D7DADD"
                 scaleX={1}
                 scaleY={1}
                 cornerRadius={5}
@@ -70,7 +71,7 @@ export const TaskItem = ({
                 onTransformStart={onTransformStart}
             />
             <Rect
-                width={(padding * length * percent) / 100}
+                width={(CELL_WIDTH * length * percent) / 100}
                 height={TASK_HEIGHT}
                 fill="#aaa"
                 opacity={0.5}
