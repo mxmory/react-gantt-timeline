@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Stage, Layer, Line, Rect, Group, Text } from 'react-konva';
 import styles from './App.module.scss';
-import { isEqual, range, uniq, uniqWith } from 'lodash';
-import { width, height, padding, ACTUAL_DATA, STAGE_HEIGHT } from './constants';
+import { isEqual, range, uniqWith } from 'lodash';
+import { width, height, CELL_HEIGHT, CELL_WIDTH, ACTUAL_DATA, HEADER_TOP_HEIGHT } from './constants';
 import { Sider } from './components/Sider/index';
 import { StageItemLine } from './components/StageItemLine';
 import { TaskItem } from './components/TaskItem';
-import { getPrevStages, getStageProps } from './utils/funcs';
+import { getPrevStages, getStageProps, increaseColorBrightness } from './utils/funcs';
 import moment from 'moment';
 import { useRef } from 'react';
-import Konva from 'konva';
 import { HOLIDAYS } from './constants/index';
+import cn from 'classnames';
+import { ArrowDropIcon, LocationIcon } from './components/Icons/index';
 
 const reduceStagesToShow = (data) => data.reduce((acc, stage) => ({ ...acc, [stage.id]: true }), {});
 21;
@@ -23,6 +24,7 @@ const App = () => {
     const [isTransforming, setIsTransforming] = useState(false);
     const [visibleStages, setVisibleStages] = useState(reduceStagesToShow(data));
     const [dataRange, setDataRange] = useState([]);
+    const [siderExpanded, setSiderExpanded] = useState(false);
 
     const timelineStageRef = useRef();
     const timelineLayerRef = useRef();
@@ -32,6 +34,10 @@ const App = () => {
 
     const toggleStageCollapse = (stageId) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
+    };
+
+    const toggleSiderExpand = () => {
+        setSiderExpanded((prev) => !prev);
     };
 
     // const onGridTaskDragEnd = (e) => {
@@ -47,18 +53,18 @@ const App = () => {
     //         if (el.id === stageId) {
     //             const newTasks = el.tasks.map((task) => {
     //                 if (task.id === id) {
-    //                     if (task.start_at === Math.round(x / padding)) {
+    //                     if (task.start_at === Math.round(x / CELL_WIDTH)) {
     //                         node.to({
-    //                             x: padding * task.start_at,
+    //                             x: CELL_WIDTH * task.start_at,
     //                             duration: 0.2,
     //                         });
     //                     } else {
     //                         node.to({
-    //                             x: Math.round(x / padding) * padding,
+    //                             x: Math.round(x / CELL_WIDTH) * CELL_WIDTH,
     //                             duration: 0.2,
     //                         });
     //                     }
-    //                     return { ...task, start_at: Math.round(x / padding) };
+    //                     return { ...task, start_at: Math.round(x / CELL_WIDTH) };
     //                 }
     //                 return task;
     //             });
@@ -66,12 +72,12 @@ const App = () => {
     //             // animating lines
 
     //             associatedStageNode.to({
-    //                 width: getStageProps(newTasks).width * padding,
+    //                 width: getStageProps(newTasks).width * CELL_WIDTH,
     //                 duration: 0.1,
     //             });
 
     //             percentStageNode.to({
-    //                 width: (getStageProps(newTasks).width * getStageProps(newTasks).percent * padding) / 100,
+    //                 width: (getStageProps(newTasks).width * getStageProps(newTasks).percent * CELL_WIDTH) / 100,
     //                 x: 0,
     //                 duration: 0.2,
     //             });
@@ -102,14 +108,14 @@ const App = () => {
 
     //     const scaleX = node.scaleX();
     //     node.scaleX(1);
-    //     const width = Math.round((node.width() * scaleX) / padding);
+    //     const width = Math.round((node.width() * scaleX) / CELL_WIDTH);
 
     //     const newData = data.map((el) => {
     //         if (el.id === stageId) {
     //             const newTasks = el.tasks.map((task) => {
     //                 if (task.id === id) {
     //                     if (width !== task.length) {
-    //                         node.width(padding * width);
+    //                         node.width(CELL_WIDTH * width);
     //                         return { ...task, length: width };
     //                     }
     //                 }
@@ -132,7 +138,7 @@ const App = () => {
     };
 
     const CoreStage = ({ stage, line }) => {
-        const { id, tasks, stages } = stage;
+        const { id, tasks, stages, color } = stage;
 
         const innerStages = getPrevStages(stages);
         const { x, width } = getStageProps(innerStages);
@@ -147,6 +153,7 @@ const App = () => {
                 length={width}
                 start_at={x}
                 type="core"
+                color={color}
                 onDeselect={onDeselect}
             />
         );
@@ -162,7 +169,7 @@ const App = () => {
         return resArr;
     };
 
-    const GridLineItem = ({ stage, allStages, index, currentLine }) => {
+    const GridLineItem = ({ stage, allStages, index, currentLine, color }) => {
         const { tasks, start_at, stages, deadline, type } = stage;
         const prevStages = [...allStages.slice(0, index)];
         const prevItemsCount = getPrevItems(prevStages).length;
@@ -182,6 +189,7 @@ const App = () => {
                     length={l}
                     start_at={x}
                     type={type}
+                    color={color}
                     // onDragEnd={onGridStageDragEnd}
                     onDeselect={onDeselect}
                 />
@@ -205,6 +213,7 @@ const App = () => {
                     stages.map((s, idx) => {
                         return (
                             <GridLineItem
+                                color={color}
                                 key={s.id}
                                 allStages={stages}
                                 index={idx}
@@ -219,8 +228,8 @@ const App = () => {
 
     useEffect(() => {
         const stage = mainStageRef.current;
-        const startIndex = Math.floor((-stage.x() - stage.width()) / padding);
-        const endIndex = Math.floor((-stage.x() + stage.width() * 2) / padding);
+        const startIndex = Math.floor((-stage.x() - stage.width()) / CELL_WIDTH);
+        const endIndex = Math.floor((-stage.x() + stage.width() * 2) / CELL_WIDTH);
         setDataRange([startIndex, endIndex]);
         checkShapes();
         stage.batchDraw();
@@ -246,6 +255,15 @@ const App = () => {
         }
     };
 
+    const moveToCurrentDate = () => {
+        const stage = mainStageRef.current;
+        const timelineStage = timelineStageRef.current;
+
+        stage.x(0);
+        timelineStage.x(0);
+        checkShapes();
+    };
+
     const checkShapes = () => {
         const layer = mainLayerRef.current;
         const timelineLayer = timelineLayerRef.current;
@@ -254,15 +272,15 @@ const App = () => {
 
         const stage = mainStageRef.current;
 
-        const startIndex = Math.floor((-stage.x() - stage.width()) / padding);
-        const endIndex = Math.floor((-stage.x() + stage.width() * 2) / padding);
+        const startIndex = Math.floor((-stage.x() - stage.width()) / CELL_WIDTH);
+        const endIndex = Math.floor((-stage.x() + stage.width() * 2) / CELL_WIDTH);
 
         setDataRange([startIndex, endIndex]);
     };
 
     const getMonths = () => {
-        return range(dataRange[0] * padding, dataRange[1] * padding, padding).map((n) => {
-            const day = moment(today).add(n / padding, 'days');
+        return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH).map((n) => {
+            const day = moment(today).add(n / CELL_WIDTH, 'days');
 
             const startDate = moment(day).startOf('month');
             const endDate = moment(day).endOf('month');
@@ -276,8 +294,128 @@ const App = () => {
 
     return (
         <div className={styles.main}>
+            <div className={styles.head}>
+                <div className={cn(styles.headSider, { [styles.open]: siderExpanded })}>
+                    <div className={styles.headerSiderTop}>
+                        <div
+                            className={styles.headerSiderFunc}
+                            onClick={moveToCurrentDate}
+                            title="Click to move to current date"
+                        >
+                            <LocationIcon />
+                        </div>
+                    </div>
+                    <div className={styles.headerSiderBottom}>
+                        <div>Stages/tasks</div>
+
+                        <div
+                            className={styles.headerSiderFunc}
+                            onClick={toggleSiderExpand}
+                            title="Click to expand information"
+                        >
+                            <ArrowDropIcon />
+                        </div>
+                    </div>
+                </div>
+                <div className={styles.timelineContainer}>
+                    <Stage width={window.innerWidth} height={CELL_HEIGHT + HEADER_TOP_HEIGHT} ref={timelineStageRef}>
+                        <Layer ref={timelineLayerRef}>
+                            <Line
+                                points={[
+                                    dataRange[0] * CELL_WIDTH,
+                                    HEADER_TOP_HEIGHT - 0.5,
+                                    dataRange[1] * CELL_WIDTH,
+                                    HEADER_TOP_HEIGHT - 0.5,
+                                ]}
+                                stroke="#aaa"
+                                strokeWidth={0.5}
+                            />
+                            {uniqWith(getMonths(), isEqual).map((m) => {
+                                const { date, start, end } = m;
+
+                                const text = date.format('MMMM YYYY');
+                                const length = (end - start) * CELL_WIDTH;
+                                return (
+                                    <Group key={text + start} x={start * CELL_WIDTH} y={0}>
+                                        <Text
+                                            y={0}
+                                            fontSize={12}
+                                            fontFamily="Montserrat"
+                                            text={text}
+                                            width={length}
+                                            height={20}
+                                            align="center"
+                                            verticalAlign="middle"
+                                        />
+                                        <Line
+                                            points={[-0.5, 0, -0.5, CELL_HEIGHT * 2 - 0.5]}
+                                            stroke="#aaa"
+                                            strokeWidth={0.5}
+                                        />
+                                    </Group>
+                                );
+                            })}
+                            {range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH).map((n) => {
+                                const weekdayNumber = moment(today)
+                                    .add(n / CELL_WIDTH, 'days')
+                                    .format('d');
+
+                                const day = moment(today).add(n / CELL_WIDTH, 'days');
+
+                                const isHoliday =
+                                    +weekdayNumber === 0 ||
+                                    +weekdayNumber === 6 ||
+                                    HOLIDAYS.includes(day.format('YYYY-MM-DD'));
+
+                                return (
+                                    <Group key={n} x={n} y={20}>
+                                        {day.isSame(today) && (
+                                            <Rect
+                                                width={CELL_WIDTH}
+                                                height={CELL_HEIGHT}
+                                                cornerRadius={5}
+                                                fill="#546678"
+                                                // x={0.5}
+                                                // y={1}
+                                            />
+                                        )}
+
+                                        <Text
+                                            fontSize={10}
+                                            fontFamily="Montserrat"
+                                            text={day.format('dd')}
+                                            width={CELL_WIDTH}
+                                            height={CELL_HEIGHT}
+                                            align="center"
+                                            fill={isHoliday ? '#888' : day.isSame(today) ? '#fff' : '#000'}
+                                            verticalAlign="top"
+                                            padding={4}
+                                        />
+                                        <Text
+                                            fontSize={10}
+                                            text={day.format('DD')}
+                                            fontFamily="Montserrat"
+                                            width={CELL_WIDTH}
+                                            height={CELL_HEIGHT}
+                                            align="center"
+                                            fill={isHoliday ? '#888' : day.isSame(today) ? '#fff' : '#000'}
+                                            verticalAlign="bottom"
+                                            padding={4}
+                                        />
+
+                                        {isHoliday && (
+                                            <Rect width={CELL_WIDTH} height={CELL_HEIGHT} fill="#ccc" opacity={0.2} />
+                                        )}
+                                    </Group>
+                                );
+                            })}
+                        </Layer>
+                    </Stage>
+                </div>
+            </div>
             <div className={styles.flex}>
                 <Sider
+                    siderExpanded={siderExpanded}
                     data={data}
                     setData={setData}
                     toggleStageCollapse={toggleStageCollapse}
@@ -286,109 +424,9 @@ const App = () => {
 
                 <div className={styles.grid} ref={containerRef}>
                     <div className={styles.innerGridContainer}>
-                        <div className={styles.timelineContainer}>
-                            <Stage width={window.innerWidth} height={padding * 2} ref={timelineStageRef}>
-                                <Layer ref={timelineLayerRef}>
-                                    <Line
-                                        points={[
-                                            dataRange[0] * padding,
-                                            padding - 0.5,
-                                            dataRange[1] * padding,
-                                            padding - 0.5,
-                                        ]}
-                                        stroke="#aaa"
-                                        strokeWidth={0.5}
-                                    />
-                                    <Line
-                                        points={[
-                                            dataRange[0] * padding,
-                                            padding * 2 - 0.5,
-                                            dataRange[1] * padding,
-                                            padding * 2 - 0.5,
-                                        ]}
-                                        stroke="#aaa"
-                                        strokeWidth={0.5}
-                                    />
-                                    {uniqWith(getMonths(), isEqual).map((m) => {
-                                        const { date, start, end } = m;
-
-                                        const text = date.format('MMMM YYYY');
-                                        const length = (end - start) * padding;
-                                        return (
-                                            <Group key={text + start} x={start * padding} y={0}>
-                                                <Text
-                                                    y={0}
-                                                    fontSize={14}
-                                                    text={text}
-                                                    width={length}
-                                                    height={padding}
-                                                    align="center"
-                                                    verticalAlign="middle"
-                                                />
-                                                <Line
-                                                    points={[-0.5, 0, -0.5, padding * 2 - 0.5]}
-                                                    stroke="#aaa"
-                                                    strokeWidth={0.5}
-                                                />
-                                            </Group>
-                                        );
-                                    })}
-                                    {range(dataRange[0] * padding, dataRange[1] * padding, padding).map((n) => {
-                                        const weekdayNumber = moment(today)
-                                            .add(n / padding, 'days')
-                                            .format('d');
-
-                                        const day = moment(today).add(n / padding, 'days');
-
-                                        const isHoliday =
-                                            +weekdayNumber === 0 ||
-                                            +weekdayNumber === 6 ||
-                                            HOLIDAYS.includes(day.format('YYYY-MM-DD'));
-
-                                        return (
-                                            <Group key={n} x={n} y={padding}>
-                                                {day.isSame(today) && (
-                                                    <Rect
-                                                        width={padding}
-                                                        height={padding}
-                                                        cornerRadius={7}
-                                                        fill="#546678"
-                                                    />
-                                                )}
-
-                                                <Text
-                                                    fontSize={11}
-                                                    text={day.format('dd')}
-                                                    width={padding}
-                                                    height={padding}
-                                                    align="center"
-                                                    fill={isHoliday ? '#888' : day.isSame(today) ? '#fff' : '#000'}
-                                                    verticalAlign="top"
-                                                    padding={3}
-                                                />
-                                                <Text
-                                                    fontSize={11}
-                                                    text={day.format('DD')}
-                                                    width={padding}
-                                                    height={padding}
-                                                    align="center"
-                                                    fill={isHoliday ? '#888' : day.isSame(today) ? '#fff' : '#000'}
-                                                    verticalAlign="bottom"
-                                                    padding={3}
-                                                />
-
-                                                {isHoliday && (
-                                                    <Rect width={padding} height={padding} fill="#ccc" opacity={0.2} />
-                                                )}
-                                            </Group>
-                                        );
-                                    })}
-                                </Layer>
-                            </Stage>
-                        </div>
                         <Stage
                             width={window.innerWidth}
-                            height={window.innerHeight}
+                            height={height}
                             ref={mainStageRef}
                             onMouseUp={onDeselect}
                             listening
@@ -404,12 +442,12 @@ const App = () => {
                             onWheel={onStageScroll}
                         >
                             <Layer ref={mainLayerRef}>
-                                {range(dataRange[0] * padding, dataRange[1] * padding, padding).map((n) => {
+                                {range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH).map((n) => {
                                     const weekdayNumber = moment(today)
-                                        .add(n / padding, 'days')
+                                        .add(n / CELL_WIDTH, 'days')
                                         .format('d');
 
-                                    const day = moment(today).add(n / padding, 'days');
+                                    const day = moment(today).add(n / CELL_WIDTH, 'days');
 
                                     const isHoliday =
                                         +weekdayNumber === 0 ||
@@ -417,45 +455,31 @@ const App = () => {
                                         HOLIDAYS.includes(day.format('YYYY-MM-DD'));
 
                                     return (
-                                        <Group key={n} x={n} y={0}>
+                                        <Group key={n} x={n} y={0} width={CELL_WIDTH}>
+                                            <Line
+                                                key={'_vert_line_' + n}
+                                                points={[-0.5, 0, -0.5, height]}
+                                                stroke="#fff"
+                                                // opacity={0.7}
+                                                strokeWidth={0.5}
+                                            />
                                             {isHoliday && (
-                                                <Rect
-                                                    width={padding}
-                                                    height={height + padding}
-                                                    fill="#ccc"
-                                                    opacity={0.2}
-                                                />
+                                                <Rect width={CELL_WIDTH} height={height} fill="#ccc" opacity={0.2} />
                                             )}
                                         </Group>
                                     );
                                 })}
                                 <Line
-                                    points={[-0.5, -padding * 2, -0.5, height + padding * 2]}
+                                    points={[-0.5, 0, -0.5, height]}
                                     stroke="#546678"
                                     strokeWidth={0.5}
                                     dashEnabled
                                     dash={[7, 7]}
                                 />
-
-                                {range(0, height, padding).map((n) => {
-                                    return (
-                                        <Line
-                                            key={'_horz_line_' + n}
-                                            points={[
-                                                dataRange[0] * padding,
-                                                Math.round(n) - 0.5,
-                                                dataRange[1] * padding,
-                                                Math.round(n) - 0.5,
-                                            ]}
-                                            stroke="#aaa"
-                                            strokeWidth={0.5}
-                                        />
-                                    );
-                                })}
                             </Layer>
                             <Layer>
                                 {data.map((stage, stageIdx) => {
-                                    const { stages, tasks } = stage;
+                                    const { stages, tasks, color } = stage;
                                     const prevStages = [...data.slice(0, stageIdx)];
 
                                     const currentLine = stageIdx + getPrevItems(prevStages).length;
@@ -490,6 +514,7 @@ const App = () => {
                                                         allStages={stages}
                                                         index={idx}
                                                         stage={el}
+                                                        color={increaseColorBrightness(color, 40)}
                                                         currentLine={currentLine + (tasks?.length || 0) + idx + 1}
                                                     />
                                                 );
