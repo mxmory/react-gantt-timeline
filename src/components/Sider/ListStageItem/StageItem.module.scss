@@ -27,11 +27,13 @@
             transition: background-color 0.3 ease;
             cursor: pointer;
             border-left: 1px solid #ebedee;
+            position: relative;
+            z-index: 2;
 
-            &:hover {
-                background-color: #ebedee;
-                color: #fff;
-            }
+            // &:hover {
+            //     background-color: #ebedee;
+            //     color: #fff;
+            // }
         }
 
         &:before {

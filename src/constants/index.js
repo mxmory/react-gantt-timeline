@@ -1,9 +1,11 @@
 export const width = 300;
+export const CANVAS_WIDTH = 3000;
 export const height = 3000;
+export const CANVAS_HEIGHT = 3000;
 export const CELL_HEIGHT = 30;
 export const CELL_WIDTH = 36;
 export const HEADER_TOP_HEIGHT = 20;
-export const STAGE_HEIGHT = 6;
+export const STAGE_HEIGHT = 8;
 export const TASK_HEIGHT = 20;
 
 export const HOLIDAYS = ['2022-06-23', '2022-06-28'];

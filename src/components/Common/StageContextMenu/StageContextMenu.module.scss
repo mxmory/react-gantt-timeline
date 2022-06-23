@@ -1,0 +1,18 @@
+.block {
+    padding: 20px;
+    width: 200px;
+    border-radius: 5px;
+    background-color: #fff;
+    border: 1px solid #000;
+    position: absolute;
+    top: 100%;
+    left: 100%;
+
+    .listItem {
+        cursor: pointer;
+
+        &:hover {
+            color: #666;
+        }
+    }
+}

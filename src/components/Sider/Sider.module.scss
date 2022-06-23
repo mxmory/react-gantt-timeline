@@ -5,6 +5,7 @@
     position: relative;
     transition: max-width 0.8s ease;
     border-right: 1px solid #ebedee;
+    z-index: 1;
 
     &.open {
         max-width: 665px;

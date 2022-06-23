@@ -28,7 +28,15 @@ export const Sider = ({ data, setData, toggleStageCollapse, visibleStages, sider
                     {(provided) => (
                         <div {...provided.droppableProps} ref={provided.innerRef} className={styles.reagentsList}>
                             {data.map((stage, index) => {
-                                return <ListStageItem key={stage.id} stage={stage} index={index} />;
+                                return (
+                                    <ListStageItem
+                                        key={stage.id}
+                                        stage={stage}
+                                        index={index}
+                                        data={data}
+                                        setData={setData}
+                                    />
+                                );
                             })}
                         </div>
                     )}
