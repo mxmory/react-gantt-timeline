@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Group, Rect } from 'react-konva';
-import { ACTUAL_DATA, CELL_HEIGHT, STAGE_HEIGHT } from '../../constants';
-import { getStage } from '../../utils/funcs';
-import { CELL_WIDTH } from '../../constants/index';
+import { ACTUAL_DATA, CELL_HEIGHT, STAGE_HEIGHT } from '../../../constants';
+import { getStage } from '../../../utils/funcs';
+import { CELL_WIDTH } from '../../../constants/index';
 
 const colorMaps = {
     milestone: '#ff00ff',
@@ -57,6 +57,7 @@ export const StageItemLine = ({
         >
             <Rect
                 id={id}
+                type="STAGE_LINE"
                 ref={shapeRef}
                 width={type === 'milestone' ? STAGE_HEIGHT : CELL_WIDTH * length}
                 height={STAGE_HEIGHT}

@@ -1,4 +1,4 @@
-import { minBy, maxBy } from 'lodash';
+import { minBy, maxBy, range } from 'lodash';
 import moment from 'moment';
 import { CELL_WIDTH } from '../constants';
 
@@ -31,15 +31,66 @@ export const getPrevStages = (stagesArr) => {
 
 export const getStage = (stages, id) => {
     let o;
-    stages.some(function iter(a) {
-        console.log(a.id, id);
-        if (a.id === id) {
-            o = a;
+    stages.some(function iter(s) {
+        if (s.id === id) {
+            o = s;
             return true;
         }
-        return Array.isArray(a.stages) && a.stages.some(iter);
+        return Array.isArray(s.stages) && s.stages.some(iter);
     });
     return o;
+};
+
+export const getDataOnStageEdit = (stages, changedStage) => {
+    return stages.map(function iter(s) {
+        if (s.id === changedStage.id) {
+            return changedStage;
+        }
+        if (s.stages) {
+            const newStages = s.stages.map(iter);
+            return { ...s, stages: newStages };
+        }
+        return s;
+    });
+};
+
+export const getDataOnStageAdd = (stages, parentStageId, newStage) => {
+    return stages.map(function iter(s) {
+        if (s.id === parentStageId) {
+            return { ...s, stages: [...(s.stages || []), newStage] };
+        }
+        if (s.stages) {
+            const newStages = s.stages.map(iter);
+            return { ...s, stages: newStages };
+        }
+        return s;
+    });
+};
+
+export const getPrevItems = (stagesArr) => {
+    const resArr = stagesArr.reduce((acc, { stages = [], tasks = [] }) => {
+        const all = [...tasks, ...stages];
+        const inner = getPrevItems(stages);
+
+        return [...acc, ...all, ...inner];
+    }, []);
+    return resArr;
+};
+
+export const getMonthsInRange = (dataRange) => {
+    const today = moment();
+
+    return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH).map((n) => {
+        const day = moment(today).add(n / CELL_WIDTH, 'days');
+
+        const startDate = moment(day).startOf('month');
+        const endDate = moment(day).endOf('month');
+
+        const xStart = moment(startDate).diff(moment(today), 'days', false);
+        const xEnd = moment(endDate).diff(moment(today), 'days', false);
+
+        return { date: startDate, start: xStart + (xStart > 0 + 1), end: xEnd + (xEnd > 0 && 1) }; // Check why if > 0 need to add + 1
+    }, []);
 };
 
 export const increaseColorBrightness = (hex, percent) => {
@@ -61,4 +112,18 @@ export const increaseColorBrightness = (hex, percent) => {
         (0 | ((1 << 8) + g + ((256 - g) * percent) / 100)).toString(16).substr(1) +
         (0 | ((1 << 8) + b + ((256 - b) * percent) / 100)).toString(16).substr(1)
     );
+};
+
+export const clipRect = (ctx, x, y, width, height, radius) => {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
 };

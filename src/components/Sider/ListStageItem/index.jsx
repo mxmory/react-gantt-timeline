@@ -1,22 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './StageItem.module.scss';
 import cn from 'classnames';
 import { ListTaskItem } from '../ListTaskItem';
 import { ContextMenuToggleHorizontal } from '../../Icons/index';
+import { StageContextMenu } from '../../Common/StageContextMenu';
 
-export const ListStageItem = ({ stage }) => {
-    const showStage = () => {
-        const { name, start_at, deadline } = stage;
-        alert(`Stage name: ${name}\nStarted at: ${start_at}\nDeadline: ${deadline}`);
+export const ListStageItem = ({ stage, data, setData }) => {
+    const [menuVisible, setMenuVisible] = useState(false);
+
+    const showMenu = () => {
+        setMenuVisible((prev) => !prev);
     };
 
     return (
         <div className={cn(styles.stageItem, { [styles.coreStage]: stage.type === 'core' })}>
-            <div className={styles.name} onClick={showStage}>
+            <div className={styles.name}>
                 <div>{stage.name}</div>
-                <div className={styles.funcs} title="Click to show actions">
+                <div className={styles.funcs} title="Click to show actions" onClick={showMenu}>
                     <ContextMenuToggleHorizontal />
                 </div>
+                {menuVisible && (
+                    <StageContextMenu stage={stage} data={data} setData={setData} setMenuVisible={setMenuVisible} />
+                )}
             </div>
             {(stage.stages || stage.tasks) && (
                 <div className={styles.body}>
@@ -24,7 +29,7 @@ export const ListStageItem = ({ stage }) => {
                         <ListTaskItem key={t.id} task={t} />
                     ))}
                     {stage.stages?.map((s) => (
-                        <ListStageItem key={s.id} stage={s} />
+                        <ListStageItem key={s.id} stage={s} data={data} setData={setData} />
                     ))}
                 </div>
             )}
