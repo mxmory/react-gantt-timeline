@@ -8,7 +8,7 @@ export const StageSection = ({ stage, allStages, index, currentLine, color, sele
     const { tasks, start_at, stages, deadline, type } = stage;
     const prevStages = [...allStages.slice(0, index)];
     const prevItemsCount = getPrevItems(prevStages).length;
-    const today = moment();
+    const today = moment().startOf('day');
 
     const start = moment(start_at);
     const x = start.diff(today, 'days', false);

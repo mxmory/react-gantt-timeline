@@ -12,11 +12,11 @@ export const BackgroundLayer = ({ dataRange }) => {
     return (
         <Layer>
             {range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH).map((n) => {
-                const weekdayNumber = moment(today)
+                const weekdayNumber = moment(today.startOf('day'))
                     .add(n / CELL_WIDTH, 'days')
                     .format('d');
 
-                const day = moment(today).add(n / CELL_WIDTH, 'days');
+                const day = moment(today.startOf('day')).add(n / CELL_WIDTH, 'days');
 
                 const isHoliday =
                     +weekdayNumber === 0 || +weekdayNumber === 6 || HOLIDAYS.includes(day.format('YYYY-MM-DD'));

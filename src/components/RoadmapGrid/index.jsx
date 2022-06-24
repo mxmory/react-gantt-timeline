@@ -5,7 +5,7 @@ import { CANVAS_HEIGHT, CELL_WIDTH, CELL_HEIGHT, CANVAS_WIDTH } from '../../cons
 import { BackgroundLayer } from './BackgroundLayer/index';
 import { DataLayer } from './DataLayer/index';
 import Konva from 'konva';
-import { getStage, getStageProps } from '../../utils/funcs';
+import { getStage, getParentStageProps, flatInnerStages, getStageProps } from '../../utils/funcs';
 import moment from 'moment';
 
 const RoadmapGrid = ({ data, setData, dataRange, setBounds, onCanvasDrag, onCanvasScroll }, ref) => {
@@ -25,19 +25,35 @@ const RoadmapGrid = ({ data, setData, dataRange, setBounds, onCanvasDrag, onCanv
         const posX = Math.floor((layerX - canvasX) / CELL_WIDTH) * CELL_WIDTH;
         const posY = Math.floor(layerY / CELL_HEIGHT) * CELL_HEIGHT;
 
-        if (e.target.attrs?.type === 'CORE_STAGE_LINE') {
-            const stage = getStage(data, e.target.attrs?.id);
-            const { x, width } = getStageProps(stage.stages);
-            stageBoundsLayer.show();
+        stageBoundsLayer.moveToTop();
 
+        if (e.target.attrs?.type === 'STAGE_LINE') {
+            // e.target.batchDraw();
+            const stage = getStage(data, e.target.attrs?.id);
+            let stageX, stageWidth;
+            if (stage.type === 'core') {
+                const innerStages = flatInnerStages(stage.stages);
+                const { x, width } = getParentStageProps(innerStages);
+                stageX = x;
+                stageWidth = width;
+            } else {
+                const { x, width } = getStageProps(stage);
+                stageX = x;
+                stageWidth = width;
+            }
+
+            stageBoundsLayer.show();
             startBound.setAttrs({
-                points: [x * CELL_WIDTH - 0.5, 0, x * CELL_WIDTH - 0.5, posY],
+                points: [stageX * CELL_WIDTH - 0.5, 0, stageX * CELL_WIDTH - 0.5, posY + CELL_HEIGHT / 2],
             });
             endBound.setAttrs({
-                points: [width * CELL_WIDTH + x * CELL_WIDTH - 0.5, 0, width * CELL_WIDTH + x * CELL_WIDTH - 0.5, posY],
+                points: [
+                    stageWidth * CELL_WIDTH + stageX * CELL_WIDTH - 0.5,
+                    0,
+                    stageWidth * CELL_WIDTH + stageX * CELL_WIDTH - 0.5,
+                    posY + CELL_HEIGHT / 2,
+                ],
             });
-        } else if (e.target.attrs?.type === 'STAGE_LINE') {
-            const stage = getStage(data, e.target.attrs?.id);
         } else {
             stageBoundsLayer.hide();
         }
@@ -98,8 +114,8 @@ const RoadmapGrid = ({ data, setData, dataRange, setBounds, onCanvasDrag, onCanv
                     onWheel={onWheel}
                 >
                     <Layer ref={stageBoundsLayerRef}>
-                        <Line id="startBound" strokeWidth={0.5} stroke="#000" dashEnabled dash={[14, 7]} />
-                        <Line id="endBound" strokeWidth={0.5} stroke="#000" dashEnabled dash={[14, 7]} />
+                        <Line id="startBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[14, 7]} />
+                        <Line id="endBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[14, 7]} />
                     </Layer>
                     <Layer ref={crosshairLayerRef}>
                         <Rect width={CELL_WIDTH} height={CANVAS_HEIGHT} fill="#ccc" opacity={0} />

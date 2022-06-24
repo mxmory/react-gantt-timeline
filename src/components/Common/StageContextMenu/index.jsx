@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { getDataOnStageEdit, getDataOnStageAdd } from '../../../utils/funcs';
+import { getDataOnStageEdit, getDataOnStageAdd, getDataOnStageDelete } from '../../../utils/funcs';
 import styles from './StageContextMenu.module.scss';
 import Modal from 'react-modal';
 
 export const StageContextMenu = ({ stage, data, setData, setMenuVisible }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const editStage = () => {
-        const newStages = getDataOnStageEdit(data, { ...stage, name: 'CHANGED' });
+        const newStages = getDataOnStageEdit(data, { ...stage, name: 'EDITED NAME' });
         setData(newStages);
+        setMenuVisible(false);
     };
 
     const addStage = (e) => {
@@ -22,9 +23,14 @@ export const StageContextMenu = ({ stage, data, setData, setMenuVisible }) => {
             id: Math.floor(10 + Math.random() * (10000 - 10 + 1)),
         };
         const newStages = getDataOnStageAdd(data, stage.id, newStage);
-        console.log(newStages);
         setData(newStages);
         setAddModalVisible(false);
+        setMenuVisible(false);
+    };
+
+    const deleteStage = () => {
+        const newStages = getDataOnStageDelete(data, stage.id);
+        setData(newStages);
         setMenuVisible(false);
     };
 
@@ -72,6 +78,14 @@ export const StageContextMenu = ({ stage, data, setData, setMenuVisible }) => {
                         <button type="submit">Ok</button>
                     </form>
                 </Modal>
+            </div>
+            <hr />
+            <div className={styles.listItem} onClick={editStage}>
+                ~ Edit stage
+            </div>
+            <hr />
+            <div className={styles.listItem} onClick={deleteStage}>
+                - Delete stage
             </div>
         </div>
     );
