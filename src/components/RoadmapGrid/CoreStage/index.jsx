@@ -1,5 +1,5 @@
 import React from 'react';
-import { getPrevStages, getStageProps } from '../../../utils/funcs';
+import { flatInnerStages, getParentStageProps } from '../../../utils/funcs';
 import { CELL_HEIGHT, CELL_WIDTH, STAGE_HEIGHT } from '../../../constants';
 import { Group, Rect } from 'react-konva';
 
@@ -7,8 +7,8 @@ export const CoreStage = ({ stage, line }) => {
     const { id, stages, color } = stage;
     const shapeRef = React.useRef();
 
-    const innerStages = getPrevStages(stages);
-    const { x, width } = getStageProps(innerStages);
+    const innerStages = flatInnerStages(stages);
+    const { x, width } = getParentStageProps(innerStages);
 
     const y = line * CELL_HEIGHT;
 
@@ -23,28 +23,32 @@ export const CoreStage = ({ stage, line }) => {
         >
             <Rect
                 id={id}
-                type="CORE_STAGE_LINE"
+                type="STAGE_LINE"
                 ref={shapeRef}
                 width={width * CELL_WIDTH}
                 height={STAGE_HEIGHT}
                 fill={color}
             />
-            <Rect
-                x={0}
-                y={-STAGE_HEIGHT}
-                width={STAGE_HEIGHT / 2}
-                height={STAGE_HEIGHT * 3}
-                fill={color}
-                cornerRadius={STAGE_HEIGHT}
-            />
-            <Rect
-                x={width * CELL_WIDTH - STAGE_HEIGHT / 2}
-                y={-STAGE_HEIGHT}
-                width={STAGE_HEIGHT / 2}
-                height={STAGE_HEIGHT * 3}
-                fill={color}
-                cornerRadius={STAGE_HEIGHT}
-            />
+            {innerStages.length !== 0 && (
+                <>
+                    <Rect
+                        x={0}
+                        y={-STAGE_HEIGHT}
+                        width={STAGE_HEIGHT / 2}
+                        height={STAGE_HEIGHT * 3}
+                        fill={color}
+                        cornerRadius={STAGE_HEIGHT}
+                    />
+                    <Rect
+                        x={width * CELL_WIDTH - STAGE_HEIGHT / 2}
+                        y={-STAGE_HEIGHT}
+                        width={STAGE_HEIGHT / 2}
+                        height={STAGE_HEIGHT * 3}
+                        fill={color}
+                        cornerRadius={STAGE_HEIGHT}
+                    />
+                </>
+            )}
         </Group>
     );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
 import { CELL_WIDTH } from '../../../constants';
-import { getPrevItems, getStageProps, increaseColorBrightness } from '../../../utils/funcs';
+import { getPrevItems, getParentStageProps, increaseColorBrightness } from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
 import { StageSection } from '../StageSection';
@@ -43,18 +43,20 @@ export const DataLayer = ({ data, setData }) => {
                 // animating lines
 
                 associatedStageNode.to({
-                    width: getStageProps(newTasks).width * CELL_WIDTH,
+                    width: getParentStageProps(newTasks).width * CELL_WIDTH,
                     duration: 0.1,
                 });
 
                 percentStageNode.to({
-                    width: (getStageProps(newTasks).width * getStageProps(newTasks).percent * CELL_WIDTH) / 100,
+                    width:
+                        (getParentStageProps(newTasks).width * getParentStageProps(newTasks).percent * CELL_WIDTH) /
+                        100,
                     x: 0,
                     duration: 0.2,
                 });
 
                 stageGroup.to({
-                    x: getStageProps(newTasks).x,
+                    x: getParentStageProps(newTasks).x,
                     duration: 0.1,
                 });
 

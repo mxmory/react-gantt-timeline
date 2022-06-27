@@ -19,7 +19,7 @@ export const TaskItemLine = ({
     const shapeRef = React.useRef();
     const trRef = React.useRef();
 
-    const today = moment();
+    const today = moment().startOf('day');
     // const progressRef = React.useRef();
 
     useEffect(() => {

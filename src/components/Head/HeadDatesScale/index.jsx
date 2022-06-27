@@ -46,10 +46,10 @@ const Scale = ({ dataRange }, ref) => {
                     );
                 })}
                 {range(startPoint * CELL_WIDTH, endPoint * CELL_WIDTH, CELL_WIDTH).map((n) => {
-                    const weekdayNumber = moment(today)
+                    const weekdayNumber = moment(today.startOf('day'))
                         .add(n / CELL_WIDTH, 'days')
                         .format('d');
-                    const day = moment(today).add(n / CELL_WIDTH, 'days');
+                    const day = moment(today.startOf('day')).add(n / CELL_WIDTH, 'days');
                     const isHoliday =
                         +weekdayNumber === 0 || +weekdayNumber === 6 || HOLIDAYS.includes(day.format('YYYY-MM-DD'));
 
@@ -66,7 +66,6 @@ const Scale = ({ dataRange }, ref) => {
                                         width={(CELL_WIDTH / 24) * todayHoursNumber}
                                         height={CELL_HEIGHT}
                                         fill="#546678"
-                                        // cornerRadius={5}
                                     />
                                 </Group>
                             )}
