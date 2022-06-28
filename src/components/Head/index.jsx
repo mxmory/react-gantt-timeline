@@ -4,7 +4,7 @@ import styles from './Head.module.scss';
 import { LocationIcon, ArrowDropIcon } from '../Icons';
 import { HeadDatesScale } from './HeadDatesScale';
 
-export const Head = ({ siderExpanded, setSiderExpanded, dataRange, moveToCurrentDate }, ref) => {
+export const Head = ({ scale, siderExpanded, setSiderExpanded, dataRange, moveToCurrentDate }, ref) => {
     const toggleSiderExpand = () => {
         setSiderExpanded((prev) => !prev);
     };
@@ -34,7 +34,7 @@ export const Head = ({ siderExpanded, setSiderExpanded, dataRange, moveToCurrent
                 </div>
             </div>
             <div className={styles.timelineContainer}>
-                <HeadDatesScale ref={ref} dataRange={dataRange} />
+                <HeadDatesScale ref={ref} dataRange={dataRange} scale={scale} />
             </div>
         </div>
     );

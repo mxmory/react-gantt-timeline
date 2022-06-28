@@ -24,7 +24,6 @@ export const StageSection = ({
     const x = start.diff(today, 'days', false) * cellWidth;
     const width = moment(deadline).diff(start, 'days', false) * cellWidth;
 
-    console.log({ width });
     return (
         <>
             <StageItemLine

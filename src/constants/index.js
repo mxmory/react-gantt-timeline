@@ -3,12 +3,29 @@ export const CANVAS_WIDTH = 3000;
 export const height = 3000;
 export const CANVAS_HEIGHT = 3000;
 export const CELL_HEIGHT = 30;
-export const CELL_WIDTH = 70;
 export const HEADER_TOP_HEIGHT = 20;
 export const STAGE_HEIGHT = 8;
 export const TASK_HEIGHT = 20;
 
-export const CELL_WIDTH_DAY_IN_WEEK = 10;
+export const SCALES = {
+    0: 'DAY',
+    1: 'WEEK',
+    2: 'MONTH',
+    3: 'YEAR',
+};
+
+export const SCALING_VALUES = {
+    DAY: {
+        DIMENSION: 'days',
+        CELL_WIDTH: 36,
+        CELL_WIDTH_SUB: 36,
+    },
+    WEEK: {
+        DIMENSION: 'weeks',
+        CELL_WIDTH: 70,
+        CELL_WIDTH_SUB: 10,
+    },
+};
 
 export const HOLIDAYS = ['2022-06-23', '2022-06-28'];
 

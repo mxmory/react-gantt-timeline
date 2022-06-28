@@ -1,6 +1,6 @@
 import React from 'react';
 import { flatInnerStages, getParentStageProps } from '../../../utils/funcs';
-import { CELL_HEIGHT, CELL_WIDTH, STAGE_HEIGHT } from '../../../constants';
+import { CELL_HEIGHT, STAGE_HEIGHT } from '../../../constants';
 import { Group, Rect } from 'react-konva';
 
 export const CoreStage = ({ stage, line, cellWidth }) => {
@@ -9,8 +9,6 @@ export const CoreStage = ({ stage, line, cellWidth }) => {
 
     const innerStages = flatInnerStages(stages);
     const { x, width } = getParentStageProps(innerStages);
-
-    console.log('core', x * cellWidth, width * cellWidth);
 
     const y = line * CELL_HEIGHT;
 

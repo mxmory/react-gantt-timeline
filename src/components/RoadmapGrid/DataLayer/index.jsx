@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
-import { CELL_WIDTH, CELL_WIDTH_DAY_IN_WEEK } from '../../../constants';
+import { SCALING_VALUES } from '../../../constants';
 import { getPrevItems, getParentStageProps, increaseColorBrightness } from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
 import { StageSection } from '../StageSection';
 
-export const DataLayer = ({ data, setData }) => {
+export const DataLayer = ({ scale, data, setData }) => {
     const [selectedId, selectShape] = useState(null);
     const [isTransforming, setIsTransforming] = useState(false);
 
-    const cellWidth = CELL_WIDTH_DAY_IN_WEEK;
+    const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES[scale];
 
     //#region funcs
     const onGridTaskDragEnd = (e) => {
@@ -123,14 +123,14 @@ export const DataLayer = ({ data, setData }) => {
 
                 return (
                     <React.Fragment key={stage.id}>
-                        <CoreStage stage={stage} line={currentLine} cellWidth={cellWidth} />
+                        <CoreStage stage={stage} line={currentLine} cellWidth={CELL_WIDTH_SUB} />
 
-                        {/* {tasks &&
+                        {tasks &&
                             tasks.map((task, taskIdx) => {
                                 const { id, length, start_at } = task;
                                 return (
                                     <TaskItemLine
-                                        cellWidth={cellWidth}
+                                        cellWidth={CELL_WIDTH_SUB}
                                         key={task.id}
                                         select={selectShape}
                                         id={id}
@@ -143,12 +143,12 @@ export const DataLayer = ({ data, setData }) => {
                                         onDeselect={onDeselect}
                                     />
                                 );
-                            })} */}
+                            })}
 
                         {stages.map((el, idx) => {
                             return (
                                 <StageSection
-                                    cellWidth={cellWidth}
+                                    cellWidth={CELL_WIDTH_SUB}
                                     select={selectShape}
                                     onDeselect={onDeselect}
                                     selectedId={selectedId}

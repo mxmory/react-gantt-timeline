@@ -1,16 +1,16 @@
 import React, { useRef } from 'react';
 import styles from './RoadmapGrid.module.scss';
 import { Stage, Layer, Rect, Line } from 'react-konva';
-import { CANVAS_HEIGHT, CELL_WIDTH, CELL_HEIGHT, CANVAS_WIDTH } from '../../constants/index';
+import { CANVAS_HEIGHT, CELL_HEIGHT, SCALING_VALUES } from '../../constants';
 import { BackgroundLayer } from './BackgroundLayer/index';
 import { DataLayer } from './DataLayer/index';
-import Konva from 'konva';
 import { getStage, getParentStageProps, flatInnerStages, getStageProps } from '../../utils/funcs';
-import moment from 'moment';
 
-const RoadmapGrid = ({ data, setData, dataRange, setBounds, onCanvasDrag, onCanvasScroll }, ref) => {
+const RoadmapGrid = ({ scale, data, setData, dataRange, setBounds, onCanvasDrag, onCanvasScroll }, ref) => {
     const crosshairLayerRef = useRef();
     const stageBoundsLayerRef = useRef();
+
+    const { CELL_WIDTH } = SCALING_VALUES[scale];
 
     const onMouseMove = (e) => {
         const crosshairLayer = crosshairLayerRef.current;
@@ -126,8 +126,8 @@ const RoadmapGrid = ({ data, setData, dataRange, setBounds, onCanvasDrag, onCanv
                             opacity={0}
                         />
                     </Layer>
-                    <BackgroundLayer dataRange={dataRange} />
-                    <DataLayer data={data} setData={setData} />
+                    <BackgroundLayer scale={scale} dataRange={dataRange} />
+                    <DataLayer scale={scale} data={data} setData={setData} />
                 </Stage>
             </div>
         </div>

@@ -2,7 +2,6 @@ import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Group, Rect, Transformer } from 'react-konva';
 import { CELL_HEIGHT, TASK_HEIGHT } from '../../../constants';
-import { CELL_WIDTH } from '../../../constants/index';
 
 export const TaskItemLine = ({
     cellWidth,

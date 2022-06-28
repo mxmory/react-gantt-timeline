@@ -1,13 +1,19 @@
 import React from 'react';
 import { Layer, Group, Line } from 'react-konva';
 import { range } from 'lodash';
-import { CELL_WIDTH, CANVAS_HEIGHT, HOLIDAYS } from '../../../constants';
+import { CANVAS_HEIGHT, HOLIDAYS } from '../../../constants';
 import moment from 'moment';
 import { HolidayHighlight } from '../HolidayHighlight';
+import { SCALING_VALUES } from '../../../constants/index';
 
-export const BackgroundLayer = ({ dataRange }) => {
+export const BackgroundLayer = ({ scale, dataRange }) => {
     const today = moment();
-    const todayHoursNumber = +moment(today).format('HH');
+    const { CELL_WIDTH } = SCALING_VALUES[scale];
+
+    const currMomentLineMap = {
+        DAY: Math.round((CELL_WIDTH / 24) * +moment(today).format('HH')) - 0.5,
+        WEEK: Math.round((CELL_WIDTH / 7) * +moment(today).format('d')) - 0.5,
+    };
 
     return (
         <Layer>
@@ -30,17 +36,13 @@ export const BackgroundLayer = ({ dataRange }) => {
                             // opacity={0.7}
                             strokeWidth={0.5}
                         />
-                        {isHoliday && <HolidayHighlight height={CANVAS_HEIGHT} />}
+
+                        {scale === 'DAY' && isHoliday && <HolidayHighlight height={CANVAS_HEIGHT} width={CELL_WIDTH} />}
                     </Group>
                 );
             })}
             <Line
-                points={[
-                    Math.round((CELL_WIDTH / 24) * todayHoursNumber) - 0.5,
-                    0,
-                    Math.round((CELL_WIDTH / 24) * todayHoursNumber) - 0.5,
-                    CANVAS_HEIGHT,
-                ]}
+                points={[currMomentLineMap[scale], 0, currMomentLineMap[scale], CANVAS_HEIGHT]}
                 stroke="#546678"
                 strokeWidth={0.5}
                 dashEnabled

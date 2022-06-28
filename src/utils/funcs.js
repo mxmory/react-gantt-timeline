@@ -1,6 +1,6 @@
 import { minBy, maxBy, range } from 'lodash';
 import moment from 'moment';
-import { CELL_WIDTH } from '../constants';
+import { SCALING_VALUES } from '../constants/index';
 
 const getStageX = (start) => start.diff(moment().startOf('day'), 'days', false);
 const getStageLength = (deadline, start) => moment(deadline).diff(moment(start), 'days', false);
@@ -10,7 +10,7 @@ export const getStageProps = (stage) => {
     return { x: getStageX(moment(start_at)), width: getStageLength(moment(deadline), moment(start_at)) };
 };
 
-export const getParentStageProps = (stages, line = 0) => {
+export const getParentStageProps = (stages) => {
     if (stages && stages.length === 0) return { x: 0, width: 0 };
     const firstStageInCore = minBy(stages, 'start_at');
     const lastStageInCore = maxBy(stages, (stage) => moment(stage.deadline));
@@ -24,7 +24,7 @@ export const getParentStageProps = (stages, line = 0) => {
 
     // const percent = (100 * percentSum) / (stages.length * 100);
 
-    return { x: getStageX(stageStartAt), y: line * CELL_WIDTH, width: stageLength };
+    return { x: getStageX(stageStartAt), width: stageLength };
 };
 
 export const flatInnerStages = (stagesArr) => {
@@ -97,17 +97,18 @@ export const getPrevItems = (stagesArr) => {
     return resArr;
 };
 
-export const getMonthsInRange = (dataRange, scale = 'days') => {
+export const getMonthsInRange = (dataRange, scale) => {
+    const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES[scale];
     const today = moment();
 
-    return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, 10).map((n) => {
-        const day = moment(today).add(n / 10, scale);
+    return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH_SUB).map((n) => {
+        const day = moment(today).add(n / CELL_WIDTH_SUB, 'days');
 
         const startDate = moment(day).startOf('month');
         const endDate = moment(day).endOf('month');
 
-        const xStart = moment(startDate).diff(moment(today), scale, false);
-        const xEnd = moment(endDate).diff(moment(today), scale, false);
+        const xStart = moment(startDate).diff(moment(today), 'days', false);
+        const xEnd = moment(endDate).diff(moment(today), 'days', false);
 
         return { date: startDate, start: xStart + (xStart > 0 + 1), end: xEnd + (xEnd > 0 && 1) }; // Check why if > 0 need to add + 1
     }, []);

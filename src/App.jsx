@@ -4,7 +4,7 @@ import { Sider } from './components/Sider/index';
 import { useRef } from 'react';
 import Head from './components/Head';
 import RoadmapGrid from './components/RoadmapGrid';
-import { ACTUAL_DATA, CELL_WIDTH } from './constants';
+import { ACTUAL_DATA, SCALING_VALUES, SCALES } from './constants';
 
 const reduceStagesToShow = (data) => data.reduce((acc, stage) => ({ ...acc, [stage.id]: true }), {});
 
@@ -13,12 +13,22 @@ const App = () => {
     const [visibleStages, setVisibleStages] = useState(reduceStagesToShow(data));
     const [dataRange, setDataRange] = useState([]);
     const [siderExpanded, setSiderExpanded] = useState(false);
+    const [scale, setScale] = useState(0);
+
+    const { CELL_WIDTH } = SCALING_VALUES[SCALES[scale]];
 
     const headDatesScaleRef = useRef();
     const mainGridRef = useRef();
 
     const toggleStageCollapse = (stageId) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
+    };
+
+    const onScaleChange = (e) => {
+        const { value } = e.target;
+        if (value !== scale) {
+            setScale(value);
+        }
     };
 
     useEffect(() => {
@@ -63,6 +73,7 @@ const App = () => {
     return (
         <div className={styles.main}>
             <Head
+                scale={SCALES[scale]}
                 ref={headDatesScaleRef}
                 siderExpanded={siderExpanded}
                 setSiderExpanded={setSiderExpanded}
@@ -78,6 +89,7 @@ const App = () => {
                     visibleStages={visibleStages}
                 />
                 <RoadmapGrid
+                    scale={SCALES[scale]}
                     ref={mainGridRef}
                     data={data}
                     setData={setData}
@@ -86,6 +98,19 @@ const App = () => {
                     onCanvasDrag={onCanvasDrag}
                     onCanvasScroll={onCanvasScroll}
                 />
+                <div className={styles.scalePanel}>
+                    <input
+                        type="range"
+                        id="scale"
+                        name="scale"
+                        min="0"
+                        max="1"
+                        value={scale}
+                        step="1"
+                        onInput={onScaleChange}
+                    />
+                    <label htmlFor="scale">Scale: {scale}</label>
+                </div>
             </div>
         </div>
     );
