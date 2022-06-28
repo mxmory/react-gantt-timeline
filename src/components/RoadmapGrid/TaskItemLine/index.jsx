@@ -1,10 +1,11 @@
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Group, Rect, Transformer } from 'react-konva';
-import { CELL_HEIGHT, TASK_HEIGHT } from '../../../constants';
+import { SCALING_VALUES, APPROX_DAYS_SCALE_COUNT, CELL_HEIGHT, TASK_HEIGHT } from '../../../constants';
+import { getStageX, getScaledCellWidth } from '../../../utils/funcs';
 
 export const TaskItemLine = ({
-    cellWidth,
+    scale,
     select,
     task,
     stageId,
@@ -19,8 +20,9 @@ export const TaskItemLine = ({
     const shapeRef = React.useRef();
     const trRef = React.useRef();
 
-    const today = moment().startOf('day');
     // const progressRef = React.useRef();
+
+    const scaledCellWidth = getScaledCellWidth(scale);
 
     useEffect(() => {
         if (isSelected) {
@@ -30,7 +32,7 @@ export const TaskItemLine = ({
     }, [isSelected]);
 
     const start = moment(start_at);
-    const x = start.diff(today, 'days', false);
+    const x = getStageX(start, scale);
     const y = line * CELL_HEIGHT;
     const length = moment(deadline).diff(start, 'days', false);
 
@@ -40,9 +42,9 @@ export const TaskItemLine = ({
             onMouseLeave={onDeselect}
             id={id}
             stageId={stageId}
-            x={x * cellWidth}
+            x={x * scaledCellWidth}
             y={y + CELL_HEIGHT / 2 - TASK_HEIGHT / 2}
-            width={length * cellWidth}
+            width={length * scaledCellWidth}
             height={TASK_HEIGHT}
             draggable={true}
             dragBoundFunc={(pos) => {
@@ -60,7 +62,7 @@ export const TaskItemLine = ({
                 id={id}
                 stageId={stageId}
                 ref={shapeRef}
-                width={cellWidth * length}
+                width={scaledCellWidth * length}
                 height={TASK_HEIGHT}
                 fill="#D7DADD"
                 scaleX={1}
@@ -71,7 +73,7 @@ export const TaskItemLine = ({
                 onTransformStart={onTransformStart}
             />
             <Rect
-                width={(cellWidth * length * percent) / 100}
+                width={(scaledCellWidth * length * percent) / 100}
                 height={TASK_HEIGHT}
                 fill="#aaa"
                 opacity={0.5}

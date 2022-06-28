@@ -33,11 +33,11 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, setBounds, onCanvasDrag,
             let stageX, stageWidth;
             if (stage.type === 'core') {
                 const innerStages = flatInnerStages(stage.stages);
-                const { x, width } = getParentStageProps(innerStages);
+                const { x, width } = getParentStageProps(innerStages, scale);
                 stageX = x;
                 stageWidth = width;
             } else {
-                const { x, width } = getStageProps(stage);
+                const { x, width } = getStageProps(stage, scale);
                 stageX = x;
                 stageWidth = width;
             }

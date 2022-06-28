@@ -1,12 +1,12 @@
 import React from 'react';
-import { SCALING_VALUES, HEADER_TOP_HEIGHT, HOLIDAYS, CELL_HEIGHT } from '../../../../constants';
+import { SCALING_VALUES, HEADER_TOP_HEIGHT, CELL_HEIGHT } from '../../../../constants';
 import { Layer, Line, Group, Rect, Text } from 'react-konva';
 import { uniqWith, isEqual, range } from 'lodash';
 import { getDimensionsInRange } from '../../../../utils/funcs';
 import moment from 'moment';
 
-export const WeekScaleLayer = ({ dataRange }) => {
-    const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES.WEEK;
+export const MonthScaleLayer = ({ dataRange }) => {
+    const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES.MONTH;
     const [startPoint, endPoint] = dataRange;
     const today = moment();
     return (
@@ -21,10 +21,10 @@ export const WeekScaleLayer = ({ dataRange }) => {
                 stroke="#aaa"
                 strokeWidth={0.5}
             />
-            {uniqWith(getDimensionsInRange(dataRange, 'WEEK'), isEqual).map((m) => {
+            {uniqWith(getDimensionsInRange(dataRange, 'MONTH'), isEqual).map((m) => {
                 const { date, start, end } = m;
 
-                const text = date.format('MMMM YYYY');
+                const text = date.format('YYYY');
                 const length = (end - start) * CELL_WIDTH_SUB;
 
                 return (
@@ -44,43 +44,35 @@ export const WeekScaleLayer = ({ dataRange }) => {
                 );
             })}
             {range(startPoint * CELL_WIDTH, endPoint * CELL_WIDTH, CELL_WIDTH).map((n) => {
-                const weekdayNumber = moment(today.startOf('day'))
-                    .add(n / CELL_WIDTH, 'weeks')
-                    .format('d');
-                const day = moment(today.startOf('day')).add(n / CELL_WIDTH, 'weeks');
-                const day2 = moment(day).add(6, 'days');
+                const month = moment(today).add(n / CELL_WIDTH, 'months');
                 // const day3 = moment(day.startOf('week'))
 
                 return (
                     <Group key={n} x={n} y={20}>
-                        {day.isSame(today) && (
+                        {month.isSame(today) && (
                             <Group>
                                 <Rect width={CELL_WIDTH} height={CELL_HEIGHT} fill="#AEB5BB" />
-                                <Rect width={(CELL_WIDTH / 7) * +weekdayNumber} height={CELL_HEIGHT} fill="#546678" />
+                                <Rect
+                                    width={
+                                        (CELL_WIDTH / 100) *
+                                        ((100 * +moment(today).format('DD')) / moment(today).daysInMonth())
+                                    }
+                                    height={CELL_HEIGHT}
+                                    fill="#546678"
+                                />
                             </Group>
                         )}
 
-                        <Text
-                            fontSize={10}
-                            fontFamily="Montserrat"
-                            text={'Week ' + day.format('w')}
-                            width={CELL_WIDTH}
-                            height={CELL_HEIGHT}
-                            align="center"
-                            fill={day.isSame(today) ? '#fff' : '#888'}
-                            verticalAlign="top"
-                            padding={4}
-                        />
                         <Line points={[-0.5, 0, -0.5, CELL_HEIGHT - 0.5]} stroke="#aaa" strokeWidth={0.5} />
                         <Text
                             fontSize={10}
-                            text={day.format('DD') + ' - ' + day2.format('DD')}
+                            text={month.format('MMMM')}
                             fontFamily="Montserrat"
                             width={CELL_WIDTH}
                             height={CELL_HEIGHT}
                             align="center"
-                            fill={day.isSame(today) ? '#fff' : '#000'}
-                            verticalAlign="bottom"
+                            fill={month.isSame(today) ? '#fff' : '#000'}
+                            verticalAlign="middle"
                             padding={4}
                         />
                     </Group>

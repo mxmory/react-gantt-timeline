@@ -13,6 +13,7 @@ export const BackgroundLayer = ({ scale, dataRange }) => {
     const currMomentLineMap = {
         DAY: Math.round((CELL_WIDTH / 24) * +moment(today).format('HH')) - 0.5,
         WEEK: Math.round((CELL_WIDTH / 7) * +moment(today).format('d')) - 0.5,
+        MONTH: (CELL_WIDTH / 100) * ((100 * +moment(today).format('DD')) / moment(today).daysInMonth()),
     };
 
     return (

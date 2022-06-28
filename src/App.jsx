@@ -38,7 +38,8 @@ const App = () => {
         setDataRange([startIndex, endIndex]);
         setBounds();
         stage.batchDraw();
-    }, []);
+        moveToCurrentDate();
+    }, [scale]);
 
     const onCanvasDrag = (e) => {
         const x = e.target.x();
@@ -104,12 +105,12 @@ const App = () => {
                         id="scale"
                         name="scale"
                         min="0"
-                        max="1"
+                        max="2"
                         value={scale}
                         step="1"
                         onInput={onScaleChange}
                     />
-                    <label htmlFor="scale">Scale: {scale}</label>
+                    <label htmlFor="scale">Scale: {SCALES[scale]}</label>
                 </div>
             </div>
         </div>

@@ -1,11 +1,11 @@
 import moment from 'moment';
 import React from 'react';
-import { getPrevItems } from '../../../utils/funcs';
+import { getPrevItems, getScaledCellWidth, getStageX } from '../../../utils/funcs';
 import { StageItemLine } from '../StageItemLine/index';
 import { TaskItemLine } from '../TaskItemLine';
 
 export const StageSection = ({
-    cellWidth,
+    scale,
     stage,
     allStages,
     index,
@@ -18,11 +18,10 @@ export const StageSection = ({
     const { tasks, start_at, stages, deadline, type } = stage;
     const prevStages = [...allStages.slice(0, index)];
     const prevItemsCount = getPrevItems(prevStages).length;
-    const today = moment().startOf('day');
-
+    const scaledCellWidth = getScaledCellWidth(scale);
     const start = moment(start_at);
-    const x = start.diff(today, 'days', false) * cellWidth;
-    const width = moment(deadline).diff(start, 'days', false) * cellWidth;
+    const x = getStageX(start, scale);
+    const width = moment(deadline).diff(start, 'days', false);
 
     return (
         <>
@@ -32,8 +31,8 @@ export const StageSection = ({
                 tasks={tasks}
                 line={currentLine + prevItemsCount}
                 isSelected={selectedId === stage.id}
-                length={width}
-                start_at={x}
+                length={width * scaledCellWidth}
+                start_at={x * scaledCellWidth}
                 type={type}
                 color={color}
                 // onDragEnd={onGridStageDragEnd}
@@ -44,7 +43,7 @@ export const StageSection = ({
                 tasks.map((task, taskIdx) => {
                     return (
                         <TaskItemLine
-                            cellWidth={cellWidth}
+                            scale={scale}
                             key={task.id}
                             select={select}
                             task={task}
@@ -60,7 +59,7 @@ export const StageSection = ({
                 stages.map((s, idx) => {
                     return (
                         <StageSection
-                            cellWidth={cellWidth}
+                            scale={scale}
                             select={select}
                             color={color}
                             key={s.id}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Layer, Line, Group, Text, Rect } from 'react-konva';
 import { SCALING_VALUES, HEADER_TOP_HEIGHT, CELL_HEIGHT, HOLIDAYS } from '../../../../constants';
 import { uniqWith, isEqual, range } from 'lodash';
-import { getMonthsInRange, clipRect } from '../../../../utils/funcs';
+import { getDimensionsInRange, clipRect } from '../../../../utils/funcs';
 import { HolidayHighlight } from '../../../RoadmapGrid/HolidayHighlight';
 import moment from 'moment';
 
@@ -23,7 +23,7 @@ export const DayScaleLayer = ({ dataRange }) => {
                 stroke="#aaa"
                 strokeWidth={0.5}
             />
-            {uniqWith(getMonthsInRange(dataRange, 'DAY'), isEqual).map((m) => {
+            {uniqWith(getDimensionsInRange(dataRange, 'DAY'), isEqual).map((m) => {
                 const { date, start, end } = m;
 
                 const text = date.format('MMMM YYYY');

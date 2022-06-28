@@ -1,16 +1,23 @@
 import { minBy, maxBy, range } from 'lodash';
 import moment from 'moment';
-import { SCALING_VALUES } from '../constants/index';
+import { APPROX_DAYS_SCALE_COUNT, SCALING_VALUES, SCALE_MOMENT_DIMENSIONS } from '../constants';
 
-const getStageX = (start) => start.diff(moment().startOf('day'), 'days', false);
-const getStageLength = (deadline, start) => moment(deadline).diff(moment(start), 'days', false);
-
-export const getStageProps = (stage) => {
-    const { start_at, deadline } = stage;
-    return { x: getStageX(moment(start_at)), width: getStageLength(moment(deadline), moment(start_at)) };
+export const getScaledCellWidth = (scale) => {
+    const { CELL_WIDTH } = SCALING_VALUES[scale];
+    const daysCount = APPROX_DAYS_SCALE_COUNT[scale];
+    return CELL_WIDTH / daysCount;
 };
 
-export const getParentStageProps = (stages) => {
+export const getStageX = (start, scale) =>
+    start.diff(moment().startOf(SCALE_MOMENT_DIMENSIONS[scale].DIMENSION), 'days', false);
+const getStageLength = (deadline, start) => moment(deadline).diff(moment(start), 'days', false);
+
+export const getStageProps = (stage, scale) => {
+    const { start_at, deadline } = stage;
+    return { x: getStageX(moment(start_at), scale), width: getStageLength(moment(deadline), moment(start_at)) };
+};
+
+export const getParentStageProps = (stages, scale) => {
     if (stages && stages.length === 0) return { x: 0, width: 0 };
     const firstStageInCore = minBy(stages, 'start_at');
     const lastStageInCore = maxBy(stages, (stage) => moment(stage.deadline));
@@ -24,7 +31,7 @@ export const getParentStageProps = (stages) => {
 
     // const percent = (100 * percentSum) / (stages.length * 100);
 
-    return { x: getStageX(stageStartAt), width: stageLength };
+    return { x: getStageX(stageStartAt, scale), width: stageLength };
 };
 
 export const flatInnerStages = (stagesArr) => {
@@ -97,28 +104,29 @@ export const getPrevItems = (stagesArr) => {
     return resArr;
 };
 
-export const getMonthsInRange = (dataRange, scale) => {
+export const getDimensionsInRange = (dataRange, scale) => {
     const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES[scale];
+
+    const { SCALE_VALUE, DIMENSION, SCALE_START_OF } = SCALE_MOMENT_DIMENSIONS[scale];
+
     const today = moment();
 
     return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH_SUB).map((n) => {
-        const day = moment(today).add(n / CELL_WIDTH_SUB, 'days');
+        const day = moment(today).add(n / CELL_WIDTH_SUB, DIMENSION);
 
-        const startDate = moment(day).startOf('month');
-        const endDate = moment(day).endOf('month');
+        const startDate = moment(day).startOf(SCALE_START_OF);
+        const endDate = moment(day).endOf(SCALE_START_OF);
 
-        const xStart = moment(startDate).diff(moment(today), 'days', false);
-        const xEnd = moment(endDate).diff(moment(today), 'days', false);
+        const xStart = moment(startDate).diff(moment(today).startOf(SCALE_VALUE), DIMENSION, false);
+        const xEnd = moment(endDate).diff(moment(today).endOf(SCALE_VALUE), DIMENSION, false);
 
-        return { date: startDate, start: xStart + (xStart > 0 + 1), end: xEnd + (xEnd > 0 && 1) }; // Check why if > 0 need to add + 1
+        return { date: startDate, start: xStart, end: xEnd };
     }, []);
 };
 
 export const increaseColorBrightness = (hex, percent) => {
-    // strip the leading # if it's there
     hex = hex.replace(/^\s*#|\s*$/g, '');
 
-    // convert 3 char codes --> 6, e.g. `E0F` --> `EE00FF`
     if (hex.length == 3) {
         hex = hex.replace(/(.)/g, '$1$1');
     }

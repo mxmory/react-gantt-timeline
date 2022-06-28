@@ -14,16 +14,47 @@ export const SCALES = {
     3: 'YEAR',
 };
 
+export const SCALE_MOMENT_DIMENSIONS = {
+    DAY: {
+        SCALE_VALUE: 'day',
+        DIMENSION: 'days',
+        SCALE_START_OF: 'month',
+    },
+    WEEK: {
+        SCALE_VALUE: 'day',
+        DIMENSION: 'days',
+        SCALE_START_OF: 'month',
+    },
+    MONTH: {
+        SCALE_VALUE: 'month',
+        DIMENSION: 'months',
+        SCALE_START_OF: 'year',
+    },
+};
+
+export const APPROX_DAYS_SCALE_COUNT = {
+    DAY: 1,
+    WEEK: 7,
+    MONTH: 30,
+    YEAR: 365,
+};
+
 export const SCALING_VALUES = {
     DAY: {
-        DIMENSION: 'days',
         CELL_WIDTH: 36,
         CELL_WIDTH_SUB: 36,
     },
     WEEK: {
-        DIMENSION: 'weeks',
-        CELL_WIDTH: 70,
-        CELL_WIDTH_SUB: 10,
+        CELL_WIDTH: 105,
+        CELL_WIDTH_SUB: 15,
+    },
+    MONTH: {
+        CELL_WIDTH: 80,
+        CELL_WIDTH_SUB: 80,
+    },
+    YEAR: {
+        CELL_WIDTH: 80,
+        CELL_WIDTH_SUB: 80,
     },
 };
 
@@ -120,8 +151,8 @@ export const ACTUAL_DATA = {
                     id: '10',
                     type: 'stage',
                     name: 'Stage 10',
-                    start_at: '2022-06-15',
-                    deadline: '2022-06-25',
+                    start_at: '2022-06-21',
+                    deadline: '2022-07-26',
                 },
             ],
         },

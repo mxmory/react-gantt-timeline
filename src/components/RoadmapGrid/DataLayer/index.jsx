@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
-import { SCALING_VALUES } from '../../../constants';
+import { SCALING_VALUES, APPROX_DAYS_SCALE_COUNT } from '../../../constants';
 import { getPrevItems, getParentStageProps, increaseColorBrightness } from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
@@ -45,20 +45,22 @@ export const DataLayer = ({ scale, data, setData }) => {
                 // animating lines
 
                 associatedStageNode.to({
-                    width: getParentStageProps(newTasks).width * CELL_WIDTH,
+                    width: getParentStageProps(newTasks, scale).width * CELL_WIDTH,
                     duration: 0.1,
                 });
 
                 percentStageNode.to({
                     width:
-                        (getParentStageProps(newTasks).width * getParentStageProps(newTasks).percent * CELL_WIDTH) /
+                        (getParentStageProps(newTasks, scale).width *
+                            getParentStageProps(newTasks).percent *
+                            CELL_WIDTH) /
                         100,
                     x: 0,
                     duration: 0.2,
                 });
 
                 stageGroup.to({
-                    x: getParentStageProps(newTasks).x,
+                    x: getParentStageProps(newTasks, scale).x,
                     duration: 0.1,
                 });
 
@@ -123,14 +125,14 @@ export const DataLayer = ({ scale, data, setData }) => {
 
                 return (
                     <React.Fragment key={stage.id}>
-                        <CoreStage stage={stage} line={currentLine} cellWidth={CELL_WIDTH_SUB} />
+                        <CoreStage scale={scale} stage={stage} line={currentLine} />
 
                         {tasks &&
                             tasks.map((task, taskIdx) => {
                                 const { id, length, start_at } = task;
                                 return (
                                     <TaskItemLine
-                                        cellWidth={CELL_WIDTH_SUB}
+                                        scale={scale}
                                         key={task.id}
                                         select={selectShape}
                                         id={id}
@@ -148,7 +150,7 @@ export const DataLayer = ({ scale, data, setData }) => {
                         {stages.map((el, idx) => {
                             return (
                                 <StageSection
-                                    cellWidth={CELL_WIDTH_SUB}
+                                    scale={scale}
                                     select={selectShape}
                                     onDeselect={onDeselect}
                                     selectedId={selectedId}
