@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
-import { CELL_WIDTH } from '../../../constants';
+import { CELL_WIDTH, CELL_WIDTH_DAY_IN_WEEK } from '../../../constants';
 import { getPrevItems, getParentStageProps, increaseColorBrightness } from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
@@ -9,6 +9,8 @@ import { StageSection } from '../StageSection';
 export const DataLayer = ({ data, setData }) => {
     const [selectedId, selectShape] = useState(null);
     const [isTransforming, setIsTransforming] = useState(false);
+
+    const cellWidth = CELL_WIDTH_DAY_IN_WEEK;
 
     //#region funcs
     const onGridTaskDragEnd = (e) => {
@@ -121,13 +123,14 @@ export const DataLayer = ({ data, setData }) => {
 
                 return (
                     <React.Fragment key={stage.id}>
-                        <CoreStage stage={stage} line={currentLine} />
+                        <CoreStage stage={stage} line={currentLine} cellWidth={cellWidth} />
 
-                        {tasks &&
+                        {/* {tasks &&
                             tasks.map((task, taskIdx) => {
                                 const { id, length, start_at } = task;
                                 return (
                                     <TaskItemLine
+                                        cellWidth={cellWidth}
                                         key={task.id}
                                         select={selectShape}
                                         id={id}
@@ -140,11 +143,12 @@ export const DataLayer = ({ data, setData }) => {
                                         onDeselect={onDeselect}
                                     />
                                 );
-                            })}
+                            })} */}
 
                         {stages.map((el, idx) => {
                             return (
                                 <StageSection
+                                    cellWidth={cellWidth}
                                     select={selectShape}
                                     onDeselect={onDeselect}
                                     selectedId={selectedId}

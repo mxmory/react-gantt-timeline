@@ -26,7 +26,7 @@ export const StageItemLine = ({
     const shapeRef = React.useRef();
 
     const y = line * CELL_HEIGHT;
-    const x = start_at * CELL_WIDTH;
+    const x = start_at;
 
     const showStage = (e) => {
         const {
@@ -43,7 +43,7 @@ export const StageItemLine = ({
             id={id}
             x={x}
             y={y + CELL_HEIGHT / 2 - STAGE_HEIGHT / 2}
-            width={type === 'milestone' ? STAGE_HEIGHT : CELL_WIDTH * length}
+            width={type === 'milestone' ? STAGE_HEIGHT : length}
             height={STAGE_HEIGHT}
             onClick={showStage}
             // draggable={onDragEnd && true}
@@ -59,7 +59,7 @@ export const StageItemLine = ({
                 id={id}
                 type="STAGE_LINE"
                 ref={shapeRef}
-                width={type === 'milestone' ? STAGE_HEIGHT : CELL_WIDTH * length}
+                width={type === 'milestone' ? STAGE_HEIGHT : length}
                 height={STAGE_HEIGHT}
                 fill={color ?? colorMaps[type]}
                 rotation={type === 'milestone' && 45}

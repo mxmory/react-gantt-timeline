@@ -97,17 +97,17 @@ export const getPrevItems = (stagesArr) => {
     return resArr;
 };
 
-export const getMonthsInRange = (dataRange) => {
+export const getMonthsInRange = (dataRange, scale = 'days') => {
     const today = moment();
 
-    return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH).map((n) => {
-        const day = moment(today).add(n / CELL_WIDTH, 'days');
+    return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, 10).map((n) => {
+        const day = moment(today).add(n / 10, scale);
 
         const startDate = moment(day).startOf('month');
         const endDate = moment(day).endOf('month');
 
-        const xStart = moment(startDate).diff(moment(today), 'days', false);
-        const xEnd = moment(endDate).diff(moment(today), 'days', false);
+        const xStart = moment(startDate).diff(moment(today), scale, false);
+        const xEnd = moment(endDate).diff(moment(today), scale, false);
 
         return { date: startDate, start: xStart + (xStart > 0 + 1), end: xEnd + (xEnd > 0 && 1) }; // Check why if > 0 need to add + 1
     }, []);

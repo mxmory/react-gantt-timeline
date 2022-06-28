@@ -5,6 +5,7 @@ import { CELL_HEIGHT, TASK_HEIGHT } from '../../../constants';
 import { CELL_WIDTH } from '../../../constants/index';
 
 export const TaskItemLine = ({
+    cellWidth,
     select,
     task,
     stageId,
@@ -40,9 +41,9 @@ export const TaskItemLine = ({
             onMouseLeave={onDeselect}
             id={id}
             stageId={stageId}
-            x={x * CELL_WIDTH}
+            x={x * cellWidth}
             y={y + CELL_HEIGHT / 2 - TASK_HEIGHT / 2}
-            width={length * CELL_WIDTH}
+            width={length * cellWidth}
             height={TASK_HEIGHT}
             draggable={true}
             dragBoundFunc={(pos) => {
@@ -60,7 +61,7 @@ export const TaskItemLine = ({
                 id={id}
                 stageId={stageId}
                 ref={shapeRef}
-                width={CELL_WIDTH * length}
+                width={cellWidth * length}
                 height={TASK_HEIGHT}
                 fill="#D7DADD"
                 scaleX={1}
@@ -71,7 +72,7 @@ export const TaskItemLine = ({
                 onTransformStart={onTransformStart}
             />
             <Rect
-                width={(CELL_WIDTH * length * percent) / 100}
+                width={(cellWidth * length * percent) / 100}
                 height={TASK_HEIGHT}
                 fill="#aaa"
                 opacity={0.5}
