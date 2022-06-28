@@ -7,11 +7,10 @@ export const CoreStage = ({ scale, stage, line }) => {
     const { id, stages, color } = stage;
     const shapeRef = React.useRef();
 
-    const scaledCellWidth = getScaledCellWidth(scale);
     const innerStages = flatInnerStages(stages);
     const { x, width } = getParentStageProps(innerStages, scale);
-
     const y = line * CELL_HEIGHT;
+    const scaledCellWidth = getScaledCellWidth(scale);
 
     return (
         <Group

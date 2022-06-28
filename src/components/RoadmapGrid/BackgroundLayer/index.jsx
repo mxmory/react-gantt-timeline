@@ -4,7 +4,7 @@ import { range } from 'lodash';
 import { CANVAS_HEIGHT, HOLIDAYS } from '../../../constants';
 import moment from 'moment';
 import { HolidayHighlight } from '../HolidayHighlight';
-import { SCALING_VALUES } from '../../../constants/index';
+import { SCALING_VALUES, APPROX_DAYS_SCALE_COUNT } from '../../../constants/index';
 
 export const BackgroundLayer = ({ scale, dataRange }) => {
     const today = moment();
@@ -14,6 +14,9 @@ export const BackgroundLayer = ({ scale, dataRange }) => {
         DAY: Math.round((CELL_WIDTH / 24) * +moment(today).format('HH')) - 0.5,
         WEEK: Math.round((CELL_WIDTH / 7) * +moment(today).format('d')) - 0.5,
         MONTH: (CELL_WIDTH / 100) * ((100 * +moment(today).format('DD')) / moment(today).daysInMonth()),
+        YEAR:
+            (CELL_WIDTH / 100) *
+            ((100 * today.diff(moment(today).startOf('year'), 'days', true)) / APPROX_DAYS_SCALE_COUNT.YEAR),
     };
 
     return (

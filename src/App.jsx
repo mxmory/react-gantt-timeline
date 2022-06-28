@@ -13,7 +13,7 @@ const App = () => {
     const [visibleStages, setVisibleStages] = useState(reduceStagesToShow(data));
     const [dataRange, setDataRange] = useState([]);
     const [siderExpanded, setSiderExpanded] = useState(false);
-    const [scale, setScale] = useState(0);
+    const [scale, setScale] = useState(0); // day by default
 
     const { CELL_WIDTH } = SCALING_VALUES[SCALES[scale]];
 
@@ -105,7 +105,7 @@ const App = () => {
                         id="scale"
                         name="scale"
                         min="0"
-                        max="2"
+                        max="3"
                         value={scale}
                         step="1"
                         onInput={onScaleChange}

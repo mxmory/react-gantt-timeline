@@ -9,7 +9,8 @@ export const getScaledCellWidth = (scale) => {
 };
 
 export const getStageX = (start, scale) =>
-    start.diff(moment().startOf(SCALE_MOMENT_DIMENSIONS[scale].DIMENSION), 'days', false);
+    start.diff(moment().startOf(SCALE_MOMENT_DIMENSIONS[scale].SCALE_VALUE), 'days', false);
+
 const getStageLength = (deadline, start) => moment(deadline).diff(moment(start), 'days', false);
 
 export const getStageProps = (stage, scale) => {
@@ -31,7 +32,10 @@ export const getParentStageProps = (stages, scale) => {
 
     // const percent = (100 * percentSum) / (stages.length * 100);
 
-    return { x: getStageX(stageStartAt, scale), width: stageLength };
+    return {
+        x: getStageX(stageStartAt, scale),
+        width: stageLength,
+    };
 };
 
 export const flatInnerStages = (stagesArr) => {

@@ -30,12 +30,17 @@ export const SCALE_MOMENT_DIMENSIONS = {
         DIMENSION: 'months',
         SCALE_START_OF: 'year',
     },
+    YEAR: {
+        SCALE_VALUE: 'year',
+        DIMENSION: 'months',
+        SCALE_START_OF: 'year',
+    },
 };
 
 export const APPROX_DAYS_SCALE_COUNT = {
     DAY: 1,
     WEEK: 7,
-    MONTH: 30,
+    MONTH: 365 / 12,
     YEAR: 365,
 };
 
@@ -151,8 +156,8 @@ export const ACTUAL_DATA = {
                     id: '10',
                     type: 'stage',
                     name: 'Stage 10',
-                    start_at: '2022-06-21',
-                    deadline: '2022-07-26',
+                    start_at: '2022-04-30',
+                    deadline: '2022-07-31',
                 },
             ],
         },

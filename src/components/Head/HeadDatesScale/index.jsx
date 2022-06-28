@@ -4,12 +4,14 @@ import { HEADER_TOP_HEIGHT, CELL_HEIGHT } from '../../../constants';
 import { WeekScaleLayer } from './WeekScaleLayer';
 import { DayScaleLayer } from './DayScaleLayer';
 import { MonthScaleLayer } from './MonthScaleLayer';
+import { YearScaleLayer } from './YearScaleLayer/';
 
 const Scale = ({ dataRange, scale }, ref) => {
     const scalingMap = {
         DAY: <DayScaleLayer />,
         WEEK: <WeekScaleLayer />,
         MONTH: <MonthScaleLayer />,
+        YEAR: <YearScaleLayer />,
     };
     return (
         <Stage width={window.innerWidth} height={CELL_HEIGHT + HEADER_TOP_HEIGHT} ref={ref}>
