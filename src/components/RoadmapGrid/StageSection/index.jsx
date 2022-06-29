@@ -45,12 +45,8 @@ export const StageSection = ({
                         <TaskItemLine
                             scale={scale}
                             key={task.id}
-                            select={select}
                             task={task}
                             line={currentLine + prevItemsCount + taskIdx + 1}
-                            isSelected={selectedId === task.id}
-                            // onDragEnd={onGridStageDragEnd}
-                            onDeselect={onDeselect}
                         />
                     );
                 })}

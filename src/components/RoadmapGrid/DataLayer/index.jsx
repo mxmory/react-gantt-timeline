@@ -134,15 +134,8 @@ export const DataLayer = ({ scale, data, setData }) => {
                                     <TaskItemLine
                                         scale={scale}
                                         key={task.id}
-                                        select={selectShape}
-                                        id={id}
                                         task={task}
                                         line={currentLine + taskIdx + 1}
-                                        isSelected={selectedId === id}
-                                        length={length}
-                                        start_at={start_at}
-                                        // onDragEnd={onGridStageDragEnd}
-                                        onDeselect={onDeselect}
                                     />
                                 );
                             })}
