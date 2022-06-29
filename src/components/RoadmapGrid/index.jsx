@@ -109,7 +109,6 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, setBounds, onCanvasDrag,
                             y: 0,
                         };
                     }}
-                    onDragEnd={setBounds}
                     onDragMove={onCanvasDrag}
                     onWheel={onWheel}
                 >
