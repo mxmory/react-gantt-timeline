@@ -98,11 +98,10 @@ export function getDataOnStageDelete(stages, stageId) {
     });
 }
 
-export const getPrevItems = (stagesArr) => {
-    const resArr = stagesArr.reduce((acc, { stages = [], tasks = [] }) => {
-        const all = [...tasks, ...stages];
-        const inner = getPrevItems(stages);
-
+export const getPrevVisibleItems = (stagesArr, visibleStages) => {
+    const resArr = stagesArr.reduce((acc, { id, stages = [], tasks = [] }) => {
+        const all = visibleStages[id] ? [...tasks, ...stages] : [];
+        const inner = visibleStages[id] ? getPrevVisibleItems(stages, visibleStages) : [];
         return [...acc, ...all, ...inner];
     }, []);
     return resArr;

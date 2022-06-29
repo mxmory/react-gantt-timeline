@@ -16,7 +16,17 @@ export const Sider = ({ data, setData, toggleStageCollapse, visibleStages, sider
         <div className={cn(styles.list, { [styles.open]: siderExpanded })}>
             <div>
                 {data.map((stage, index) => {
-                    return <ListStageItem key={stage.id} stage={stage} index={index} data={data} setData={setData} />;
+                    return (
+                        <ListStageItem
+                            key={stage.id}
+                            stage={stage}
+                            index={index}
+                            data={data}
+                            setData={setData}
+                            visibleStages={visibleStages}
+                            toggleStageCollapse={toggleStageCollapse}
+                        />
+                    );
                 })}
             </div>
         </div>

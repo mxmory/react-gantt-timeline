@@ -111,7 +111,6 @@ export const ACTUAL_DATA = {
                                     name: 'Test stage',
                                     start_at: '2022-06-10',
                                     deadline: '2022-06-21',
-
                                     tasks: [
                                         {
                                             id: 'task_0000_1',

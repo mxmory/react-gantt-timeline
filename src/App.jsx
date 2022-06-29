@@ -5,8 +5,13 @@ import { useRef } from 'react';
 import Head from './components/Head';
 import RoadmapGrid from './components/RoadmapGrid';
 import { ACTUAL_DATA, SCALING_VALUES, SCALES } from './constants';
+import { flatInnerStages } from './utils/funcs';
 
-const reduceStagesToShow = (data) => data.reduce((acc, stage) => ({ ...acc, [stage.id]: true }), {});
+const reduceStagesToShow = (data) =>
+    flatInnerStages(data).reduce(
+        (acc, stage) => ({ ...acc, [stage.id]: true, ...(stage.stages && reduceStagesToShow(stage.stages)) }),
+        {}
+    );
 
 const App = () => {
     const [data, setData] = useState(ACTUAL_DATA.stages);
@@ -90,6 +95,7 @@ const App = () => {
                     visibleStages={visibleStages}
                 />
                 <RoadmapGrid
+                    visibleStages={visibleStages}
                     scale={SCALES[scale]}
                     ref={mainGridRef}
                     data={data}

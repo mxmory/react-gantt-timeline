@@ -1,10 +1,11 @@
 import moment from 'moment';
 import React from 'react';
-import { getPrevItems, getScaledCellWidth, getStageX } from '../../../utils/funcs';
+import { getScaledCellWidth, getStageX, getPrevVisibleItems } from '../../../utils/funcs';
 import { StageItemLine } from '../StageItemLine/index';
 import { TaskItemLine } from '../TaskItemLine';
 
 export const StageSection = ({
+    visibleStages,
     data,
     setData,
     scale,
@@ -19,7 +20,7 @@ export const StageSection = ({
 }) => {
     const { tasks, start_at, stages, deadline, type } = stage;
     const prevStages = [...allStages.slice(0, index)];
-    const prevItemsCount = getPrevItems(prevStages).length;
+    const prevItemsCount = getPrevVisibleItems(prevStages, visibleStages).length;
     const scaledCellWidth = getScaledCellWidth(scale);
     const start = moment(start_at);
     const x = getStageX(start, scale);
@@ -44,7 +45,8 @@ export const StageSection = ({
                 onDeselect={onDeselect}
             />
 
-            {tasks &&
+            {visibleStages[stage.id] &&
+                tasks &&
                 tasks.map((task, taskIdx) => {
                     return (
                         <TaskItemLine
@@ -52,14 +54,18 @@ export const StageSection = ({
                             key={task.id}
                             task={task}
                             line={currentLine + prevItemsCount + taskIdx + 1}
+                            data={data}
+                            setData={setData}
                         />
                     );
                 })}
 
-            {stages &&
+            {visibleStages[stage.id] &&
+                stages &&
                 stages.map((s, idx) => {
                     return (
                         <StageSection
+                            visibleStages={visibleStages}
                             scale={scale}
                             data={data}
                             setData={setData}

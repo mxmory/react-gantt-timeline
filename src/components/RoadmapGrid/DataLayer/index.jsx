@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
 import { SCALING_VALUES, APPROX_DAYS_SCALE_COUNT } from '../../../constants';
-import { getPrevItems, getParentStageProps, increaseColorBrightness } from '../../../utils/funcs';
+import { getParentStageProps, increaseColorBrightness, getPrevVisibleItems } from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
 import { StageSection } from '../StageSection';
 
-export const DataLayer = ({ scale, data, setData }) => {
+export const DataLayer = ({ scale, data, setData, visibleStages }) => {
     const [selectedId, selectShape] = useState(null);
     const [isTransforming, setIsTransforming] = useState(false);
 
@@ -120,14 +120,15 @@ export const DataLayer = ({ scale, data, setData }) => {
             {data.map((stage, stageIdx) => {
                 const { stages, tasks, color } = stage;
                 const prevStages = [...data.slice(0, stageIdx)];
-
-                const currentLine = stageIdx + getPrevItems(prevStages).length;
+                const prevItemsCount = getPrevVisibleItems(prevStages, visibleStages).length;
+                const currentLine = prevItemsCount + stageIdx;
 
                 return (
                     <React.Fragment key={stage.id}>
                         <CoreStage scale={scale} stage={stage} line={currentLine} />
 
-                        {tasks &&
+                        {visibleStages[stage.id] &&
+                            tasks &&
                             tasks.map((task, taskIdx) => {
                                 return (
                                     <TaskItemLine
@@ -135,28 +136,32 @@ export const DataLayer = ({ scale, data, setData }) => {
                                         key={task.id}
                                         task={task}
                                         line={currentLine + taskIdx + 1}
+                                        data={data}
+                                        setData={setData}
                                     />
                                 );
                             })}
 
-                        {stages.map((el, idx) => {
-                            return (
-                                <StageSection
-                                    data={data}
-                                    setData={setData}
-                                    scale={scale}
-                                    select={selectShape}
-                                    onDeselect={onDeselect}
-                                    selectedId={selectedId}
-                                    key={el.id}
-                                    allStages={stages}
-                                    index={idx}
-                                    stage={el}
-                                    color={increaseColorBrightness(color, 40)}
-                                    currentLine={currentLine + (tasks?.length || 0) + idx + 1}
-                                />
-                            );
-                        })}
+                        {visibleStages[stage.id] &&
+                            stages.map((el, idx) => {
+                                return (
+                                    <StageSection
+                                        visibleStages={visibleStages}
+                                        data={data}
+                                        setData={setData}
+                                        scale={scale}
+                                        select={selectShape}
+                                        onDeselect={onDeselect}
+                                        selectedId={selectedId}
+                                        key={el.id}
+                                        allStages={stages}
+                                        index={idx}
+                                        stage={el}
+                                        color={increaseColorBrightness(color, 40)}
+                                        currentLine={currentLine + (tasks?.length || 0) + idx + 1}
+                                    />
+                                );
+                            })}
                     </React.Fragment>
                 );
             })}

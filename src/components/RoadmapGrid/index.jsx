@@ -8,7 +8,7 @@ import { getStage, getParentStageProps, flatInnerStages, getStageProps, getScale
 import moment from 'moment';
 import { STAGE_HEIGHT } from '../../constants/index';
 
-const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll }, ref) => {
+const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleStages }, ref) => {
     const crosshairLayerRef = useRef();
     const stageBoundsLayerRef = useRef();
     const dragRangeBoundsLayerRef = useRef();
@@ -193,7 +193,7 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll }, ref) =
                         <Text opacity={0} fontFamily="Montserrat" fontSize={10} />
                         <Text opacity={0} fontFamily="Montserrat" fontSize={10} />
                     </Layer>
-                    <DataLayer scale={scale} data={data} setData={setData} />
+                    <DataLayer scale={scale} data={data} setData={setData} visibleStages={visibleStages} />
                 </Stage>
             </div>
         </div>
