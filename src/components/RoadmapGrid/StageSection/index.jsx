@@ -5,6 +5,8 @@ import { StageItemLine } from '../StageItemLine/index';
 import { TaskItemLine } from '../TaskItemLine';
 
 export const StageSection = ({
+    data,
+    setData,
     scale,
     stage,
     allStages,
@@ -26,6 +28,9 @@ export const StageSection = ({
     return (
         <>
             <StageItemLine
+                scale={scale}
+                data={data}
+                setData={setData}
                 select={select}
                 id={stage.id}
                 tasks={tasks}
@@ -56,6 +61,8 @@ export const StageSection = ({
                     return (
                         <StageSection
                             scale={scale}
+                            data={data}
+                            setData={setData}
                             select={select}
                             color={color}
                             key={s.id}

@@ -111,15 +111,15 @@ export const getPrevItems = (stagesArr) => {
 export const getDimensionsInRange = (dataRange, scale) => {
     const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES[scale];
 
-    const { SCALE_VALUE, DIMENSION, SCALE_START_OF } = SCALE_MOMENT_DIMENSIONS[scale];
+    const { SCALE_VALUE, DIMENSION, HEAD_SCALE_START_OF } = SCALE_MOMENT_DIMENSIONS[scale];
 
     const today = moment();
 
     return range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH_SUB).map((n) => {
         const day = moment(today).add(n / CELL_WIDTH_SUB, DIMENSION);
 
-        const startDate = moment(day).startOf(SCALE_START_OF);
-        const endDate = moment(day).endOf(SCALE_START_OF);
+        const startDate = moment(day).startOf(HEAD_SCALE_START_OF);
+        const endDate = moment(day).endOf(HEAD_SCALE_START_OF);
 
         const xStart = moment(startDate).diff(moment(today).startOf(SCALE_VALUE), DIMENSION, false);
         const xEnd = moment(endDate).diff(moment(today).endOf(SCALE_VALUE), DIMENSION, false);

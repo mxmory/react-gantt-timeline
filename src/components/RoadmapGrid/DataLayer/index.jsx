@@ -129,7 +129,6 @@ export const DataLayer = ({ scale, data, setData }) => {
 
                         {tasks &&
                             tasks.map((task, taskIdx) => {
-                                const { id, length, start_at } = task;
                                 return (
                                     <TaskItemLine
                                         scale={scale}
@@ -143,6 +142,8 @@ export const DataLayer = ({ scale, data, setData }) => {
                         {stages.map((el, idx) => {
                             return (
                                 <StageSection
+                                    data={data}
+                                    setData={setData}
                                     scale={scale}
                                     select={selectShape}
                                     onDeselect={onDeselect}

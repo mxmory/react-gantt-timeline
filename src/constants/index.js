@@ -18,22 +18,22 @@ export const SCALE_MOMENT_DIMENSIONS = {
     DAY: {
         SCALE_VALUE: 'day',
         DIMENSION: 'days',
-        SCALE_START_OF: 'month',
+        HEAD_SCALE_START_OF: 'month',
     },
     WEEK: {
         SCALE_VALUE: 'day',
         DIMENSION: 'days',
-        SCALE_START_OF: 'month',
+        HEAD_SCALE_START_OF: 'month',
     },
     MONTH: {
         SCALE_VALUE: 'month',
         DIMENSION: 'months',
-        SCALE_START_OF: 'year',
+        HEAD_SCALE_START_OF: 'year',
     },
     YEAR: {
         SCALE_VALUE: 'year',
         DIMENSION: 'months',
-        SCALE_START_OF: 'year',
+        HEAD_SCALE_START_OF: 'year',
     },
 };
 
@@ -48,18 +48,22 @@ export const SCALING_VALUES = {
     DAY: {
         CELL_WIDTH: 36,
         CELL_WIDTH_SUB: 36,
+        DIMENSIONS: ['day', 'days'],
     },
     WEEK: {
         CELL_WIDTH: 105,
         CELL_WIDTH_SUB: 15,
+        DIMENSIONS: ['day', 'weeks'],
     },
     MONTH: {
         CELL_WIDTH: 80,
         CELL_WIDTH_SUB: 80,
+        DIMENSIONS: ['month', 'months'],
     },
     YEAR: {
         CELL_WIDTH: 80,
         CELL_WIDTH_SUB: 80,
+        DIMENSIONS: ['year', 'years'],
     },
 };
 
@@ -156,8 +160,8 @@ export const ACTUAL_DATA = {
                     id: '10',
                     type: 'stage',
                     name: 'Stage 10',
-                    start_at: '2022-04-30',
-                    deadline: '2022-07-31',
+                    start_at: '2022-06-21',
+                    deadline: '2022-07-3',
                 },
             ],
         },

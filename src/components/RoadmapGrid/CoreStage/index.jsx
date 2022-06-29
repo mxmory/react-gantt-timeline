@@ -15,6 +15,7 @@ export const CoreStage = ({ scale, stage, line }) => {
     return (
         <Group
             id={id}
+            type="STAGE_LINE"
             x={x * scaledCellWidth}
             y={y + CELL_HEIGHT / 2 - STAGE_HEIGHT / 2}
             width={width * scaledCellWidth}
