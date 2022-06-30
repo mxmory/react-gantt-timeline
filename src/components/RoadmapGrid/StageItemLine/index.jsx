@@ -48,25 +48,21 @@ export const StageItemLine = ({
         } = e.target;
 
         const stage = getStage(data, id);
-        const { x: stageX } = getStageProps(stage, scale);
+        const editedStartBound = moment()
+            .add(Math.round(x / CELL_WIDTH), dimension)
+            .startOf(value);
 
-        if (stageX !== Math.round(x / CELL_WIDTH)) {
-            const editedStartBound = moment()
-                .add(Math.round(x / CELL_WIDTH), dimension)
-                .startOf(value);
-            const diff = moment(editedStartBound.startOf('day')).diff(stage.start_at, 'days', false);
-            const editedEndBound = moment(stage.deadline).add(diff, 'days');
+        const diff = moment(editedStartBound.startOf('day')).diff(stage.start_at, 'days', false);
+        const editedEndBound = moment(stage.deadline).add(diff, 'days');
+        e.target.x(Math.round(x / CELL_WIDTH) * CELL_WIDTH);
 
-            const editedStage = {
-                ...stage,
-                start_at: editedStartBound.format('YYYY-MM-DD'),
-                deadline: editedEndBound.format('YYYY-MM-DD'),
-            };
-            const newData = getDataOnStageEdit(data, editedStage);
-            setData(newData);
-        } else {
-            e.target.x(Math.round(x / CELL_WIDTH) * CELL_WIDTH);
-        }
+        const editedStage = {
+            ...stage,
+            start_at: editedStartBound.format('YYYY-MM-DD'),
+            deadline: editedEndBound.format('YYYY-MM-DD'),
+        };
+        const newData = getDataOnStageEdit(data, editedStage);
+        setData(newData);
     };
 
     return (
