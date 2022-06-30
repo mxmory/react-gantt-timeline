@@ -19,7 +19,6 @@ export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTra
             attrs: { x, id },
         } = e.target;
 
-        console.log(x, task);
         const { x: stageX } = getStageProps(task, scale);
 
         if (stageX !== Math.round(x / CELL_WIDTH)) {
@@ -28,8 +27,6 @@ export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTra
                 .startOf(value);
             const diff = moment(editedStartBound.startOf('day')).diff(task.start_at, 'days', false);
             const editedEndBound = moment(task.deadline).add(diff, 'days');
-
-            console.log(diff);
 
             const editedStage = {
                 ...task,

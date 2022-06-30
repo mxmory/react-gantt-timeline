@@ -4,8 +4,9 @@ import { Sider } from './components/Sider/index';
 import { useRef } from 'react';
 import Head from './components/Head';
 import RoadmapGrid from './components/RoadmapGrid';
-import { ACTUAL_DATA, SCALING_VALUES, SCALES } from './constants';
+import { ACTUAL_DATA, SCALING_VALUES, SCALES, HEADER_TOP_HEIGHT } from './constants';
 import { flatInnerStages } from './utils/funcs';
+import { CELL_HEIGHT, STAGE_HEIGHT } from './constants/index';
 
 const reduceStagesToShow = (data) =>
     flatInnerStages(data).reduce(
@@ -19,11 +20,27 @@ const App = () => {
     const [dataRange, setDataRange] = useState([]);
     const [siderExpanded, setSiderExpanded] = useState(false);
     const [scale, setScale] = useState(0); // day by default
+    const [offsetItems, setOffsetItems] = useState([]);
 
     const { CELL_WIDTH } = SCALING_VALUES[SCALES[scale]];
 
     const headDatesScaleRef = useRef();
     const mainGridRef = useRef();
+
+    const dataLayer = mainGridRef.current?.getChildren((el) => el.getId('DATA_LAYER'))[0];
+
+    useEffect(() => {
+        setVisibleStages(reduceStagesToShow(data));
+    }, []);
+
+    useEffect(() => {
+        mainGridRef.current?.draw();
+        setTimeout(() => {
+            const items =
+                dataLayer?.getChildren((node) => node.getType('Group') && node?.getAttrs().type === 'STAGE_LINE') || [];
+            setOffsetItems(items);
+        }, 100); // Need to wait layer to redraw itself. Maybe todo.
+    }, [visibleStages]);
 
     const toggleStageCollapse = (stageId) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
@@ -94,17 +111,48 @@ const App = () => {
                     toggleStageCollapse={toggleStageCollapse}
                     visibleStages={visibleStages}
                 />
-                <RoadmapGrid
-                    visibleStages={visibleStages}
-                    scale={SCALES[scale]}
-                    ref={mainGridRef}
-                    data={data}
-                    setData={setData}
-                    dataRange={dataRange}
-                    setBounds={setBounds}
-                    onCanvasDrag={onCanvasDrag}
-                    onCanvasScroll={onCanvasScroll}
-                />
+                <div className={styles.innerFlex}>
+                    <RoadmapGrid
+                        visibleStages={visibleStages}
+                        scale={SCALES[scale]}
+                        ref={mainGridRef}
+                        data={data}
+                        setData={setData}
+                        dataRange={dataRange}
+                        setBounds={setBounds}
+                        onCanvasDrag={onCanvasDrag}
+                        onCanvasScroll={onCanvasScroll}
+                    />
+                    <div className={styles.backgroundStagesLayout}>
+                        {offsetItems.map((el) => {
+                            const [rect] = el.getChildren((rect) => rect.getType('STAGE_LINE'));
+                            const color = rect?.getAttr('fill');
+                            const isVisible = el.isClientRectOnScreen();
+                            const xStageStart = -mainGridRef.current.x();
+                            const xRectEnd = el.width() + el.x();
+                            const position = xStageStart - xRectEnd > 0 ? '-10px' : 'calc(100% - 10px)';
+
+                            return (
+                                <div
+                                    key={el.attrs.id}
+                                    style={{
+                                        position: 'absolute',
+                                        width: 20,
+                                        height: STAGE_HEIGHT,
+                                        backgroundColor: color,
+                                        left: !isVisible ? position : '-100%',
+                                        top: el.y(),
+                                        opacity: !isVisible ? 1 : 0,
+                                        borderRadius: 5,
+                                        zIndex: -1,
+                                        transition: 'opacity 0.5s ease',
+                                    }}
+                                ></div>
+                            );
+                        })}
+                    </div>
+                </div>
+
                 <div className={styles.scalePanel}>
                     <input
                         type="range"

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from './RoadmapGrid.module.scss';
 import { Stage, Layer, Rect, Line, Text, Group } from 'react-konva';
 import { CANVAS_HEIGHT, CELL_HEIGHT, SCALING_VALUES } from '../../constants';
@@ -12,6 +12,7 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
     const crosshairLayerRef = useRef();
     const stageBoundsLayerRef = useRef();
     const dragRangeBoundsLayerRef = useRef();
+    const outerContainerRef = useRef();
 
     const { CELL_WIDTH } = SCALING_VALUES[scale];
     const scaledCellWidth = getScaledCellWidth(scale);
@@ -160,15 +161,19 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
         onMouseLeave();
     };
 
+    useEffect(() => {
+        ref.current.width(outerContainerRef.current.clientWidth);
+    }, []);
+
     return (
-        <div className={styles.grid}>
+        <div ref={outerContainerRef} className={styles.grid}>
             <div className={styles.innerGridContainer}>
                 <Stage
                     onDragMove={onDragMove}
                     onDragEnd={onDragEnd}
                     onMouseMove={onMouseMove}
                     onMouseLeave={onMouseLeave}
-                    width={window.innerWidth}
+                    width={outerContainerRef.current?.clientWidth}
                     height={CANVAS_HEIGHT}
                     ref={ref}
                     onWheel={onWheel}

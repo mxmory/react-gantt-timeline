@@ -116,7 +116,7 @@ export const DataLayer = ({ scale, data, setData, visibleStages }) => {
     };
 
     return (
-        <Layer>
+        <Layer id="DATA_LAYER">
             {data.map((stage, stageIdx) => {
                 const { stages, tasks, color } = stage;
                 const prevStages = [...data.slice(0, stageIdx)];

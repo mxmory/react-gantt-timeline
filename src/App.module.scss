@@ -14,7 +14,23 @@
         overflow-x: hidden;
         // border-top: 1px solid #ddd;
         // height: 100vh;
-        overflow: auto;
+        overflow-y: auto;
+
+        .innerFlex {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+
+            .backgroundStagesLayout {
+                width: 100%;
+                position: absolute;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: 0;
+                pointer-events: none;
+            }
+        }
 
         ::-webkit-scrollbar {
             display: none;
