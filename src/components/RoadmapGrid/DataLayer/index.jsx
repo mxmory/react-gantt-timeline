@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
-import { SCALING_VALUES, APPROX_DAYS_SCALE_COUNT } from '../../../constants';
+import { SCALING_VALUES } from '../../../constants';
 import { getParentStageProps, increaseColorBrightness, getPrevVisibleItems } from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
@@ -10,7 +10,7 @@ export const DataLayer = ({ scale, data, setData, visibleStages }) => {
     const [selectedId, selectShape] = useState(null);
     const [isTransforming, setIsTransforming] = useState(false);
 
-    const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES[scale];
+    const { CELL_WIDTH } = SCALING_VALUES[scale];
 
     //#region funcs
     const onGridTaskDragEnd = (e) => {

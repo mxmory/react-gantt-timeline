@@ -9,7 +9,7 @@ export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTra
     const shapeRef = React.useRef();
     const {
         CELL_WIDTH,
-        DIMENSIONS: [value, dimension],
+        DIMENSIONS: { VALUE, DIMENSION },
     } = SCALING_VALUES[scale];
 
     // const progressRef = React.useRef();
@@ -23,8 +23,8 @@ export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTra
 
         if (stageX !== Math.round(x / CELL_WIDTH)) {
             const editedStartBound = moment()
-                .add(Math.round(x / CELL_WIDTH), dimension)
-                .startOf(value);
+                .add(Math.round(x / CELL_WIDTH), DIMENSION)
+                .startOf(VALUE);
             const diff = moment(editedStartBound.startOf('day')).diff(task.start_at, 'days', false);
             const editedEndBound = moment(task.deadline).add(diff, 'days');
 

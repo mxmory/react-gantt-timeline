@@ -2,9 +2,16 @@ import React, { useState } from 'react';
 import { getDataOnStageEdit, getDataOnStageAdd, getDataOnStageDelete } from '../../../utils/funcs';
 import styles from './StageContextMenu.module.scss';
 import Modal from 'react-modal';
+import moment from 'moment';
+import { SCALING_VALUES } from '../../../constants';
 
-export const StageContextMenu = ({ stage, data, setData, setMenuVisible }) => {
+export const StageContextMenu = ({ scale, stage, data, setData, setMenuVisible, moveToDate }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
+
+    const {
+        DIMENSIONS: { DIMENSION },
+    } = SCALING_VALUES[scale];
+
     const editStage = () => {
         const newStages = getDataOnStageEdit(data, { ...stage, name: 'EDITED NAME' });
         setData(newStages);
@@ -31,6 +38,16 @@ export const StageContextMenu = ({ stage, data, setData, setMenuVisible }) => {
     const deleteStage = () => {
         const newStages = getDataOnStageDelete(data, stage.id);
         setData(newStages);
+        setMenuVisible(false);
+    };
+
+    const moveToStart = () => {
+        moveToDate(stage.start_at, scale);
+        setMenuVisible(false);
+    };
+
+    const moveToEnd = () => {
+        moveToDate(moment(stage.deadline).subtract(1, DIMENSION), scale);
         setMenuVisible(false);
     };
 
@@ -86,6 +103,14 @@ export const StageContextMenu = ({ stage, data, setData, setMenuVisible }) => {
             <hr />
             <div className={styles.listItem} onClick={deleteStage}>
                 - Delete stage
+            </div>
+            <hr />
+            <div className={styles.listItem} onClick={moveToStart}>
+                {'<-'} go to start
+            </div>
+            <hr />
+            <div className={styles.listItem} onClick={moveToEnd}>
+                {'->'} go to end
             </div>
         </div>
     );

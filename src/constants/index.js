@@ -48,22 +48,22 @@ export const SCALING_VALUES = {
     DAY: {
         CELL_WIDTH: 36,
         CELL_WIDTH_SUB: 36,
-        DIMENSIONS: ['day', 'days'],
+        DIMENSIONS: { VALUE: 'day', DIMENSION: 'days' },
     },
     WEEK: {
         CELL_WIDTH: 105,
         CELL_WIDTH_SUB: 15,
-        DIMENSIONS: ['day', 'weeks'],
+        DIMENSIONS: { VALUE: 'day', DIMENSION: 'weeks' },
     },
     MONTH: {
         CELL_WIDTH: 80,
         CELL_WIDTH_SUB: 80,
-        DIMENSIONS: ['month', 'months'],
+        DIMENSIONS: { VALUE: 'month', DIMENSION: 'months' },
     },
     YEAR: {
         CELL_WIDTH: 80,
         CELL_WIDTH_SUB: 80,
-        DIMENSIONS: ['year', 'years'],
+        DIMENSIONS: { VALUE: 'year', DIMENSION: 'years' },
     },
 };
 
@@ -102,8 +102,8 @@ export const ACTUAL_DATA = {
                             id: '000',
                             type: 'stage',
                             name: 'Test stage',
-                            start_at: '2022-06-08',
-                            deadline: '2022-06-12',
+                            start_at: '2022-07-01',
+                            deadline: '2022-07-12',
                             stages: [
                                 {
                                     id: '0000',
@@ -159,8 +159,8 @@ export const ACTUAL_DATA = {
                     id: '10',
                     type: 'stage',
                     name: 'Stage 10',
-                    start_at: '2022-06-21',
-                    deadline: '2022-07-3',
+                    start_at: '2022-07-21',
+                    deadline: '2025-07-3',
                 },
             ],
         },

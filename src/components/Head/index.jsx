@@ -4,7 +4,7 @@ import styles from './Head.module.scss';
 import { LocationIcon, ArrowDropIcon } from '../Icons';
 import { HeadDatesScale } from './HeadDatesScale';
 
-export const Head = ({ scale, siderExpanded, setSiderExpanded, dataRange, moveToCurrentDate }, ref) => {
+export const Head = ({ scale, siderExpanded, setSiderExpanded, dataRange, moveToDate }, ref) => {
     const toggleSiderExpand = () => {
         setSiderExpanded((prev) => !prev);
     };
@@ -13,11 +13,7 @@ export const Head = ({ scale, siderExpanded, setSiderExpanded, dataRange, moveTo
         <div className={styles.head}>
             <div className={cn(styles.headSider, { [styles.open]: siderExpanded })}>
                 <div className={styles.headerSiderTop}>
-                    <div
-                        className={styles.headerSiderFunc}
-                        onClick={moveToCurrentDate}
-                        title="Click to move to current date"
-                    >
+                    <div className={styles.headerSiderFunc} onClick={moveToDate} title="Click to move to current date">
                         <LocationIcon />
                     </div>
                 </div>

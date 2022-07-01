@@ -31,7 +31,7 @@ export const StageItemLine = ({
     const x = start_at;
     const {
         CELL_WIDTH,
-        DIMENSIONS: [value, dimension],
+        DIMENSIONS: { VALUE, DIMENSION },
     } = SCALING_VALUES[scale];
 
     const showStage = (e) => {
@@ -49,8 +49,8 @@ export const StageItemLine = ({
 
         const stage = getStage(data, id);
         const editedStartBound = moment()
-            .add(Math.round(x / CELL_WIDTH), dimension)
-            .startOf(value);
+            .add(Math.round(x / CELL_WIDTH), DIMENSION)
+            .startOf(VALUE);
 
         const diff = moment(editedStartBound.startOf('day')).diff(stage.start_at, 'days', false);
         const editedEndBound = moment(stage.deadline).add(diff, 'days');

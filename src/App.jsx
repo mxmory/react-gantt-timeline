@@ -5,8 +5,9 @@ import { useRef } from 'react';
 import Head from './components/Head';
 import RoadmapGrid from './components/RoadmapGrid';
 import { ACTUAL_DATA, SCALING_VALUES, SCALES, HEADER_TOP_HEIGHT } from './constants';
-import { flatInnerStages } from './utils/funcs';
+import { flatInnerStages, getScaledCellWidth } from './utils/funcs';
 import { CELL_HEIGHT, STAGE_HEIGHT } from './constants/index';
+import moment from 'moment';
 
 const reduceStagesToShow = (data) =>
     flatInnerStages(data).reduce(
@@ -40,7 +41,7 @@ const App = () => {
                 dataLayer?.getChildren((node) => node.getType('Group') && node?.getAttrs().type === 'STAGE_LINE') || [];
             setOffsetItems(items);
         }, 100); // Need to wait layer to redraw itself. Maybe todo.
-    }, [visibleStages]);
+    }, [visibleStages, data]);
 
     const toggleStageCollapse = (stageId) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
@@ -60,7 +61,7 @@ const App = () => {
         setDataRange([startIndex, endIndex]);
         setBounds();
         stage.batchDraw();
-        moveToCurrentDate();
+        moveToDate(moment());
     }, [scale]);
 
     const onCanvasDrag = (e) => {
@@ -78,11 +79,17 @@ const App = () => {
         }
     };
 
-    const moveToCurrentDate = () => {
+    const moveToDate = (date = moment(), scale = 'DAY') => {
+        const {
+            DIMENSIONS: { VALUE },
+        } = SCALING_VALUES[scale];
+        const scaledCellWidth = getScaledCellWidth(scale);
+        const isAfterToday = moment(date).isSameOrAfter(moment());
+        const diff = moment().startOf(VALUE).diff(moment(date), 'days', !isAfterToday);
         const stage = mainGridRef.current;
         const timelineStage = headDatesScaleRef.current;
-        stage.x(0);
-        timelineStage.x(0);
+        stage.x(Math.round(diff) * scaledCellWidth);
+        timelineStage.x(Math.round(diff) * scaledCellWidth);
         setBounds();
     };
 
@@ -101,10 +108,12 @@ const App = () => {
                 siderExpanded={siderExpanded}
                 setSiderExpanded={setSiderExpanded}
                 dataRange={dataRange}
-                moveToCurrentDate={moveToCurrentDate}
+                moveToDate={moveToDate}
             />
             <div className={styles.flex}>
                 <Sider
+                    scale={SCALES[scale]}
+                    moveToDate={moveToDate}
                     siderExpanded={siderExpanded}
                     data={data}
                     setData={setData}

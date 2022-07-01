@@ -3,7 +3,7 @@ import styles from './Sider.module.scss';
 import cn from 'classnames';
 import { ListStageItem } from './ListStageItem';
 
-export const Sider = ({ data, setData, toggleStageCollapse, visibleStages, siderExpanded }) => {
+export const Sider = ({ moveToDate, data, setData, toggleStageCollapse, visibleStages, siderExpanded, scale }) => {
     const reorder = (list, startIndex, endIndex) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
@@ -18,6 +18,8 @@ export const Sider = ({ data, setData, toggleStageCollapse, visibleStages, sider
                 {data.map((stage, index) => {
                     return (
                         <ListStageItem
+                            scale={scale}
+                            moveToDate={moveToDate}
                             key={stage.id}
                             stage={stage}
                             index={index}
