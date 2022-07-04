@@ -1,54 +1,74 @@
 import moment from 'moment';
 import React from 'react';
-import { getPrevItems } from '../../../utils/funcs';
+import { getScaledCellWidth, getStageX, getPrevVisibleItems } from '../../../utils/funcs';
 import { StageItemLine } from '../StageItemLine/index';
 import { TaskItemLine } from '../TaskItemLine';
 
-export const StageSection = ({ stage, allStages, index, currentLine, color, select, onDeselect, selectedId }) => {
+export const StageSection = ({
+    visibleStages,
+    data,
+    setData,
+    scale,
+    stage,
+    allStages,
+    index,
+    currentLine,
+    color,
+    select,
+    onDeselect,
+    selectedId,
+}) => {
     const { tasks, start_at, stages, deadline, type } = stage;
     const prevStages = [...allStages.slice(0, index)];
-    const prevItemsCount = getPrevItems(prevStages).length;
-    const today = moment().startOf('day');
-
+    const prevItemsCount = getPrevVisibleItems(prevStages, visibleStages).length;
+    const scaledCellWidth = getScaledCellWidth(scale);
     const start = moment(start_at);
-    const x = start.diff(today, 'days', false);
+    const x = getStageX(start, scale);
     const width = moment(deadline).diff(start, 'days', false);
 
     return (
         <>
             <StageItemLine
+                scale={scale}
+                data={data}
+                setData={setData}
                 select={select}
                 id={stage.id}
                 tasks={tasks}
                 line={currentLine + prevItemsCount}
                 isSelected={selectedId === stage.id}
-                length={width}
-                start_at={x}
+                length={width * scaledCellWidth}
+                start_at={x * scaledCellWidth}
                 type={type}
                 color={color}
                 // onDragEnd={onGridStageDragEnd}
                 onDeselect={onDeselect}
             />
 
-            {tasks &&
+            {visibleStages[stage.id] &&
+                tasks &&
                 tasks.map((task, taskIdx) => {
                     return (
                         <TaskItemLine
+                            scale={scale}
                             key={task.id}
-                            select={select}
                             task={task}
                             line={currentLine + prevItemsCount + taskIdx + 1}
-                            isSelected={selectedId === task.id}
-                            // onDragEnd={onGridStageDragEnd}
-                            onDeselect={onDeselect}
+                            data={data}
+                            setData={setData}
                         />
                     );
                 })}
 
-            {stages &&
+            {visibleStages[stage.id] &&
+                stages &&
                 stages.map((s, idx) => {
                     return (
                         <StageSection
+                            visibleStages={visibleStages}
+                            scale={scale}
+                            data={data}
+                            setData={setData}
                             select={select}
                             color={color}
                             key={s.id}

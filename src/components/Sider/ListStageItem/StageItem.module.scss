@@ -1,7 +1,44 @@
 .stageItem {
+    position: relative;
+    box-sizing: border-box;
+
     &.coreStage {
         & > .name {
             font-weight: bold;
+        }
+    }
+
+    .dropZone {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+    }
+
+    .nestDropZone {
+        position: absolute;
+        right: 44px;
+        padding: 2px;
+        top: 4px;
+        width: 36px;
+        height: 22px;
+        background: #fff;
+        // z-index: 2;
+        opacity: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        border: 1px solid transparent;
+
+        &:hover {
+            background-color: red;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
     }
 
@@ -15,6 +52,37 @@
         padding-left: 20px;
         position: relative;
         background-color: #f5f5f6;
+
+        .nameWrap {
+            display: flex;
+            align-items: center;
+
+            .toggleStageCollapse {
+                display: flex;
+                align-items: center;
+                margin-right: 10px;
+                cursor: pointer;
+                border-radius: 5px;
+                width: 18px;
+                height: 18px;
+
+                &.collapsed {
+                    svg {
+                        transform: rotate(-90deg);
+                    }
+                }
+
+                svg {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                &:hover {
+                    background-color: #aeb5bb;
+                    color: #fff;
+                }
+            }
+        }
 
         // duplicates
         .funcs {

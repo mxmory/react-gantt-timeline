@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
-import { CELL_WIDTH } from '../../../constants';
-import { getPrevItems, getParentStageProps, increaseColorBrightness } from '../../../utils/funcs';
+import { SCALING_VALUES } from '../../../constants';
+import { getParentStageProps, increaseColorBrightness, getPrevVisibleItems } from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
 import { StageSection } from '../StageSection';
 
-export const DataLayer = ({ data, setData }) => {
+export const DataLayer = ({ scale, data, setData, visibleStages }) => {
     const [selectedId, selectShape] = useState(null);
     const [isTransforming, setIsTransforming] = useState(false);
+
+    const { CELL_WIDTH } = SCALING_VALUES[scale];
 
     //#region funcs
     const onGridTaskDragEnd = (e) => {
@@ -43,20 +45,22 @@ export const DataLayer = ({ data, setData }) => {
                 // animating lines
 
                 associatedStageNode.to({
-                    width: getParentStageProps(newTasks).width * CELL_WIDTH,
+                    width: getParentStageProps(newTasks, scale).width * CELL_WIDTH,
                     duration: 0.1,
                 });
 
                 percentStageNode.to({
                     width:
-                        (getParentStageProps(newTasks).width * getParentStageProps(newTasks).percent * CELL_WIDTH) /
+                        (getParentStageProps(newTasks, scale).width *
+                            getParentStageProps(newTasks).percent *
+                            CELL_WIDTH) /
                         100,
                     x: 0,
                     duration: 0.2,
                 });
 
                 stageGroup.to({
-                    x: getParentStageProps(newTasks).x,
+                    x: getParentStageProps(newTasks, scale).x,
                     duration: 0.1,
                 });
 
@@ -112,51 +116,52 @@ export const DataLayer = ({ data, setData }) => {
     };
 
     return (
-        <Layer>
+        <Layer id="DATA_LAYER">
             {data.map((stage, stageIdx) => {
                 const { stages, tasks, color } = stage;
                 const prevStages = [...data.slice(0, stageIdx)];
-
-                const currentLine = stageIdx + getPrevItems(prevStages).length;
+                const prevItemsCount = getPrevVisibleItems(prevStages, visibleStages).length;
+                const currentLine = prevItemsCount + stageIdx;
 
                 return (
                     <React.Fragment key={stage.id}>
-                        <CoreStage stage={stage} line={currentLine} />
+                        <CoreStage scale={scale} stage={stage} line={currentLine} />
 
-                        {tasks &&
+                        {visibleStages[stage.id] &&
+                            tasks &&
                             tasks.map((task, taskIdx) => {
-                                const { id, length, start_at } = task;
                                 return (
                                     <TaskItemLine
+                                        scale={scale}
                                         key={task.id}
-                                        select={selectShape}
-                                        id={id}
                                         task={task}
                                         line={currentLine + taskIdx + 1}
-                                        isSelected={selectedId === id}
-                                        length={length}
-                                        start_at={start_at}
-                                        // onDragEnd={onGridStageDragEnd}
-                                        onDeselect={onDeselect}
+                                        data={data}
+                                        setData={setData}
                                     />
                                 );
                             })}
 
-                        {stages.map((el, idx) => {
-                            return (
-                                <StageSection
-                                    select={selectShape}
-                                    onDeselect={onDeselect}
-                                    selectedId={selectedId}
-                                    key={el.id}
-                                    allStages={stages}
-                                    index={idx}
-                                    stage={el}
-                                    color={increaseColorBrightness(color, 40)}
-                                    currentLine={currentLine + (tasks?.length || 0) + idx + 1}
-                                />
-                            );
-                        })}
+                        {visibleStages[stage.id] &&
+                            stages.map((el, idx) => {
+                                return (
+                                    <StageSection
+                                        visibleStages={visibleStages}
+                                        data={data}
+                                        setData={setData}
+                                        scale={scale}
+                                        select={selectShape}
+                                        onDeselect={onDeselect}
+                                        selectedId={selectedId}
+                                        key={el.id}
+                                        allStages={stages}
+                                        index={idx}
+                                        stage={el}
+                                        color={increaseColorBrightness(color, 40)}
+                                        currentLine={currentLine + (tasks?.length || 0) + idx + 1}
+                                    />
+                                );
+                            })}
                     </React.Fragment>
                 );
             })}
