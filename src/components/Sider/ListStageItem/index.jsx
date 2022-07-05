@@ -4,7 +4,15 @@ import cn from 'classnames';
 import { ListTaskItem } from '../ListTaskItem';
 import { ArrowDropIcon, ContextMenuToggleHorizontal, EnterIcon } from '../../Icons';
 import { StageContextMenu } from '../../Common/StageContextMenu';
-import { getDataOnStageAdd, getStage, getDataOnStageDelete } from '../../../utils/funcs';
+import {
+    getDataOnStageAdd,
+    getStage,
+    getDataOnStageDelete,
+    flatInnerStages,
+    getDirectStageParent,
+    getDataOnStageEdit,
+} from '../../../utils/funcs';
+import { MilestoneIcon } from '../../Icons/index';
 
 export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCollapse, visibleStages, scale }) => {
     const [menuVisible, setMenuVisible] = useState(false);
@@ -31,22 +39,59 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
     const onDrop = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const targetId = e.currentTarget.dataset.dropzoneId;
-        const movingStageId = e.dataTransfer.getData('dragging-stage-id');
-        console.log('moving', movingStageId, 'up to', targetId);
-        e.currentTarget.style.borderTop = 'none';
 
+        e.currentTarget.style.borderTop = 'none';
         if (nestAreaRef.current) {
             nestAreaRef.current.style.opacity = 0;
+            onNestedDragLeave();
+        }
+
+        const targetId = e.currentTarget.dataset.dropzoneId;
+        const movingStageId = e.dataTransfer.getData('dragging-stage-id');
+        const movingStage = getStage(data, movingStageId);
+        const parentStage = getDirectStageParent(data, targetId);
+
+        if (getStage(movingStage.stages, targetId)) {
+            console.log('Can not apply parent stage to its child');
+            return;
+        }
+
+        if (!parentStage) {
+            console.log('Can not place stage here');
+            return;
+        }
+
+        if (movingStageId !== targetId) {
+            const stagesWithoutChanged = getDataOnStageDelete(data, movingStageId);
+            const newParentStage = getDirectStageParent(stagesWithoutChanged, targetId);
+            const targetStageIndex = parentStage.stages?.findIndex((s) => s.id === targetId);
+
+            const newParentStageStages = [
+                ...[...newParentStage.stages].slice(0, targetStageIndex),
+                movingStage,
+                ...[...newParentStage.stages].slice(targetStageIndex),
+            ];
+
+            const res = getDataOnStageEdit(getDataOnStageDelete(data, movingStageId), {
+                ...newParentStage,
+                stages: newParentStageStages,
+            });
+            setData(res);
         }
     };
 
     const onNestedDrop = (e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        e.currentTarget.style.borderTop = 'none';
+        if (nestAreaRef.current) {
+            nestAreaRef.current.style.opacity = 0;
+            onNestedDragLeave();
+        }
+
         const movingStageId = e.dataTransfer.getData('dragging-stage-id');
         const targetStageId = e.currentTarget.dataset.nestingId;
-        console.log(movingStageId, targetStageId);
         const movingStage = getStage(data, movingStageId);
         const targetStage = getStage(data, targetStageId);
 
@@ -57,7 +102,8 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
             console.log('Can not apply stage to the milestone');
             return;
         }
-        if (movingStage.stages?.find((el) => el.id === targetStageId)) {
+
+        if (getStage(movingStage.stages, targetStageId)) {
             console.log('Can not apply parent stage to its child');
             return;
         }
@@ -66,12 +112,6 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
         const newStagesWithoutMoved = getDataOnStageDelete(data, movingStageId);
         const newStages = getDataOnStageAdd(newStagesWithoutMoved, targetStageId, newMovedStage);
         setData(newStages);
-
-        e.currentTarget.style.borderTop = 'none';
-
-        if (nestAreaRef.current) {
-            nestAreaRef.current.style.opacity = 0;
-        }
     };
 
     const onDragOver = (e) => {
@@ -81,8 +121,14 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
 
     const onDragEnter = (e) => {
         e.preventDefault();
+        const targetId = e.currentTarget?.dataset.dropzoneId;
 
-        e.currentTarget.style.borderTop = '1px solid';
+        const targetItemParent = getDirectStageParent(data, targetId);
+
+        if (targetItemParent) {
+            e.currentTarget.style.borderTop = '1px dashed #999';
+        }
+
         if (nestAreaRef.current) {
             nestAreaRef.current.style.opacity = 1;
         }
@@ -102,13 +148,12 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
         }
     };
 
-    const onNestedDragEnter = (e) => {
-        // console.log(e.currentTarget);
+    const onNestedDragEnter = () => {
         nestAreaRef.current.style.backgroundColor = '#000';
         nestAreaRef.current.style.color = '#fff';
     };
 
-    const onNestedDragLeave = (e) => {
+    const onNestedDragLeave = () => {
         nestAreaRef.current.style.backgroundColor = '#fff';
         nestAreaRef.current.style.color = '#000';
     };
@@ -158,7 +203,12 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
                                 <ArrowDropIcon />
                             </div>
                         )}
-                    {stage.type === 'milestone' && '* '}
+
+                    {stage.type === 'milestone' && (
+                        <div className={styles.nameIcon}>
+                            <MilestoneIcon />
+                        </div>
+                    )}
                     {stage.id}
                 </div>
                 <div className={styles.funcs} title="Click to show actions" onClick={showMenu}>
