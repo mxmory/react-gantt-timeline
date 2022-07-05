@@ -4,9 +4,11 @@ import { Sider } from './components/Sider/index';
 import { useRef } from 'react';
 import Head from './components/Head';
 import RoadmapGrid from './components/RoadmapGrid';
-import { ACTUAL_DATA, SCALING_VALUES, SCALES, HEADER_TOP_HEIGHT } from './constants';
+import { ACTUAL_DATA, SCALING_VALUES, SCALES } from './constants';
 import { flatInnerStages, getScaledCellWidth } from './utils/funcs';
-import { CELL_HEIGHT, STAGE_HEIGHT } from './constants/index';
+import { STAGE_HEIGHT } from './constants/';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 import moment from 'moment';
 
 const reduceStagesToShow = (data) =>
@@ -47,8 +49,7 @@ const App = () => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
     };
 
-    const onScaleChange = (e) => {
-        const { value } = e.target;
+    const onScaleChange = (value) => {
         if (value !== scale) {
             setScale(value);
         }
@@ -163,7 +164,7 @@ const App = () => {
                 </div>
 
                 <div className={styles.scalePanel}>
-                    <input
+                    {/* <input
                         type="range"
                         id="scale"
                         name="scale"
@@ -173,7 +174,39 @@ const App = () => {
                         step="1"
                         onInput={onScaleChange}
                     />
-                    <label htmlFor="scale">Scale: {SCALES[scale]}</label>
+                    <label htmlFor="scale">Scale: {SCALES[scale]}</label> */}
+                    <Slider
+                        min={0}
+                        max={3}
+                        value={scale}
+                        onChange={onScaleChange}
+                        className={styles.scaleSlider}
+                        dots={true}
+                        handleStyle={[
+                            {
+                                backgroundColor: '#F05729',
+                                width: 14,
+                                height: 14,
+                                border: 'none',
+                                opacity: 1,
+                                boxShadow: 'none',
+                            },
+                        ]}
+                        dotStyle={{
+                            width: 2,
+                            height: 9,
+                            borderRadius: 1,
+                            top: -3,
+                            bottom: 0,
+                            borderColor: '#D7DADD',
+                        }}
+                        trackStyle={{ backgroundColor: '#D7DADD' }}
+                        railStyle={{ backgroundColor: '#D7DADD' }}
+                    />
+                    <div className={styles.scaleLabel}>
+                        Scale:{' '}
+                        <span className={styles.value}>{SCALING_VALUES[SCALES[scale]].DIMENSIONS.DIMENSION}</span>
+                    </div>
                 </div>
             </div>
         </div>

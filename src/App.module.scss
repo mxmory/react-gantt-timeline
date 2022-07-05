@@ -50,7 +50,21 @@
         bottom: 10px;
         right: 10px;
         background-color: #fff;
-        padding: 10px;
+        padding: 10px 20px;
         border-radius: 5px;
+        // width: 115px;
+
+        .scaleSlider {
+            width: 100px;
+        }
+
+        .scaleLabel {
+            color: #868f98;
+            font-size: 12px;
+
+            .value {
+                color: #000;
+            }
+        }
     }
 }
