@@ -27,7 +27,7 @@ export const StageContextMenu = ({ scale, stage, data, setData, setMenuVisible, 
             start_at,
             deadline,
             type: 'stage',
-            id: Math.floor(10 + Math.random() * (10000 - 10 + 1)),
+            id: '' + Math.floor(10 + Math.random() * (10000 - 10 + 1)),
         };
         const newStages = getDataOnStageAdd(data, stage.id, newStage);
         setData(newStages);

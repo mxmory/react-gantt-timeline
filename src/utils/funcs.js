@@ -50,7 +50,7 @@ export const flatInnerStages = (stagesArr) => {
     return resArr;
 };
 
-export const getStage = (stages, id) => {
+export const getStage = (stages = [], id) => {
     let o;
     stages.some(function iter(s) {
         if (s.id === id) {
@@ -60,6 +60,10 @@ export const getStage = (stages, id) => {
         return Array.isArray(s.stages) && s.stages.some(iter);
     });
     return o;
+};
+
+export const getDirectStageParent = (data, stageId) => {
+    return flatInnerStages(data).find((el) => el.stages?.find((s) => s.id === stageId));
 };
 
 export const getDataOnStageEdit = (stages, changedStage) => {
@@ -89,7 +93,7 @@ export const getDataOnStageAdd = (stages, parentStageId, newStage) => {
 };
 
 export function getDataOnStageDelete(stages, stageId) {
-    return stages.filter((o) => {
+    return [...stages].filter((o) => {
         const keep = o.id != stageId;
         if (keep && o.stages) {
             o.stages = getDataOnStageDelete(o.stages, stageId);

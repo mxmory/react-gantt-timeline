@@ -57,6 +57,12 @@
             display: flex;
             align-items: center;
 
+            .nameIcon {
+                margin-right: 2px;
+                display: flex;
+                align-items: center;
+            }
+
             .toggleStageCollapse {
                 display: flex;
                 align-items: center;
@@ -65,6 +71,7 @@
                 border-radius: 5px;
                 width: 18px;
                 height: 18px;
+                z-index: 3;
 
                 &.collapsed {
                     svg {

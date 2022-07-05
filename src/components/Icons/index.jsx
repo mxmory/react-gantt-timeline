@@ -33,3 +33,9 @@ export const EnterIcon = () => (
         />
     </svg>
 );
+
+export const MilestoneIcon = () => (
+    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="2.84277" width="8" height="8" rx="1" transform="rotate(45 8 2.84277)" fill="#5F5F5F" />
+    </svg>
+);
