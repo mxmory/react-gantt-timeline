@@ -71,7 +71,8 @@ const App = () => {
 
     const onCanvasScroll = (e) => {
         const { evt } = e;
-        if (evt.shiftKey) {
+        console.log(evt);
+        if (evt.shiftKey || evt.wheelDeltaX !== 0) {
             evt.preventDefault();
             headDatesScaleRef.current.x(headDatesScaleRef.current.x() - evt.deltaY);
             mainGridRef.current.x(mainGridRef.current.x() - evt.deltaY);
