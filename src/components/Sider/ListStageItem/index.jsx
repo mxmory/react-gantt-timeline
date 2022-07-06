@@ -14,7 +14,16 @@ import {
 } from '../../../utils/funcs';
 import { MilestoneIcon } from '../../Icons/index';
 
-export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCollapse, visibleStages, scale }) => {
+export const ListStageItem = ({
+    moveToDate,
+    stage,
+    data,
+    setData,
+    toggleStageCollapse,
+    visibleStages,
+    scale,
+    siderExpanded,
+}) => {
     const [menuVisible, setMenuVisible] = useState(false);
     const nestAreaRef = useRef();
     const dropZoneRef = useRef();
@@ -163,7 +172,6 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
             id={stage.id}
             className={cn(styles.stageItem, { [styles.coreStage]: stage.type === 'core' })}
             onDragStart={onDragStart}
-            // onDrop={onDrop}
         >
             <div
                 ref={dropZoneRef}
@@ -211,9 +219,16 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
                     )}
                     {stage.name}
                 </div>
+                <div className={cn(styles.additionalInfo, { [styles.additionalInfoOpen]: siderExpanded })}>
+                    <div className={styles.data}>12.12.2022</div>
+                    <div className={styles.data}>12.12.2022</div>
+                    <div className={styles.data}>12.12.2022</div>
+                </div>
+
                 <div className={styles.funcs} title="Click to show actions" onClick={showMenu}>
                     <ContextMenuToggleHorizontal />
                 </div>
+
                 {menuVisible && (
                     <StageContextMenu
                         scale={scale}
@@ -243,6 +258,7 @@ export const ListStageItem = ({ moveToDate, stage, data, setData, toggleStageCol
                                         setData={setData}
                                         toggleStageCollapse={toggleStageCollapse}
                                         visibleStages={visibleStages}
+                                        siderExpanded={siderExpanded}
                                     />
                                 </div>
                             ))}

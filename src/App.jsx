@@ -36,6 +36,7 @@ const App = () => {
 
     useEffect(() => {
         setVisibleStages(reduceStagesToShow(data));
+        moveToDate(moment());
     }, []);
 
     useEffect(() => {

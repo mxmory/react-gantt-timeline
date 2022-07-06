@@ -18,6 +18,7 @@ export const Sider = ({ moveToDate, data, setData, toggleStageCollapse, visibleS
                             data={data}
                             setData={setData}
                             visibleStages={visibleStages}
+                            siderExpanded={siderExpanded}
                             toggleStageCollapse={toggleStageCollapse}
                         />
                     );
