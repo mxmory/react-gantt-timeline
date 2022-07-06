@@ -1,15 +1,8 @@
 import moment from 'moment';
-import React from 'react';
-import { Group, Rect } from 'react-konva';
-import { ACTUAL_DATA, CELL_HEIGHT, STAGE_HEIGHT, SCALE_MOMENT_DIMENSIONS, SCALING_VALUES } from '../../../constants';
-import { getStage, getScaledCellWidth, getDataOnStageEdit, getStageProps } from '../../../utils/funcs';
-
-const colorMaps = {
-    milestone: '#ff00ff',
-    task: '#24a4f9',
-    stage: '#EBEDEE',
-    core: '#000',
-};
+import React, { useEffect } from 'react';
+import { Group, Rect, Transformer } from 'react-konva';
+import { ACTUAL_DATA, CELL_HEIGHT, STAGE_HEIGHT, SCALING_VALUES } from '../../../constants';
+import { getStage, getDataOnStageEdit } from '../../../utils/funcs';
 
 export const StageItemLine = ({
     scale,
@@ -24,8 +17,12 @@ export const StageItemLine = ({
     onDeselect,
     color,
     type,
+    isSelected,
+    onTransformStart,
+    onTransformEnd,
 }) => {
     const shapeRef = React.useRef();
+    const trRef = React.useRef();
 
     const y = line * CELL_HEIGHT;
     const x = start_at;
@@ -33,6 +30,13 @@ export const StageItemLine = ({
         CELL_WIDTH,
         DIMENSIONS: { VALUE, DIMENSION },
     } = SCALING_VALUES[scale];
+
+    useEffect(() => {
+        if (isSelected) {
+            trRef.current.nodes([shapeRef.current]);
+            trRef.current.getLayer().batchDraw();
+        }
+    }, [isSelected]);
 
     const showStage = (e) => {
         const {
@@ -54,7 +58,8 @@ export const StageItemLine = ({
 
         const diff = moment(editedStartBound.startOf('day')).diff(stage.start_at, 'days', false);
         const editedEndBound = moment(stage.deadline).add(diff, 'days');
-        e.target.x(Math.round(x / CELL_WIDTH) * CELL_WIDTH);
+
+        e.target.to({ x: Math.round(x / CELL_WIDTH) * CELL_WIDTH, duration: 0.2 });
 
         const editedStage = {
             ...stage,
@@ -62,7 +67,10 @@ export const StageItemLine = ({
             deadline: editedEndBound.format('YYYY-MM-DD'),
         };
         const newData = getDataOnStageEdit(data, editedStage);
-        setData(newData);
+
+        setTimeout(() => {
+            setData(newData);
+        }, 200); // wait for tween to end to avoid flickering
     };
 
     return (
@@ -91,11 +99,11 @@ export const StageItemLine = ({
                 ref={shapeRef}
                 width={type === 'milestone' ? STAGE_HEIGHT : length}
                 height={STAGE_HEIGHT}
-                fill={color ?? colorMaps[type]}
+                fill={color}
                 rotation={type === 'milestone' && 45}
                 cornerRadius={type === 'stage' && 5}
-                // onTransformEnd={onTransformEnd}
-                // onTransformStart={onTransformStart}
+                onTransformEnd={onTransformEnd}
+                onTransformStart={onTransformStart}
             />
             {/* {type !== 'milestone' && <Text width={CELL_WIDTH * length} height={STAGE_HEIGHT} text={id + '_' + type} />} */}
 
@@ -107,18 +115,19 @@ export const StageItemLine = ({
                 // onTransformEnd={onTransformEnd}
                 // onTransformStart={onTransformStart}
             /> */}
-
-            {type === 'core' && (
-                <>
-                    <Rect width={STAGE_HEIGHT / 2} height={STAGE_HEIGHT * 3} fill={color} x={0} y={-STAGE_HEIGHT} />
-                    <Rect
-                        width={STAGE_HEIGHT / 2}
-                        height={STAGE_HEIGHT * 3}
-                        fill={color}
-                        x={length - STAGE_HEIGHT / 2}
-                        y={-STAGE_HEIGHT}
-                    />
-                </>
+            {isSelected && (
+                <Transformer
+                    ref={trRef}
+                    rotateEnabled={false}
+                    flipEnabled={false}
+                    enabledAnchors={['middle-right']}
+                    anchorCornerRadius={3}
+                    anchorStroke="#999"
+                    anchorStrokeWidth={0.5}
+                    anchorSize={15}
+                    padding={-15}
+                    borderEnabled={false}
+                />
             )}
         </Group>
     );

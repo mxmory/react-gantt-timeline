@@ -10,6 +10,8 @@ import { STAGE_HEIGHT } from './constants/';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import moment from 'moment';
+import { MinusIcon } from './components/Icons';
+import { PlusIcon } from './components/Icons/index';
 
 const reduceStagesToShow = (data) =>
     flatInnerStages(data).reduce(
@@ -101,6 +103,18 @@ const App = () => {
         setDataRange([startIndex, endIndex]);
     };
 
+    const minusScale = () => {
+        if (scale > 0) {
+            setScale(scale - 1);
+        }
+    };
+
+    const plusScale = () => {
+        if (scale < 3) {
+            setScale(scale + 1);
+        }
+    };
+
     return (
         <div className={styles.main}>
             <Head
@@ -164,48 +178,45 @@ const App = () => {
                 </div>
 
                 <div className={styles.scalePanel}>
-                    {/* <input
-                        type="range"
-                        id="scale"
-                        name="scale"
-                        min="0"
-                        max="3"
-                        value={scale}
-                        step="1"
-                        onInput={onScaleChange}
-                    />
-                    <label htmlFor="scale">Scale: {SCALES[scale]}</label> */}
-                    <Slider
-                        min={0}
-                        max={3}
-                        value={scale}
-                        onChange={onScaleChange}
-                        className={styles.scaleSlider}
-                        dots={true}
-                        handleStyle={[
-                            {
-                                backgroundColor: '#F05729',
-                                width: 14,
-                                height: 14,
-                                border: 'none',
-                                opacity: 1,
-                                boxShadow: 'none',
-                            },
-                        ]}
-                        dotStyle={{
-                            width: 2,
-                            height: 9,
-                            borderRadius: 1,
-                            top: -3,
-                            bottom: 0,
-                            borderColor: '#D7DADD',
-                        }}
-                        trackStyle={{ backgroundColor: '#D7DADD' }}
-                        railStyle={{ backgroundColor: '#D7DADD' }}
-                    />
-                    <div className={styles.scaleLabel}>
-                        Scale:{' '}
-                        <span className={styles.value}>{SCALING_VALUES[SCALES[scale]].DIMENSIONS.DIMENSION}</span>
+                    <div className={styles.scaleControl} onClick={minusScale}>
+                        <MinusIcon />
+                    </div>
+                    <div className={styles.scaleSliderWrap}>
+                        <Slider
+                            min={0}
+                            max={3}
+                            value={scale}
+                            onChange={onScaleChange}
+                            className={styles.scaleSlider}
+                            dots={true}
+                            handleStyle={[
+                                {
+                                    backgroundColor: '#F05729',
+                                    width: 14,
+                                    height: 14,
+                                    border: 'none',
+                                    opacity: 1,
+                                    boxShadow: 'none',
+                                },
+                            ]}
+                            dotStyle={{
+                                width: 2,
+                                height: 9,
+                                borderRadius: 1,
+                                top: -3,
+                                bottom: 0,
+                                borderColor: '#D7DADD',
+                            }}
+                            trackStyle={{ backgroundColor: '#D7DADD' }}
+                            railStyle={{ backgroundColor: '#D7DADD' }}
+                        />
+                        <div className={styles.scaleLabel}>
+                            Scale:{' '}
+                            <span className={styles.value}>{SCALING_VALUES[SCALES[scale]].DIMENSIONS.DIMENSION}</span>
+                        </div>
+                    </div>
+                    <div className={styles.scaleControl} onClick={plusScale}>
+                        <PlusIcon />
                     </div>
                 </div>
             </div>

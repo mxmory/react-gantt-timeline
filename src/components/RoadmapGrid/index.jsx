@@ -21,11 +21,13 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
         const stageBoundsLayer = stageBoundsLayerRef.current;
         const dragRangeBoundsLayer = dragRangeBoundsLayerRef.current;
         const crosshairLayer = crosshairLayerRef.current;
+        stageBoundsLayer.hide();
+        crosshairLayer.hide();
+
+        console.log('dragMove');
 
         if (e.target.attrs?.type === 'STAGE_LINE') {
             dragRangeBoundsLayer.show();
-            stageBoundsLayer.hide();
-            crosshairLayer.hide();
             const [dragRect, startDateText, endDateText] = dragRangeBoundsLayer.children;
 
             const { x, y, id } = e.target.attrs;
@@ -96,7 +98,6 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
         const posY = Math.floor(layerY / CELL_HEIGHT) * CELL_HEIGHT;
 
         const scaledCellWidth = getScaledCellWidth(scale);
-
         stageBoundsLayer.moveToTop();
 
         if (e.target.attrs?.type === 'STAGE_LINE') {
@@ -114,7 +115,10 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
                 stageWidth = width;
             }
 
-            stageBoundsLayer.show();
+            if (!e.evt.buttons) {
+                stageBoundsLayer.show();
+            }
+
             startBound.setAttrs({
                 points: [stageX * scaledCellWidth - 0.5, 0, stageX * scaledCellWidth - 0.5, posY + CELL_HEIGHT / 2],
             });

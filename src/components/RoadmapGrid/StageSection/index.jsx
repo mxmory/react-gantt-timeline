@@ -17,6 +17,8 @@ export const StageSection = ({
     select,
     onDeselect,
     selectedId,
+    onTransformStart,
+    onTransformEnd,
 }) => {
     const { tasks, start_at, stages, deadline, type } = stage;
     const prevStages = [...allStages.slice(0, index)];
@@ -42,6 +44,8 @@ export const StageSection = ({
                 type={type}
                 color={color}
                 // onDragEnd={onGridStageDragEnd}
+                onTransformStart={onTransformStart}
+                onTransformEnd={onTransformEnd}
                 onDeselect={onDeselect}
             />
 
@@ -76,6 +80,10 @@ export const StageSection = ({
                             index={idx}
                             stage={s}
                             currentLine={currentLine + (tasks?.length || 0) + prevItemsCount + idx + 1}
+                            selectedId={selectedId}
+                            onTransformStart={onTransformStart}
+                            onTransformEnd={onTransformEnd}
+                            onDeselect={onDeselect}
                         />
                     );
                 })}

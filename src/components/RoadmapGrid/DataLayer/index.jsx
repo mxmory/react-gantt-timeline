@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
 import { SCALING_VALUES } from '../../../constants';
-import { getParentStageProps, increaseColorBrightness, getPrevVisibleItems } from '../../../utils/funcs';
+import {
+    getParentStageProps,
+    increaseColorBrightness,
+    getPrevVisibleItems,
+    getScaledCellWidth,
+    getStage,
+    getDataOnStageEdit,
+} from '../../../utils/funcs';
 import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
 import { StageSection } from '../StageSection';
+import moment from 'moment';
 
 export const DataLayer = ({ scale, data, setData, visibleStages }) => {
     const [selectedId, selectShape] = useState(null);
@@ -74,6 +82,29 @@ export const DataLayer = ({ scale, data, setData, visibleStages }) => {
 
     const onTransformStart = () => {
         setIsTransforming(true);
+    };
+
+    const onStageTransformEnd = (e) => {
+        const node = e.target;
+
+        const {
+            attrs: { id },
+        } = node;
+
+        const editingStage = getStage(data, id);
+        const { start_at } = editingStage;
+
+        const scaleX = node.scaleX();
+        node.scaleX(1);
+
+        const width = Math.round((node.width() * scaleX) / getScaledCellWidth(scale));
+        const newDeadline = moment(start_at).add(width, 'days').format('YYYY-MM-DD');
+        const newData = getDataOnStageEdit(data, { ...editingStage, deadline: newDeadline });
+
+        node.width(width * getScaledCellWidth(scale));
+        setData(newData);
+        setIsTransforming(false);
+        selectShape(null);
     };
 
     const onGridTaskTransformEnd = (e) => {
@@ -159,6 +190,8 @@ export const DataLayer = ({ scale, data, setData, visibleStages }) => {
                                         stage={el}
                                         color={increaseColorBrightness(color, 40)}
                                         currentLine={currentLine + (tasks?.length || 0) + idx + 1}
+                                        onTransformStart={onTransformStart}
+                                        onTransformEnd={onStageTransformEnd}
                                     />
                                 );
                             })}
