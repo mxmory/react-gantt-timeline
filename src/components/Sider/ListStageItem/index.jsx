@@ -2,17 +2,20 @@ import React, { useRef, useState } from 'react';
 import styles from './StageItem.module.scss';
 import cn from 'classnames';
 import { ListTaskItem } from '../ListTaskItem';
-import { ArrowDropIcon, ContextMenuToggleHorizontal, EnterIcon } from '../../Icons';
+import { ArrowDropIcon, ContextMenuToggleHorizontalIcon, EnterIcon } from '../../Icons';
 import { StageContextMenu } from '../../Common/StageContextMenu';
 import {
     getDataOnStageAdd,
     getStage,
     getDataOnStageDelete,
-    flatInnerStages,
     getDirectStageParent,
     getDataOnStageEdit,
+    getParentStageProps,
+    formatDuration,
 } from '../../../utils/funcs';
 import { MilestoneIcon } from '../../Icons/index';
+import moment from 'moment';
+import { DURATION_SCALES, DURATION_SCALE_VALUES } from '../../../constants';
 
 export const ListStageItem = ({
     moveToDate,
@@ -23,6 +26,7 @@ export const ListStageItem = ({
     visibleStages,
     scale,
     siderExpanded,
+    durationScale,
 }) => {
     const [menuVisible, setMenuVisible] = useState(false);
     const nestAreaRef = useRef();
@@ -167,6 +171,26 @@ export const ListStageItem = ({
         nestAreaRef.current.style.color = '#000';
     };
 
+    const scaleKey = DURATION_SCALES[durationScale];
+    const { DIMENSION, TITLE } = DURATION_SCALE_VALUES[scaleKey];
+
+    const additionalInfoMap = {
+        core: {
+            start: stage.type === 'core' && getParentStageProps(stage.stages, scale).startAt.format('YYYY-MM-DD'),
+            end: stage.type === 'core' && getParentStageProps(stage.stages, scale).deadline.format('YYYY-MM-DD'),
+            duration:
+                stage.type === 'core' &&
+                formatDuration(getParentStageProps(stage.stages, scale).duration, DIMENSION) + ' ' + TITLE,
+        },
+        milestone: { start: stage.start_at, end: stage.deadline, duration: null },
+        stage: {
+            start: stage.start_at,
+            end: stage.deadline,
+            duration:
+                formatDuration(moment.duration(moment(stage.deadline).diff(stage.start_at)), DIMENSION) + ' ' + TITLE,
+        },
+    };
+
     return (
         <div
             id={stage.id}
@@ -220,13 +244,13 @@ export const ListStageItem = ({
                     {stage.name}
                 </div>
                 <div className={cn(styles.additionalInfo, { [styles.additionalInfoOpen]: siderExpanded })}>
-                    <div className={styles.data}>12.12.2022</div>
-                    <div className={styles.data}>12.12.2022</div>
-                    <div className={styles.data}>12.12.2022</div>
+                    <div className={styles.data}>{additionalInfoMap[stage.type].start}</div>
+                    <div className={styles.data}>{additionalInfoMap[stage.type].end}</div>
+                    <div className={styles.data}>{additionalInfoMap[stage.type].duration}</div>
                 </div>
 
                 <div className={styles.funcs} title="Click to show actions" onClick={showMenu}>
-                    <ContextMenuToggleHorizontal />
+                    <ContextMenuToggleHorizontalIcon />
                 </div>
 
                 {menuVisible && (
@@ -259,6 +283,7 @@ export const ListStageItem = ({
                                         toggleStageCollapse={toggleStageCollapse}
                                         visibleStages={visibleStages}
                                         siderExpanded={siderExpanded}
+                                        durationScale={durationScale}
                                     />
                                 </div>
                             ))}

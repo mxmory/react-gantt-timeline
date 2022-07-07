@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContextMenuToggleHorizontal } from '../../Icons';
+import { ContextMenuToggleHorizontalIcon } from '../../Icons';
 import styles from './ListTaskItem.module.scss';
 
 export const ListTaskItem = ({ task }) => {
@@ -8,7 +8,7 @@ export const ListTaskItem = ({ task }) => {
         <div className={styles.task}>
             <div>{id}</div>
             <div className={styles.funcs} title="Click to show actions">
-                <ContextMenuToggleHorizontal />
+                <ContextMenuToggleHorizontalIcon />
             </div>
         </div>
     );

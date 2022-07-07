@@ -14,6 +14,32 @@ export const SCALES = {
     3: 'YEAR',
 };
 
+export const DURATION_SCALES = {
+    0: 'HOUR',
+    1: 'DAY',
+    2: 'WEEK',
+    3: 'MONTH',
+};
+
+export const DURATION_SCALE_VALUES = {
+    HOUR: {
+        TITLE: 'Hours',
+        DIMENSION: 'hours',
+    },
+    DAY: {
+        TITLE: 'Days',
+        DIMENSION: 'days',
+    },
+    WEEK: {
+        TITLE: 'Weeks',
+        DIMENSION: 'weeks',
+    },
+    MONTH: {
+        TITLE: 'Months',
+        DIMENSION: 'months',
+    },
+};
+
 export const SCALE_MOMENT_DIMENSIONS = {
     DAY: {
         SCALE_VALUE: 'day',

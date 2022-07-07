@@ -3,7 +3,16 @@ import styles from './Sider.module.scss';
 import cn from 'classnames';
 import { ListStageItem } from './ListStageItem';
 
-export const Sider = ({ moveToDate, data, setData, toggleStageCollapse, visibleStages, siderExpanded, scale }) => {
+export const Sider = ({
+    moveToDate,
+    data,
+    setData,
+    toggleStageCollapse,
+    visibleStages,
+    siderExpanded,
+    scale,
+    durationScale,
+}) => {
     return (
         <div className={cn(styles.list, { [styles.open]: siderExpanded })}>
             <div>
@@ -20,6 +29,7 @@ export const Sider = ({ moveToDate, data, setData, toggleStageCollapse, visibleS
                             visibleStages={visibleStages}
                             siderExpanded={siderExpanded}
                             toggleStageCollapse={toggleStageCollapse}
+                            durationScale={durationScale}
                         />
                     );
                 })}

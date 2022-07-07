@@ -1,4 +1,4 @@
-import { minBy, maxBy, range } from 'lodash';
+import { minBy, maxBy, range, round } from 'lodash';
 import moment from 'moment';
 import { APPROX_DAYS_SCALE_COUNT, SCALING_VALUES, SCALE_MOMENT_DIMENSIONS } from '../constants';
 
@@ -20,11 +20,14 @@ export const getStageProps = (stage, scale) => {
 
 export const getParentStageProps = (stages, scale) => {
     if (stages && stages.length === 0) return { x: 0, width: 0 };
-    const firstStageInCore = minBy(stages, 'start_at');
-    const lastStageInCore = maxBy(stages, (stage) => moment(stage.deadline));
+    const flatStages = flatInnerStages(stages);
+    const firstStageInCore = minBy(flatStages, (stage) => moment(stage.start_at));
+    const lastStageInCore = maxBy(flatStages, (stage) => moment(stage.deadline));
 
     const stageStartAt = moment(firstStageInCore.start_at);
+    const stageDeadline = moment(lastStageInCore.deadline);
     const stageLength = getStageLength(lastStageInCore.deadline, stageStartAt);
+    const duration = moment.duration(stageDeadline.diff(stageStartAt));
 
     // const percentSum = stages.reduce((acc, { percent }) => {
     //     return acc + percent;
@@ -35,6 +38,9 @@ export const getParentStageProps = (stages, scale) => {
     return {
         x: getStageX(stageStartAt, scale),
         width: stageLength,
+        startAt: stageStartAt,
+        deadline: stageDeadline,
+        duration: duration,
     };
 };
 
@@ -162,4 +168,14 @@ export const clipRect = (ctx, x, y, width, height, radius) => {
     ctx.lineTo(x, y + radius);
     ctx.quadraticCurveTo(x, y, x + radius, y);
     ctx.closePath();
+};
+
+export const formatDuration = (duration, dimension) => {
+    const map = {
+        hours: duration.asHours(),
+        days: duration.asDays(),
+        weeks: duration.asWeeks(),
+        months: duration.asMonths(),
+    };
+    return round(map[dimension], 1);
 };

@@ -4,7 +4,7 @@ import { Sider } from './components/Sider/index';
 import { useRef } from 'react';
 import Head from './components/Head';
 import RoadmapGrid from './components/RoadmapGrid';
-import { ACTUAL_DATA, SCALING_VALUES, SCALES } from './constants';
+import { ACTUAL_DATA, SCALING_VALUES, SCALES, DURATION_SCALES, DURATION_SCALE_VALUES } from './constants';
 import { flatInnerStages, getScaledCellWidth } from './utils/funcs';
 import { STAGE_HEIGHT } from './constants/';
 import Slider from 'rc-slider';
@@ -24,7 +24,8 @@ const App = () => {
     const [visibleStages, setVisibleStages] = useState(reduceStagesToShow(data));
     const [dataRange, setDataRange] = useState([]);
     const [siderExpanded, setSiderExpanded] = useState(false);
-    const [scale, setScale] = useState(0); // day by default
+    const [scale, setScale] = useState(0); // day by default (REDUX)
+    const [durationScale, setDurationScale] = useState(1); // day by default (REDUX)
     const [offsetItems, setOffsetItems] = useState([]);
 
     const { CELL_WIDTH } = SCALING_VALUES[SCALES[scale]];
@@ -47,6 +48,14 @@ const App = () => {
             setOffsetItems(items);
         }, 100); // Need to wait layer to redraw itself. Maybe todo.
     }, [visibleStages, data]);
+
+    useEffect(() => {
+        setBounds();
+    }, [siderExpanded]);
+
+    const toggleSidebar = () => {
+        setSiderExpanded((prev) => !prev);
+    };
 
     const toggleStageCollapse = (stageId) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
@@ -122,9 +131,11 @@ const App = () => {
                 scale={SCALES[scale]}
                 ref={headDatesScaleRef}
                 siderExpanded={siderExpanded}
-                setSiderExpanded={setSiderExpanded}
+                toggleSidebar={toggleSidebar}
                 dataRange={dataRange}
                 moveToDate={moveToDate}
+                durationScale={durationScale}
+                setDurationScale={setDurationScale}
             />
             <div className={styles.flex}>
                 <Sider
@@ -135,6 +146,7 @@ const App = () => {
                     setData={setData}
                     toggleStageCollapse={toggleStageCollapse}
                     visibleStages={visibleStages}
+                    durationScale={durationScale}
                 />
                 <div className={styles.innerFlex}>
                     <RoadmapGrid
