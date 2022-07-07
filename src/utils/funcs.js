@@ -19,7 +19,7 @@ export const getStageProps = (stage, scale) => {
 };
 
 export const getParentStageProps = (stages, scale) => {
-    if (stages && stages.length === 0) return { x: 0, width: 0 };
+    if (stages && stages.length === 0) return { x: null, width: 0 };
     const flatStages = flatInnerStages(stages);
     const firstStageInCore = minBy(flatStages, (stage) => moment(stage.start_at));
     const lastStageInCore = maxBy(flatStages, (stage) => moment(stage.deadline));
@@ -171,6 +171,7 @@ export const clipRect = (ctx, x, y, width, height, radius) => {
 };
 
 export const formatDuration = (duration, dimension) => {
+    if (!duration) return;
     const map = {
         hours: duration.asHours(),
         days: duration.asDays(),
@@ -179,3 +180,9 @@ export const formatDuration = (duration, dimension) => {
     };
     return round(map[dimension], 1);
 };
+
+export const reduceStagesToShow = (data) =>
+    flatInnerStages(data).reduce(
+        (acc, stage) => ({ ...acc, [stage.id]: true, ...(stage.stages && reduceStagesToShow(stage.stages)) }),
+        {}
+    );

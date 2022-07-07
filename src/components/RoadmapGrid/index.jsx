@@ -24,8 +24,6 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
         stageBoundsLayer.hide();
         crosshairLayer.hide();
 
-        console.log('dragMove');
-
         if (e.target.attrs?.type === 'STAGE_LINE') {
             dragRangeBoundsLayer.show();
             const [dragRect, startDateText, endDateText] = dragRangeBoundsLayer.children;

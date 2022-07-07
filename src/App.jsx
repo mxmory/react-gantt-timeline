@@ -4,20 +4,14 @@ import { Sider } from './components/Sider/index';
 import { useRef } from 'react';
 import Head from './components/Head';
 import RoadmapGrid from './components/RoadmapGrid';
-import { ACTUAL_DATA, SCALING_VALUES, SCALES, DURATION_SCALES, DURATION_SCALE_VALUES } from './constants';
-import { flatInnerStages, getScaledCellWidth } from './utils/funcs';
-import { STAGE_HEIGHT } from './constants/';
+import { ACTUAL_DATA, SCALING_VALUES, SCALES } from './constants';
+import { getScaledCellWidth, reduceStagesToShow } from './utils/funcs';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import moment from 'moment';
-import { MinusIcon } from './components/Icons';
-import { PlusIcon } from './components/Icons/index';
-
-const reduceStagesToShow = (data) =>
-    flatInnerStages(data).reduce(
-        (acc, stage) => ({ ...acc, [stage.id]: true, ...(stage.stages && reduceStagesToShow(stage.stages)) }),
-        {}
-    );
+import { MinusIcon, PlusIcon } from './components/Icons';
+import OffscreenStagesMarks from './components/RoadmapGrid/OffscreenStagesMarks';
+import TimelineGrid from './components/TimelineGrid';
 
 const App = () => {
     const [data, setData] = useState(ACTUAL_DATA.stages);
@@ -26,7 +20,7 @@ const App = () => {
     const [siderExpanded, setSiderExpanded] = useState(false);
     const [scale, setScale] = useState(0); // day by default (REDUX)
     const [durationScale, setDurationScale] = useState(1); // day by default (REDUX)
-    const [offsetItems, setOffsetItems] = useState([]);
+    const [offscreenItems, setOffscreenItems] = useState([]);
 
     const { CELL_WIDTH } = SCALING_VALUES[SCALES[scale]];
 
@@ -45,7 +39,7 @@ const App = () => {
         setTimeout(() => {
             const items =
                 dataLayer?.getChildren((node) => node.getType('Group') && node?.getAttrs().type === 'STAGE_LINE') || [];
-            setOffsetItems(items);
+            setOffscreenItems(items);
         }, 100); // Need to wait layer to redraw itself. Maybe todo.
     }, [visibleStages, data]);
 
@@ -160,34 +154,8 @@ const App = () => {
                         onCanvasDrag={onCanvasDrag}
                         onCanvasScroll={onCanvasScroll}
                     />
-                    <div className={styles.backgroundStagesLayout}>
-                        {offsetItems.map((el) => {
-                            const [rect] = el.getChildren((rect) => rect.getType('STAGE_LINE'));
-                            const color = rect?.getAttr('fill');
-                            const isVisible = el.isClientRectOnScreen();
-                            const xStageStart = -mainGridRef.current.x();
-                            const xRectEnd = el.width() + el.x();
-                            const position = xStageStart - xRectEnd > 0 ? '-10px' : 'calc(100% - 10px)';
-
-                            return (
-                                <div
-                                    key={el.attrs.id}
-                                    style={{
-                                        position: 'absolute',
-                                        width: 20,
-                                        height: STAGE_HEIGHT,
-                                        backgroundColor: color,
-                                        left: !isVisible ? position : '-100%',
-                                        top: el.y(),
-                                        opacity: !isVisible ? 1 : 0,
-                                        borderRadius: 5,
-                                        zIndex: -1,
-                                        transition: 'opacity 0.5s ease',
-                                    }}
-                                ></div>
-                            );
-                        })}
-                    </div>
+                    <OffscreenStagesMarks marks={offscreenItems} ref={mainGridRef} />
+                    <TimelineGrid siderExpanded={siderExpanded} />
                 </div>
 
                 <div className={styles.scalePanel}>

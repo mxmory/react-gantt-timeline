@@ -176,12 +176,19 @@ export const ListStageItem = ({
 
     const additionalInfoMap = {
         core: {
-            start: stage.type === 'core' && getParentStageProps(stage.stages, scale).startAt.format('YYYY-MM-DD'),
-            end: stage.type === 'core' && getParentStageProps(stage.stages, scale).deadline.format('YYYY-MM-DD'),
+            start:
+                stage.type === 'core' &&
+                stage.stages.length !== 0 &&
+                getParentStageProps(stage.stages, scale).startAt?.format('YYYY-MM-DD'),
+            end:
+                stage.type === 'core' &&
+                stage.stages.length !== 0 &&
+                getParentStageProps(stage.stages, scale).deadline?.format('YYYY-MM-DD'),
             duration:
                 stage.type === 'core' &&
+                stage.stages.length !== 0 &&
                 formatDuration(getParentStageProps(stage.stages, scale).duration, DIMENSION) + ' ' + TITLE,
-        },
+        }, // REFACTOR TODO
         milestone: { start: stage.start_at, end: stage.deadline, duration: null },
         stage: {
             start: stage.start_at,
