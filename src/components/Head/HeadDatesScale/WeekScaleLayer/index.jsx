@@ -1,5 +1,5 @@
 import React from 'react';
-import { SCALING_VALUES, HEADER_TOP_HEIGHT, HOLIDAYS, CELL_HEIGHT } from '../../../../constants';
+import { SCALING_VALUES, HEADER_TOP_HEIGHT, CELL_HEIGHT } from '../../../../constants';
 import { Layer, Line, Group, Rect, Text } from 'react-konva';
 import { uniqWith, isEqual, range } from 'lodash';
 import { getDimensionsInRange } from '../../../../utils/funcs';
