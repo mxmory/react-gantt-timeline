@@ -1,32 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './Sider.module.scss';
 import cn from 'classnames';
 import { ListStageItem } from './ListStageItem';
+import { RoadmapSiderProps } from './types';
 
-export const Sider = ({ moveToDate, data, setData, toggleStageCollapse, visibleStages, siderExpanded, scale }) => {
-    const reorder = (list, startIndex, endIndex) => {
-        const result = Array.from(list);
-        const [removed] = result.splice(startIndex, 1);
-        result.splice(endIndex, 0, removed);
-
-        return result;
-    };
-
+export const Sider: React.FC<RoadmapSiderProps> = ({
+    moveToDate,
+    data,
+    setData,
+    toggleStageCollapse,
+    visibleStages,
+    siderExpanded,
+    scale,
+    durationScale,
+}) => {
     return (
         <div className={cn(styles.list, { [styles.open]: siderExpanded })}>
             <div>
-                {data.map((stage, index) => {
+                {data.map((stage) => {
                     return (
                         <ListStageItem
                             scale={scale}
                             moveToDate={moveToDate}
                             key={stage.id}
                             stage={stage}
-                            index={index}
                             data={data}
                             setData={setData}
                             visibleStages={visibleStages}
+                            siderExpanded={siderExpanded}
                             toggleStageCollapse={toggleStageCollapse}
+                            durationScale={durationScale}
                         />
                     );
                 })}

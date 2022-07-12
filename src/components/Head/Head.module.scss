@@ -12,7 +12,6 @@
         max-width: 295px;
         border-right: 1px solid #ebedee;
 
-        transition: max-width 0.8s ease;
         will-change: auto;
 
         svg {
@@ -27,7 +26,23 @@
             }
         }
 
-        .headerSiderFunc {
+        .settingsFunc {
+            display: flex;
+            width: 32px;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            cursor: pointer;
+            border-left: 1px solid #ebedee;
+            color: #aeb5bb;
+            position: relative;
+
+            &:hover {
+                color: #f05729;
+            }
+        }
+
+        .commonFunc {
             background-color: #ebedee;
             width: 40px;
             height: 100%;
@@ -56,11 +71,57 @@
             padding-left: 20px;
             font-size: 12px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             height: 20px;
             width: 100%;
             color: #aeb5bb;
+
+            .mainTitle {
+                display: flex;
+                align-items: center;
+                margin-right: auto;
+            }
+
+            .additionalTitles {
+                display: none;
+
+                &.open {
+                    display: flex;
+                }
+
+                .titleItem {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 100px;
+                    width: 100px;
+                    border-left: 1px solid #ebedee;
+                }
+            }
+        }
+
+        .contextMenu {
+            width: 150px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ebedee;
+            z-index: 3;
+
+            .contextMenuItem {
+                padding: 5px;
+                border-radius: 5px;
+
+                &.active {
+                    background-color: #ebedee;
+                }
+
+                &:hover {
+                    opacity: 0.5;
+                }
+            }
         }
     }
 
