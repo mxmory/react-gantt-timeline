@@ -3,8 +3,7 @@ import cn from 'classnames';
 import styles from './Head.module.scss';
 import { LocationIcon, ArrowDropIcon, SettingsIcon } from '../Icons';
 import { HeadDatesScale } from './HeadDatesScale';
-import { DURATION_SCALES } from '../../constants';
-import { DURATION_SCALE_VALUES } from '../../constants/index';
+import { SCALES, DURATION_SCALE_VALUES } from '../../constants';
 
 export const Head = (
     { scale, siderExpanded, toggleSidebar, dataRange, moveToDate, durationScale, setDurationScale },
@@ -25,14 +24,14 @@ export const Head = (
                             <SettingsIcon />
                             {durationScaleMenuOpen && (
                                 <div className={styles.contextMenu}>
-                                    {Object.keys(DURATION_SCALES).map((key) => {
-                                        const scaleKey = DURATION_SCALES[key];
+                                    {Object.keys(SCALES).map((key) => {
+                                        const scaleKey = SCALES[key];
 
                                         const { TITLE } = DURATION_SCALE_VALUES[scaleKey];
                                         return (
                                             <div
                                                 className={cn(styles.contextMenuItem, {
-                                                    [styles.active]: durationScale === +key,
+                                                    [styles.active]: durationScale === scaleKey,
                                                 })}
                                                 key={key}
                                                 onClick={() => setDurationScale(+key)}

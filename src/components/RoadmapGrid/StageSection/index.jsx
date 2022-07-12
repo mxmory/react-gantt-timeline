@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React from 'react';
 import { getScaledCellWidth, getStageX, getPrevVisibleItems } from '../../../utils/funcs';
-import { StageItemLine } from '../StageItemLine/index';
+import { StageItemLine } from '../StageItemLine/';
 import { TaskItemLine } from '../TaskItemLine';
 
 export const StageSection = ({

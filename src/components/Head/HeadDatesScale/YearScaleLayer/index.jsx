@@ -1,10 +1,8 @@
 import React from 'react';
-import { SCALING_VALUES, HEADER_TOP_HEIGHT, CELL_HEIGHT } from '../../../../constants';
+import { SCALING_VALUES, HEADER_TOP_HEIGHT, CELL_HEIGHT, APPROX_DAYS_SCALE_COUNT } from '../../../../constants';
 import { Layer, Line, Group, Rect, Text } from 'react-konva';
-import { uniqWith, isEqual, range } from 'lodash';
-import { getDimensionsInRange } from '../../../../utils/funcs';
+import { range } from 'lodash';
 import moment from 'moment';
-import { APPROX_DAYS_SCALE_COUNT } from '../../../../constants/index';
 
 export const YearScaleLayer = ({ dataRange }) => {
     const { CELL_WIDTH } = SCALING_VALUES.MONTH;

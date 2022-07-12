@@ -1,33 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import styles from './App.module.scss';
-import { Sider } from './components/Sider/index';
-import { useRef } from 'react';
-import Head from './components/Head';
-import RoadmapGrid from './components/RoadmapGrid';
-import { ACTUAL_DATA, SCALING_VALUES, SCALES } from './constants';
-import { getScaledCellWidth, reduceStagesToShow } from './utils/funcs';
+import Konva from 'konva';
+import moment from 'moment';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import moment from 'moment';
+import React, { useEffect, useRef, useState } from 'react';
+import { KonvaWheelEvent } from 'types/events';
+import styles from './App.module.scss';
+import Head from './components/Head';
 import { MinusIcon, PlusIcon } from './components/Icons';
+import RoadmapGrid from './components/RoadmapGrid';
 import OffscreenStagesMarks from './components/RoadmapGrid/OffscreenStagesMarks';
+import { Sider } from './components/Sider';
 import TimelineGrid from './components/TimelineGrid';
+import { SCALING_VALUES, ACTUAL_DATA, SCALES } from './constants';
+import { getScaledCellWidth, reduceStagesToShow } from './utils/funcs';
+import { RoadmapDataRange, RoadmapStage, RoadmapStageVisibility, Scale } from './types/roadmap';
 
 const App = () => {
-    const [data, setData] = useState(ACTUAL_DATA.stages);
-    const [visibleStages, setVisibleStages] = useState(reduceStagesToShow(data));
-    const [dataRange, setDataRange] = useState([]);
-    const [siderExpanded, setSiderExpanded] = useState(false);
-    const [scale, setScale] = useState(0); // day by default (REDUX)
-    const [durationScale, setDurationScale] = useState(1); // day by default (REDUX)
-    const [offscreenItems, setOffscreenItems] = useState([]);
+    const [data, setData] = useState<RoadmapStage[]>(ACTUAL_DATA.stages);
+    const [visibleStages, setVisibleStages] = useState<RoadmapStageVisibility>(reduceStagesToShow(data));
+    const [dataRange, setDataRange] = useState<RoadmapDataRange>([0, 0]);
+    const [siderExpanded, setSiderExpanded] = useState<boolean>(false);
+    const [scale, setScale] = useState<number>(0); // day by default (REDUX)
+    const [durationScale, setDurationScale] = useState<number>(0); // day by default (REDUX)
+    const [offscreenItems, setOffscreenItems] = useState<(Konva.Group | Konva.Shape)[]>([]);
 
     const { CELL_WIDTH } = SCALING_VALUES[SCALES[scale]];
 
-    const headDatesScaleRef = useRef();
-    const mainGridRef = useRef();
+    const headDatesScaleRef = useRef<Konva.Stage>(null);
+    const mainGridRef = useRef<Konva.Stage>(null);
 
-    const dataLayer = mainGridRef.current?.getChildren((el) => el.getId('DATA_LAYER'))[0];
+    const dataLayer = mainGridRef.current?.getChildren((el) => el.getAttr('id') === 'DATA_LAYER')[0];
 
     useEffect(() => {
         setVisibleStages(reduceStagesToShow(data));
@@ -38,7 +40,9 @@ const App = () => {
         mainGridRef.current?.draw();
         setTimeout(() => {
             const items =
-                dataLayer?.getChildren((node) => node.getType('Group') && node?.getAttrs().type === 'STAGE_LINE') || [];
+                dataLayer?.getChildren(
+                    (node) => node.getType() === 'Group' && node?.getAttrs().type === 'STAGE_LINE'
+                ) || [];
             setOffscreenItems(items);
         }, 100); // Need to wait layer to redraw itself. Maybe todo.
     }, [visibleStages, data]);
@@ -51,11 +55,11 @@ const App = () => {
         setSiderExpanded((prev) => !prev);
     };
 
-    const toggleStageCollapse = (stageId) => {
+    const toggleStageCollapse = (stageId: string) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
     };
 
-    const onScaleChange = (value) => {
+    const onScaleChange = (value: number) => {
         if (value !== scale) {
             setScale(value);
         }
@@ -63,6 +67,7 @@ const App = () => {
 
     useEffect(() => {
         const stage = mainGridRef.current;
+        if (!stage) return;
         const startIndex = Math.floor((-stage.x() - stage.width()) / CELL_WIDTH);
         const endIndex = Math.floor((-stage.x() + stage.width() * 2) / CELL_WIDTH);
         setDataRange([startIndex, endIndex]);
@@ -71,37 +76,34 @@ const App = () => {
         moveToDate(moment());
     }, [scale]);
 
-    const onCanvasDrag = (e) => {
-        const x = e.target.x();
-        headDatesScaleRef.current.x(x);
-    };
-
-    const onCanvasScroll = (e) => {
+    const onCanvasScroll = (e: KonvaWheelEvent): void => {
         const { evt } = e;
         if (evt.shiftKey || evt.wheelDeltaX !== 0) {
             evt.preventDefault();
-            headDatesScaleRef.current.x(headDatesScaleRef.current.x() - evt.deltaY);
-            mainGridRef.current.x(mainGridRef.current.x() - evt.deltaY);
+            headDatesScaleRef.current?.x(headDatesScaleRef.current.x() - evt.deltaY);
+            mainGridRef.current?.x(mainGridRef.current.x() - evt.deltaY);
             setBounds();
         }
     };
 
-    const moveToDate = (date = moment(), scale = 'DAY') => {
+    const moveToDate = (date = moment(), scale: Scale = SCALES[0]) => {
         const {
             DIMENSIONS: { VALUE },
         } = SCALING_VALUES[scale];
+
         const scaledCellWidth = getScaledCellWidth(scale);
         const isAfterToday = moment(date).isSameOrAfter(moment());
         const diff = moment().startOf(VALUE).diff(moment(date), 'days', !isAfterToday);
         const stage = mainGridRef.current;
         const timelineStage = headDatesScaleRef.current;
-        stage.x(Math.round(diff) * scaledCellWidth);
-        timelineStage.x(Math.round(diff) * scaledCellWidth);
+        stage?.x(Math.round(diff) * scaledCellWidth);
+        timelineStage?.x(Math.round(diff) * scaledCellWidth);
         setBounds();
     };
 
     const setBounds = () => {
         const stage = mainGridRef.current;
+        if (!stage) return;
         const startIndex = Math.floor((-stage.x() - stage.width()) / CELL_WIDTH);
         const endIndex = Math.floor((-stage.x() + stage.width() * 2) / CELL_WIDTH);
         setDataRange([startIndex, endIndex]);
@@ -109,7 +111,7 @@ const App = () => {
 
     const minusScale = () => {
         if (scale > 0) {
-            setScale(scale - 1);
+            setScale((prev) => prev - 1);
         }
     };
 
@@ -128,7 +130,7 @@ const App = () => {
                 toggleSidebar={toggleSidebar}
                 dataRange={dataRange}
                 moveToDate={moveToDate}
-                durationScale={durationScale}
+                durationScale={SCALES[durationScale]}
                 setDurationScale={setDurationScale}
             />
             <div className={styles.flex}>
@@ -140,7 +142,7 @@ const App = () => {
                     setData={setData}
                     toggleStageCollapse={toggleStageCollapse}
                     visibleStages={visibleStages}
-                    durationScale={durationScale}
+                    durationScale={SCALES[durationScale]}
                 />
                 <div className={styles.innerFlex}>
                     <RoadmapGrid
@@ -150,8 +152,6 @@ const App = () => {
                         data={data}
                         setData={setData}
                         dataRange={dataRange}
-                        setBounds={setBounds}
-                        onCanvasDrag={onCanvasDrag}
                         onCanvasScroll={onCanvasScroll}
                     />
                     <OffscreenStagesMarks marks={offscreenItems} ref={mainGridRef} />
@@ -167,7 +167,7 @@ const App = () => {
                             min={0}
                             max={3}
                             value={scale}
-                            onChange={onScaleChange}
+                            onChange={onScaleChange as () => void} // workaround due to bad typings for this prop
                             className={styles.scaleSlider}
                             dots={true}
                             handleStyle={[

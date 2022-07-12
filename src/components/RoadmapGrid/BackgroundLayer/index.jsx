@@ -1,10 +1,9 @@
 import React from 'react';
 import { Layer, Group, Line } from 'react-konva';
 import { range } from 'lodash';
-import { CANVAS_HEIGHT, HOLIDAYS } from '../../../constants';
+import { CANVAS_HEIGHT, HOLIDAYS, SCALING_VALUES, APPROX_DAYS_SCALE_COUNT } from '../../../constants';
 import moment from 'moment';
 import { HolidayHighlight } from '../HolidayHighlight';
-import { SCALING_VALUES, APPROX_DAYS_SCALE_COUNT } from '../../../constants/index';
 
 export const BackgroundLayer = ({ scale, dataRange }) => {
     const today = moment();

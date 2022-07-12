@@ -1,35 +1,42 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './RoadmapGrid.module.scss';
-import { Stage, Layer, Rect, Line, Text, Group } from 'react-konva';
+import { Stage, Layer, Rect, Line, Text } from 'react-konva';
 import { CANVAS_HEIGHT, CELL_HEIGHT, SCALING_VALUES } from '../../constants';
 import { BackgroundLayer } from './BackgroundLayer/index';
 import { DataLayer } from './DataLayer/index';
 import { getStage, getParentStageProps, flatInnerStages, getStageProps, getScaledCellWidth } from '../../utils/funcs';
 import moment from 'moment';
 import { STAGE_HEIGHT } from '../../constants/index';
+import { RoadmapGridProps } from './types';
+import Konva from 'konva';
+import { KonvaMouseEvent, KonvaWheelEvent } from 'types/events';
 
-const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleStages }, ref) => {
-    const crosshairLayerRef = useRef();
-    const stageBoundsLayerRef = useRef();
-    const dragRangeBoundsLayerRef = useRef();
-    const outerContainerRef = useRef();
+const RoadmapGrid = React.forwardRef<Konva.Stage, RoadmapGridProps>(function RoadmapGrid(
+    { scale, data, setData, dataRange, onCanvasScroll, visibleStages },
+    ref
+) {
+    const crosshairLayerRef = useRef<Konva.Layer>(null); // Layer for moving crosshair onMouseMove
+    const stageBoundsLayerRef = useRef<Konva.Layer>(null); // Layer for stage bounds display onMouseEnter
+    const dragRangeBoundsLayerRef = useRef<Konva.Layer>(null); // Layer for display snappy gray rectangle while dragging a stage
+    const outerContainerRef = useRef<HTMLDivElement>(null); // There are dots showing offscreen stages
 
     const { CELL_WIDTH } = SCALING_VALUES[scale];
     const scaledCellWidth = getScaledCellWidth(scale);
 
-    const onDragMove = (e) => {
+    const onDragMove = (e: Konva.KonvaEventObject<DragEvent>) => {
         const stageBoundsLayer = stageBoundsLayerRef.current;
         const dragRangeBoundsLayer = dragRangeBoundsLayerRef.current;
         const crosshairLayer = crosshairLayerRef.current;
-        stageBoundsLayer.hide();
-        crosshairLayer.hide();
+        stageBoundsLayer?.hide();
+        crosshairLayer?.hide();
 
         if (e.target.attrs?.type === 'STAGE_LINE') {
-            dragRangeBoundsLayer.show();
-            const [dragRect, startDateText, endDateText] = dragRangeBoundsLayer.children;
+            dragRangeBoundsLayer?.show();
+            const [dragRect, startDateText, endDateText] = dragRangeBoundsLayer?.children || [];
 
             const { x, y, id } = e.target.attrs;
             const stage = getStage(data, id);
+            if (!stage) return;
             const { width } = getStageProps(stage, scale);
             const posX = Math.round(x / CELL_WIDTH) * CELL_WIDTH;
             const posY = Math.floor(y / CELL_HEIGHT) * CELL_HEIGHT;
@@ -63,7 +70,7 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
 
     const onDragEnd = () => {
         const dragRangeBoundsLayer = dragRangeBoundsLayerRef.current;
-        const [dragRect, startDateText, endDateText] = dragRangeBoundsLayer.children;
+        const [dragRect, startDateText, endDateText] = dragRangeBoundsLayer?.children || [];
 
         dragRect.to({
             opacity: 0,
@@ -81,15 +88,15 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
         });
     };
 
-    const onMouseMove = (e) => {
+    const onMouseMove = (e: KonvaMouseEvent) => {
         const crosshairLayer = crosshairLayerRef.current;
         const stageBoundsLayer = stageBoundsLayerRef.current;
 
         if (!crosshairLayer || !stageBoundsLayer) return;
         crosshairLayer.show();
         const { layerX, layerY } = e.evt;
-        const [vertCrosshair, horzCrosshair] = crosshairLayer.children;
-        const [startBound, endBound] = stageBoundsLayer.children;
+        const [vertCrosshair, horzCrosshair] = crosshairLayer.children || [];
+        const [startBound, endBound] = stageBoundsLayer.children || [];
 
         const canvasX = e.currentTarget.x();
         const posX = Math.floor((layerX - canvasX) / CELL_WIDTH) * CELL_WIDTH;
@@ -101,6 +108,7 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
         if (e.target.attrs?.type === 'STAGE_LINE') {
             // e.target.batchDraw();
             const stage = getStage(data, e.target.attrs?.id);
+            if (!stage) return;
             let stageX, stageWidth;
             if (stage.type === 'core') {
                 const innerStages = flatInnerStages(stage.stages);
@@ -148,7 +156,7 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
     const onMouseLeave = () => {
         const layer = crosshairLayerRef.current;
         if (!layer) return;
-        const [vertCrosshair, horzCrosshair] = layer.children;
+        const [vertCrosshair, horzCrosshair] = layer.children || [];
 
         vertCrosshair.to({
             opacity: 0,
@@ -160,13 +168,13 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
         });
     };
 
-    const onWheel = (e) => {
+    const onWheel = (e: KonvaWheelEvent) => {
         onCanvasScroll(e);
         onMouseLeave();
     };
 
     useEffect(() => {
-        ref.current.width(outerContainerRef.current.clientWidth);
+        (ref as React.MutableRefObject<Konva.Stage>)?.current?.width(outerContainerRef.current?.clientWidth || 0);
     }, []);
 
     return (
@@ -177,10 +185,10 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
                     onDragEnd={onDragEnd}
                     onMouseMove={onMouseMove}
                     onMouseLeave={onMouseLeave}
+                    onWheel={onWheel}
                     width={outerContainerRef.current?.clientWidth}
                     height={CANVAS_HEIGHT}
                     ref={ref}
-                    onWheel={onWheel}
                 >
                     <Layer ref={stageBoundsLayerRef}>
                         <Line id="startBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[14, 7]} />
@@ -207,6 +215,6 @@ const RoadmapGrid = ({ scale, data, setData, dataRange, onCanvasScroll, visibleS
             </div>
         </div>
     );
-};
+});
 
-export default React.forwardRef(RoadmapGrid);
+export default RoadmapGrid;

@@ -1,8 +1,8 @@
 import moment from 'moment';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Group, Rect } from 'react-konva';
 import { CELL_HEIGHT, SCALING_VALUES, TASK_HEIGHT } from '../../../constants';
-import { getStageX, getScaledCellWidth, getStage, getStageProps, getDataOnStageEdit } from '../../../utils/funcs';
+import { getStageX, getScaledCellWidth, getStageProps, getDataOnStageEdit } from '../../../utils/funcs';
 
 export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTransformStart, data, setData }) => {
     const { id, percent = 0, start_at, deadline } = task;
@@ -16,7 +16,7 @@ export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTra
 
     const onDragEnd = (e) => {
         const {
-            attrs: { x, id },
+            attrs: { x },
         } = e.target;
 
         const { x: stageX } = getStageProps(task, scale);

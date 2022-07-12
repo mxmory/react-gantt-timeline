@@ -2,8 +2,9 @@ import React from 'react';
 import styles from './Sider.module.scss';
 import cn from 'classnames';
 import { ListStageItem } from './ListStageItem';
+import { RoadmapSiderProps } from './types';
 
-export const Sider = ({
+export const Sider: React.FC<RoadmapSiderProps> = ({
     moveToDate,
     data,
     setData,
@@ -16,14 +17,13 @@ export const Sider = ({
     return (
         <div className={cn(styles.list, { [styles.open]: siderExpanded })}>
             <div>
-                {data.map((stage, index) => {
+                {data.map((stage) => {
                     return (
                         <ListStageItem
                             scale={scale}
                             moveToDate={moveToDate}
                             key={stage.id}
                             stage={stage}
-                            index={index}
                             data={data}
                             setData={setData}
                             visibleStages={visibleStages}

@@ -11,8 +11,10 @@ import { CoreStage } from '../CoreStage';
 import { TaskItemLine } from '../TaskItemLine';
 import { StageSection } from '../StageSection';
 import moment from 'moment';
+import { DataLayerProps } from './types';
+import { KonvaMouseEvent } from 'types/events';
 
-export const DataLayer = ({ scale, data, setData, visibleStages }) => {
+export const DataLayer: React.FC<DataLayerProps> = ({ scale, data, setData, visibleStages }) => {
     const [selectedId, selectShape] = useState(null);
     const [isTransforming, setIsTransforming] = useState(false);
 
@@ -20,7 +22,7 @@ export const DataLayer = ({ scale, data, setData, visibleStages }) => {
         setIsTransforming(true);
     };
 
-    const onStageTransformEnd = (e) => {
+    const onStageTransformEnd = (e: KonvaMouseEvent) => {
         const node = e.target;
 
         const {
@@ -28,6 +30,8 @@ export const DataLayer = ({ scale, data, setData, visibleStages }) => {
         } = node;
 
         const editingStage = getStage(data, id);
+        if (!editingStage) return;
+
         const { start_at } = editingStage;
 
         const scaleX = node.scaleX();
@@ -66,16 +70,18 @@ export const DataLayer = ({ scale, data, setData, visibleStages }) => {
                             tasks.map((task, taskIdx) => {
                                 return (
                                     <TaskItemLine
-                                        scale={scale}
                                         key={task.id}
+                                        scale={scale}
                                         task={task}
+                                        stageId={stage.id}
                                         line={currentLine + taskIdx + 1}
+                                        onTransformStart //after
+                                        onTransformEnd // after
                                         data={data}
                                         setData={setData}
                                     />
                                 );
                             })}
-
                         {visibleStages[stage.id] &&
                             stages.map((el, idx) => {
                                 return (
