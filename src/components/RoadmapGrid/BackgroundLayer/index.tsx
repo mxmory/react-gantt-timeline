@@ -4,28 +4,31 @@ import { range } from 'lodash';
 import { CANVAS_HEIGHT, HOLIDAYS, SCALING_VALUES, APPROX_DAYS_SCALE_COUNT } from '../../../constants';
 import moment from 'moment';
 import { HolidayHighlight } from '../HolidayHighlight';
+import { BackgroundLayerProps } from './types';
 
-export const BackgroundLayer = ({ scale, dataRange }) => {
-    const today = moment();
+export const BackgroundLayer: React.FC<BackgroundLayerProps> = ({ scale, dataRange }) => {
     const { CELL_WIDTH } = SCALING_VALUES[scale];
 
     const currMomentLineMap = {
-        DAY: Math.round((CELL_WIDTH / 24) * +moment(today).format('HH')) - 0.5,
-        WEEK: Math.round((CELL_WIDTH / 7) * +moment(today).format('d')) - 0.5,
-        MONTH: (CELL_WIDTH / 100) * ((100 * +moment(today).format('DD')) / moment(today).daysInMonth()),
+        DAY: Math.round((CELL_WIDTH / 24) * +moment().format('HH')) - 0.5,
+        WEEK: Math.round((CELL_WIDTH / 7) * +moment().format('d')) - 0.5,
+        MONTH: (CELL_WIDTH / 100) * ((100 * +moment().format('DD')) / moment().daysInMonth()),
         YEAR:
             (CELL_WIDTH / 100) *
-            ((100 * today.diff(moment(today).startOf('year'), 'days', true)) / APPROX_DAYS_SCALE_COUNT.YEAR),
+            ((100 * moment().diff(moment().startOf('year'), 'days', true)) / APPROX_DAYS_SCALE_COUNT.YEAR),
     };
 
     return (
         <Layer>
             {range(dataRange[0] * CELL_WIDTH, dataRange[1] * CELL_WIDTH, CELL_WIDTH).map((n) => {
-                const weekdayNumber = moment(today.startOf('day'))
+                const weekdayNumber = moment()
+                    .startOf('day')
                     .add(n / CELL_WIDTH, 'days')
                     .format('d');
 
-                const day = moment(today.startOf('day')).add(n / CELL_WIDTH, 'days');
+                const day = moment()
+                    .startOf('day')
+                    .add(n / CELL_WIDTH, 'days');
 
                 const isHoliday =
                     +weekdayNumber === 0 || +weekdayNumber === 6 || HOLIDAYS.includes(day.format('YYYY-MM-DD'));

@@ -23,3 +23,29 @@ export type RoadmapStageVisibility = {
 };
 
 export type RoadmapDataRange = [number, number];
+
+export type DurationScaleValues = {
+    [key: string]: {
+        TITLE: string;
+        DIMENSION: moment.unitOfTime.Diff;
+    };
+};
+
+export type ScaleMomentDimensions = {
+    [key: string]: {
+        SCALE_VALUE: moment.unitOfTime.StartOf;
+        DIMENSION: moment.unitOfTime.Diff;
+        HEAD_SCALE_START_OF: moment.unitOfTime.StartOf;
+    };
+};
+
+export type ScalingValues = {
+    [key: string]: {
+        CELL_WIDTH: number;
+        CELL_WIDTH_SUB: number;
+        DIMENSIONS: {
+            VALUE: moment.unitOfTime.StartOf;
+            DIMENSION: moment.unitOfTime.Diff;
+        };
+    };
+};

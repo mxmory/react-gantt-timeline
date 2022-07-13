@@ -22,7 +22,7 @@ const App = () => {
     const [siderExpanded, setSiderExpanded] = useState<boolean>(false);
     const [scale, setScale] = useState<number>(0); // day by default (REDUX)
     const [durationScale, setDurationScale] = useState<number>(0); // day by default (REDUX)
-    const [offscreenItems, setOffscreenItems] = useState<(Konva.Group | Konva.Shape)[]>([]);
+    const [offscreenItems, setOffscreenItems] = useState<Konva.Group[] | []>([]);
 
     const { CELL_WIDTH } = SCALING_VALUES[SCALES[scale]];
 
@@ -40,9 +40,9 @@ const App = () => {
         mainGridRef.current?.draw();
         setTimeout(() => {
             const items =
-                dataLayer?.getChildren(
+                (dataLayer?.getChildren(
                     (node) => node.getType() === 'Group' && node?.getAttrs().type === 'STAGE_LINE'
-                ) || [];
+                ) as Konva.Group[]) || [];
             setOffscreenItems(items);
         }, 100); // Need to wait layer to redraw itself. Maybe todo.
     }, [visibleStages, data]);

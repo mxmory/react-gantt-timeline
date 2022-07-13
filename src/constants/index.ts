@@ -1,4 +1,4 @@
-import { Scale, RoadmapStage } from 'types/roadmap';
+import { Scale, RoadmapStage, DurationScaleValues, ScaleMomentDimensions, ScalingValues } from 'types/roadmap';
 
 export const width = 300;
 export const CANVAS_WIDTH = 3000;
@@ -14,13 +14,6 @@ export const SCALES: { [key: number]: Scale } = {
     1: 'WEEK',
     2: 'MONTH',
     3: 'YEAR',
-};
-
-type DurationScaleValues = {
-    [key: string]: {
-        TITLE: string;
-        DIMENSION: moment.unitOfTime.Diff;
-    };
 };
 
 export const DURATION_SCALE_VALUES: DurationScaleValues = {
@@ -40,14 +33,6 @@ export const DURATION_SCALE_VALUES: DurationScaleValues = {
         TITLE: 'Years',
         DIMENSION: 'years',
     },
-};
-
-type ScaleMomentDimensions = {
-    [key: string]: {
-        SCALE_VALUE: moment.unitOfTime.StartOf;
-        DIMENSION: moment.unitOfTime.Diff;
-        HEAD_SCALE_START_OF: moment.unitOfTime.StartOf;
-    };
 };
 
 export const SCALE_MOMENT_DIMENSIONS: ScaleMomentDimensions = {
@@ -78,17 +63,6 @@ export const APPROX_DAYS_SCALE_COUNT: { [key: string]: number } = {
     [SCALES[1]]: 7,
     [SCALES[2]]: 365 / 12,
     [SCALES[3]]: 365,
-};
-
-type ScalingValues = {
-    [key: string]: {
-        CELL_WIDTH: number;
-        CELL_WIDTH_SUB: number;
-        DIMENSIONS: {
-            VALUE: moment.unitOfTime.StartOf;
-            DIMENSION: moment.unitOfTime.Diff;
-        };
-    };
 };
 
 export const SCALING_VALUES: ScalingValues = {

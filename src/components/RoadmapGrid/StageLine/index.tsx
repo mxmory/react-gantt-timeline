@@ -1,10 +1,13 @@
+import Konva from 'konva';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Group, Rect, Transformer } from 'react-konva';
+import { KonvaMouseEvent } from 'types/events';
 import { ACTUAL_DATA, CELL_HEIGHT, STAGE_HEIGHT, SCALING_VALUES } from '../../../constants';
 import { getStage, getDataOnStageEdit } from '../../../utils/funcs';
+import { StageLineProps } from './types';
 
-export const StageItemLine = ({
+export const StageLine: React.FC<StageLineProps> = ({
     scale,
     data,
     setData,
@@ -13,7 +16,6 @@ export const StageItemLine = ({
     line,
     length,
     start_at,
-    // percent = 0,
     onDeselect,
     color,
     type,
@@ -21,8 +23,8 @@ export const StageItemLine = ({
     onTransformStart,
     onTransformEnd,
 }) => {
-    const shapeRef = React.useRef();
-    const trRef = React.useRef();
+    const shapeRef = React.useRef<Konva.Rect>(null);
+    const trRef = React.useRef<Konva.Transformer>(null);
 
     const y = line * CELL_HEIGHT;
     const x = start_at;
@@ -32,26 +34,28 @@ export const StageItemLine = ({
     } = SCALING_VALUES[scale];
 
     useEffect(() => {
-        if (isSelected) {
-            trRef.current.nodes([shapeRef.current]);
-            trRef.current.getLayer().batchDraw();
+        if (isSelected && shapeRef.current) {
+            trRef.current?.nodes([shapeRef.current]);
+            trRef.current?.getLayer()?.batchDraw();
         }
     }, [isSelected]);
 
-    const showStage = (e) => {
+    const showStage = (e: KonvaMouseEvent) => {
         const {
             attrs: { id },
         } = e.target;
-        const { name, start_at, deadline } = getStage(ACTUAL_DATA.stages, id);
+        const { name, start_at, deadline } = getStage(ACTUAL_DATA.stages, id) || {};
         alert(`Stage name: ${name}\nStarted at: ${start_at}\nDeadline: ${deadline}`);
     };
 
-    const onDragEnd = (e) => {
+    const onDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
         const {
             attrs: { x, id },
         } = e.target;
 
         const stage = getStage(data, id);
+        if (!stage) return;
+
         const editedStartBound = moment()
             .add(Math.round(x / CELL_WIDTH), DIMENSION)
             .startOf(VALUE);
@@ -70,7 +74,7 @@ export const StageItemLine = ({
 
         setTimeout(() => {
             setData(newData);
-        }, 200); // wait for tween to end to avoid flickering
+        }, 200); // wait for tween to end to dismiss flickering
     };
 
     return (
@@ -100,21 +104,12 @@ export const StageItemLine = ({
                 width={type === 'milestone' ? STAGE_HEIGHT : length}
                 height={STAGE_HEIGHT}
                 fill={color}
-                rotation={type === 'milestone' && 45}
-                cornerRadius={type === 'stage' && 5}
+                rotation={type === 'milestone' ? 45 : undefined}
+                cornerRadius={type !== 'milestone' ? 5 : undefined}
                 onTransformEnd={onTransformEnd}
                 onTransformStart={onTransformStart}
             />
-            {/* {type !== 'milestone' && <Text width={CELL_WIDTH * length} height={STAGE_HEIGHT} text={id + '_' + type} />} */}
 
-            {/* <Rect
-                width={(CELL_WIDTH * width * percent) / 100}
-                height={STAGE_HEIGHT}
-                fill="#fff"
-                opacity={0.5}
-                // onTransformEnd={onTransformEnd}
-                // onTransformStart={onTransformStart}
-            /> */}
             {isSelected && (
                 <Transformer
                     ref={trRef}

@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 import styles from './Head.module.scss';
 import { LocationIcon, ArrowDropIcon, SettingsIcon } from '../Icons';
-import { HeadDatesScale } from './HeadDatesScale';
+import HeadDatesScale from './HeadDatesScale';
 import { SCALES, DURATION_SCALE_VALUES } from '../../constants';
+import { HeadProps } from './types';
+import Konva from 'konva';
 
-export const Head = (
+export const Head: React.ForwardRefRenderFunction<Konva.Stage, HeadProps> = (
     { scale, siderExpanded, toggleSidebar, dataRange, moveToDate, durationScale, setDurationScale },
     ref
 ) => {
@@ -25,7 +27,7 @@ export const Head = (
                             {durationScaleMenuOpen && (
                                 <div className={styles.contextMenu}>
                                     {Object.keys(SCALES).map((key) => {
-                                        const scaleKey = SCALES[key];
+                                        const scaleKey = SCALES[+key];
 
                                         const { TITLE } = DURATION_SCALE_VALUES[scaleKey];
                                         return (
@@ -45,7 +47,11 @@ export const Head = (
                         </div>
                     )}
 
-                    <div className={styles.commonFunc} onClick={moveToDate} title="Click to move to current date">
+                    <div
+                        className={styles.commonFunc}
+                        onClick={() => moveToDate()}
+                        title="Click to move to current date"
+                    >
                         <LocationIcon />
                     </div>
                 </div>
