@@ -3,7 +3,7 @@ import moment from 'moment';
 import React, { useEffect } from 'react';
 import { Group, Rect, Transformer } from 'react-konva';
 import { KonvaMouseEvent } from 'types/events';
-import { ACTUAL_DATA, CELL_HEIGHT, STAGE_HEIGHT, SCALING_VALUES } from '../../../constants';
+import { ACTUAL_DATA, CELL_HEIGHT, STAGE_HEIGHT, SCALING_VALUES, CORE_STAGE_HEIGHT } from '../../../constants';
 import { getStage, getDataOnStageEdit } from '../../../utils/funcs';
 import { StageLineProps } from './types';
 
@@ -25,6 +25,8 @@ export const StageLine: React.FC<StageLineProps> = ({
 }) => {
     const shapeRef = React.useRef<Konva.Rect>(null);
     const trRef = React.useRef<Konva.Transformer>(null);
+
+    const stage = getStage(data, id);
 
     const y = line * CELL_HEIGHT;
     const x = start_at;
@@ -86,7 +88,6 @@ export const StageLine: React.FC<StageLineProps> = ({
             x={x}
             y={y + CELL_HEIGHT / 2 - STAGE_HEIGHT / 2}
             width={type === 'milestone' ? STAGE_HEIGHT : length}
-            height={STAGE_HEIGHT}
             onClick={showStage}
             draggable={true}
             onDragEnd={onDragEnd}
@@ -102,13 +103,28 @@ export const StageLine: React.FC<StageLineProps> = ({
                 type="STAGE_LINE"
                 ref={shapeRef}
                 width={type === 'milestone' ? STAGE_HEIGHT : length}
-                height={STAGE_HEIGHT}
+                height={stage?.stages.length === 0 ? STAGE_HEIGHT : CORE_STAGE_HEIGHT}
                 fill={color}
                 rotation={type === 'milestone' ? 45 : undefined}
-                cornerRadius={type !== 'milestone' ? 5 : undefined}
+                cornerRadius={type !== 'milestone' ? 10 : undefined}
                 onTransformEnd={onTransformEnd}
                 onTransformStart={onTransformStart}
+                listening={stage?.stages.length === 0}
             />
+
+            {stage?.stages.length !== 0 && (
+                <>
+                    <Rect x={0} y={-4} width={4} height={16} fill={color} cornerRadius={CORE_STAGE_HEIGHT} />
+                    <Rect
+                        x={length - CORE_STAGE_HEIGHT / 2}
+                        y={-4}
+                        width={4}
+                        height={16}
+                        fill={color}
+                        cornerRadius={CORE_STAGE_HEIGHT}
+                    />
+                </>
+            )}
 
             {isSelected && (
                 <Transformer

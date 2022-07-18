@@ -191,8 +191,8 @@ const RoadmapGrid: React.ForwardRefRenderFunction<Konva.Stage, RoadmapGridProps>
                     ref={ref}
                 >
                     <Layer ref={stageBoundsLayerRef}>
-                        <Line id="startBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[14, 7]} />
-                        <Line id="endBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[14, 7]} />
+                        <Line id="startBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[3, 3]} />
+                        <Line id="endBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[3, 3]} />
                     </Layer>
                     <Layer ref={crosshairLayerRef}>
                         <Rect width={CELL_WIDTH} height={CANVAS_HEIGHT} fill="#ccc" opacity={0} />

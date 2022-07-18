@@ -12,8 +12,9 @@ import OffscreenStagesMarks from './components/RoadmapGrid/OffscreenStagesMarks'
 import { Sider } from './components/Sider';
 import TimelineGrid from './components/TimelineGrid';
 import { SCALING_VALUES, ACTUAL_DATA, SCALES } from './constants';
-import { getScaledCellWidth, reduceStagesToShow } from './utils/funcs';
+import { adaptStages, getScaledCellWidth, reduceStagesToShow } from './utils/funcs';
 import { RoadmapDataRange, RoadmapStage, RoadmapStageVisibility, Scale } from './types/roadmap';
+import { isEqual } from 'lodash';
 
 const App = () => {
     const [data, setData] = useState<RoadmapStage[]>(ACTUAL_DATA.stages);
@@ -47,23 +48,16 @@ const App = () => {
         }, 100); // Need to wait layer to redraw itself. Maybe todo.
     }, [visibleStages, data]);
 
-    useEffect(() => {
-        setBounds();
-    }, [siderExpanded]);
-
-    const toggleSidebar = () => {
-        setSiderExpanded((prev) => !prev);
-    };
-
     const toggleStageCollapse = (stageId: string) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
     };
 
-    const onScaleChange = (value: number) => {
-        if (value !== scale) {
-            setScale(value);
+    useEffect(() => {
+        const adaptedData = adaptStages(data, SCALES[scale]);
+        if (!isEqual(adaptedData, data)) {
+            setData(adaptedData);
         }
-    };
+    }, [data]);
 
     useEffect(() => {
         const stage = mainGridRef.current;
@@ -74,7 +68,7 @@ const App = () => {
         setBounds();
         stage.batchDraw();
         moveToDate(moment());
-    }, [scale]);
+    }, [scale, siderExpanded]);
 
     const onCanvasScroll = (e: KonvaWheelEvent): void => {
         const { evt } = e;
@@ -127,7 +121,7 @@ const App = () => {
                 scale={SCALES[scale]}
                 ref={headDatesScaleRef}
                 siderExpanded={siderExpanded}
-                toggleSidebar={toggleSidebar}
+                toggleSidebar={() => setSiderExpanded((prev) => !prev)}
                 dataRange={dataRange}
                 moveToDate={moveToDate}
                 durationScale={SCALES[durationScale]}
@@ -167,7 +161,7 @@ const App = () => {
                             min={0}
                             max={3}
                             value={scale}
-                            onChange={onScaleChange as () => void} // workaround due to bad typings for this prop
+                            onChange={setScale as () => void}
                             className={styles.scaleSlider}
                             dots={true}
                             handleStyle={[

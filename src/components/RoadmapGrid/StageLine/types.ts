@@ -13,9 +13,9 @@ export interface StageLineProps {
     length: number;
     start_at: number;
     onDeselect(): void;
-    color: string;
+    color: string | undefined;
     type: StageType;
     isSelected: boolean;
-    onTransformStart(): void;
+    onTransformStart(e: KonvaMouseEvent): void;
     onTransformEnd(e: KonvaMouseEvent): void;
 }

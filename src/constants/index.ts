@@ -6,7 +6,8 @@ export const height = 3000;
 export const CANVAS_HEIGHT = 3000;
 export const CELL_HEIGHT = 30;
 export const HEADER_TOP_HEIGHT = 20;
-export const STAGE_HEIGHT = 8;
+export const STAGE_HEIGHT = 12;
+export const CORE_STAGE_HEIGHT = 8;
 export const TASK_HEIGHT = 20;
 
 export const SCALES: { [key: number]: Scale } = {
@@ -94,21 +95,72 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
     stages: [
         {
             id: '1',
-            type: 'core',
+            type: 'stage',
             color: '#8189D6',
-            start_at: '2022-07-21',
-            deadline: '2025-07-3',
+            start_at: '2022-07-18',
+            deadline: '2022-07-30',
             name: 'Main stage 2',
             stages: [
                 {
                     id: '10',
                     type: 'stage',
                     name: 'Stage 10',
-                    start_at: '2022-07-21',
-                    deadline: '2025-07-3',
-                    stages: [],
+                    start_at: '2022-07-18',
+                    deadline: '2022-07-23',
+                    stages: [
+                        {
+                            id: '100',
+                            type: 'stage',
+                            name: 'Stage 100',
+                            start_at: '2022-07-18',
+                            deadline: '2022-07-23',
+                            stages: [],
+                        },
+                        {
+                            id: '101',
+                            type: 'milestone',
+                            name: 'Milestone 101',
+                            start_at: '2022-07-20',
+                            deadline: '2022-07-20',
+                            stages: [],
+                        },
+                    ],
+                },
+                {
+                    id: '11',
+                    type: 'stage',
+                    name: 'Stage 11',
+                    start_at: '2022-07-23',
+                    deadline: '2022-07-31',
+                    stages: [
+                        {
+                            id: '111',
+                            type: 'stage',
+                            name: 'Stage 100',
+                            start_at: '2022-07-23',
+                            deadline: '2022-07-25',
+                            stages: [],
+                        },
+                        {
+                            id: '112',
+                            type: 'stage',
+                            name: 'Stage ababa',
+                            start_at: '2022-07-25',
+                            deadline: '2022-07-31',
+                            stages: [],
+                        },
+                    ],
                 },
             ],
+        },
+        {
+            id: '2',
+            type: 'stage',
+            color: '#ff0000',
+            start_at: '2022-07-21',
+            deadline: '2022-07-28',
+            name: 'Main stage 5',
+            stages: [],
         },
     ],
 };

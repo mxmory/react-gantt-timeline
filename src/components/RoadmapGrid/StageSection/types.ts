@@ -8,12 +8,13 @@ export interface StageSectionProps {
     setData: Dispatch<SetStateAction<RoadmapStage[]>>;
     scale: Scale;
     stage: RoadmapStage;
-    allStages: RoadmapStage[];
+    allSiblingStages: RoadmapStage[];
     index: number;
     currentLine: number;
-    color: string;
+    color: string | undefined;
     select: Dispatch<SetStateAction<string | null>>;
     onDeselect(): void;
     selectedId: string | null;
     setIsTransforming: Dispatch<SetStateAction<boolean>>;
+    core: boolean; // first level stage
 }

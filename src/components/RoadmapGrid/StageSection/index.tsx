@@ -1,6 +1,13 @@
 import moment from 'moment';
 import React from 'react';
-import { getScaledCellWidth, getStageX, getPrevVisibleItems, getStage, getDataOnStageEdit } from '../../../utils/funcs';
+import {
+    getScaledCellWidth,
+    getStageX,
+    getPrevVisibleItems,
+    getStage,
+    getDataOnStageEdit,
+    increaseColorBrightness,
+} from '../../../utils/funcs';
 import { StageLine } from '../StageLine';
 import { TaskItemLine } from '../TaskItemLine';
 import { KonvaMouseEvent } from 'types/events';
@@ -12,7 +19,6 @@ export const StageSection: React.FC<StageSectionProps> = ({
     setData,
     scale,
     stage,
-    allStages,
     index,
     currentLine,
     color,
@@ -20,11 +26,11 @@ export const StageSection: React.FC<StageSectionProps> = ({
     onDeselect,
     selectedId,
     setIsTransforming,
-    // onTransformStart,
-    // onTransformEnd,
+    allSiblingStages,
+    core,
 }) => {
     const { tasks, start_at, stages, deadline, type } = stage;
-    const prevStages = [...allStages.slice(0, index)];
+    const prevStages = [...allSiblingStages.slice(0, index)];
     const prevItemsCount = getPrevVisibleItems(prevStages, visibleStages).length;
     const scaledCellWidth = getScaledCellWidth(scale);
     const start = moment(start_at);
@@ -43,7 +49,12 @@ export const StageSection: React.FC<StageSectionProps> = ({
         } = node;
 
         const editingStage = getStage(data, id);
-        if (!editingStage) return;
+        if (!editingStage || editingStage.stages.length !== 0) {
+            e.evt.preventDefault();
+            node.scaleX(1);
+            node.width(node.width());
+            return;
+        }
 
         const { start_at } = editingStage;
 
@@ -105,15 +116,16 @@ export const StageSection: React.FC<StageSectionProps> = ({
                             data={data}
                             setData={setData}
                             select={select}
-                            color={color}
+                            color={core ? increaseColorBrightness(color, 40) : color}
                             key={s.id}
-                            allStages={stages}
+                            allSiblingStages={stages}
                             index={idx}
                             stage={s}
                             currentLine={currentLine + (tasks?.length || 0) + prevItemsCount + idx + 1}
                             selectedId={selectedId}
                             onDeselect={onDeselect}
                             setIsTransforming={setIsTransforming}
+                            core={false}
                         />
                     );
                 })}

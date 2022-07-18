@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Layer } from 'react-konva';
-import { increaseColorBrightness, getPrevVisibleItems } from '../../../utils/funcs';
-import { CoreStage } from '../CoreStage';
-import { TaskItemLine } from '../TaskItemLine';
+import { getPrevVisibleItems } from '../../../utils/funcs';
 import { StageSection } from '../StageSection';
 import { DataLayerProps } from './types';
 
@@ -18,55 +16,29 @@ export const DataLayer: React.FC<DataLayerProps> = ({ scale, data, setData, visi
 
     return (
         <Layer id="DATA_LAYER">
-            {data.map((stage, stageIdx) => {
-                const { stages, tasks, color } = stage;
-                const prevStages = [...data.slice(0, stageIdx)];
+            {data.map((stage, idx) => {
+                const { stages, tasks, color, id } = stage;
+                const prevStages = [...data.slice(0, idx)];
                 const prevItemsCount = getPrevVisibleItems(prevStages, visibleStages).length;
-                const currentLine = prevItemsCount + stageIdx;
 
                 return (
-                    <React.Fragment key={stage.id}>
-                        <CoreStage scale={scale} stage={stage} line={currentLine} />
-
-                        {visibleStages[stage.id] &&
-                            tasks &&
-                            tasks.map((task, taskIdx) => {
-                                return (
-                                    <TaskItemLine
-                                        key={task.id}
-                                        scale={scale}
-                                        task={task}
-                                        stageId={stage.id}
-                                        line={currentLine + taskIdx + 1}
-                                        // onTransformStart //after
-                                        // onTransformEnd // after
-                                        data={data}
-                                        setData={setData}
-                                    />
-                                );
-                            })}
-                        {visibleStages[stage.id] &&
-                            stages.map((el, idx) => {
-                                return (
-                                    <StageSection
-                                        visibleStages={visibleStages}
-                                        data={data}
-                                        setData={setData}
-                                        scale={scale}
-                                        setIsTransforming={setIsTransforming}
-                                        select={selectShape}
-                                        onDeselect={onDeselect}
-                                        selectedId={selectedId}
-                                        key={el.id}
-                                        allStages={stages}
-                                        index={idx}
-                                        stage={el}
-                                        color={increaseColorBrightness(color, 40)}
-                                        currentLine={currentLine + (tasks?.length || 0) + idx + 1}
-                                    />
-                                );
-                            })}
-                    </React.Fragment>
+                    <StageSection
+                        key={id}
+                        visibleStages={visibleStages}
+                        data={data}
+                        setData={setData}
+                        scale={scale}
+                        setIsTransforming={setIsTransforming}
+                        select={selectShape}
+                        onDeselect={onDeselect}
+                        selectedId={selectedId}
+                        allSiblingStages={stages}
+                        index={idx}
+                        stage={stage}
+                        color={color}
+                        core={true}
+                        currentLine={prevItemsCount + (tasks?.length || 0) + idx}
+                    />
                 );
             })}
         </Layer>

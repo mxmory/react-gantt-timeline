@@ -12,6 +12,9 @@ export interface RoadmapStage {
 
 export interface RoadmapTask {
     id: string;
+    name: string;
+    start_at: string;
+    deadline: string;
 }
 
 export type StageType = 'stage' | 'milestone' | 'core';
