@@ -1,2 +1,1 @@
-# React Canvas Gantt Demo
-
+React gantt timeline implementation using react-konva
