@@ -12,8 +12,6 @@ export const TaskItemLine = ({ scale, task, stageId, line, data, setData }) => {
         DIMENSIONS: { VALUE, DIMENSION },
     } = SCALING_VALUES[scale];
 
-    // const progressRef = React.useRef();
-
     const onDragEnd = (e) => {
         const {
             attrs: { x },

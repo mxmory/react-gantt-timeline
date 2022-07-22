@@ -4,7 +4,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { KonvaWheelEvent } from 'types/events';
-import styles from './App.module.scss';
+import styles from './Roadmap.module.scss';
 import Head from './components/Head';
 import { MinusIcon, PlusIcon } from './components/Icons';
 import RoadmapGrid from './components/RoadmapGrid';
@@ -16,7 +16,7 @@ import { adaptStages, getScaledCellWidth, reduceStagesToShow } from './utils/fun
 import { RoadmapDataRange, RoadmapStage, RoadmapStageVisibility, Scale } from './types/roadmap';
 import { isEqual } from 'lodash';
 
-const App = () => {
+const Roadmap = () => {
     const [data, setData] = useState<RoadmapStage[]>(ACTUAL_DATA.stages);
     const [visibleStages, setVisibleStages] = useState<RoadmapStageVisibility>(reduceStagesToShow(data));
     const [dataRange, setDataRange] = useState<RoadmapDataRange>([0, 0]);
@@ -33,12 +33,22 @@ const App = () => {
     const dataLayer = mainGridRef.current?.getChildren((el) => el.getAttr('id') === 'DATA_LAYER')[0];
 
     useEffect(() => {
-        setVisibleStages(reduceStagesToShow(data));
+        // (reduceStagesToShow(data));
         moveToDate(moment());
     }, []);
 
     useEffect(() => {
         mainGridRef.current?.draw();
+        // const redrawGrid = async () => {
+        // };
+
+        // redrawGrid().then(() => {
+        //     const items =
+        //         dataLayer?.getChildren(
+        //             (node) => node.getType() === 'Group' && node?.getAttrs().type === 'STAGE_LINE'
+        //         ) || [];
+        //     setOffscreenItems(items);
+        // });
         setTimeout(() => {
             const items =
                 (dataLayer?.getChildren(
@@ -72,10 +82,13 @@ const App = () => {
 
     const onCanvasScroll = (e: KonvaWheelEvent): void => {
         const { evt } = e;
+        console.log(evt.shiftKey, evt.wheelDeltaX);
         if (evt.shiftKey || evt.wheelDeltaX !== 0) {
             evt.preventDefault();
-            headDatesScaleRef.current?.x(headDatesScaleRef.current.x() - evt.deltaY);
-            mainGridRef.current?.x(mainGridRef.current.x() - evt.deltaY);
+            headDatesScaleRef.current?.x(
+                headDatesScaleRef.current.x() - (evt.shiftKey ? evt.deltaY : -evt.wheelDeltaX)
+            );
+            mainGridRef.current?.x(mainGridRef.current.x() - (evt.shiftKey ? evt.deltaY : -evt.wheelDeltaX));
             setBounds();
         }
     };
@@ -199,4 +212,4 @@ const App = () => {
     );
 };
 
-export default App;
+export default Roadmap;

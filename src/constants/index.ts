@@ -99,11 +99,12 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
             color: '#8189D6',
             start_at: '2022-07-18',
             deadline: '2022-07-30',
-            name: 'Main stage 2',
+            name: 'Stage 1',
             stages: [
                 {
                     id: '10',
                     type: 'stage',
+                    color: '#8189D6',
                     name: 'Stage 10',
                     start_at: '2022-07-18',
                     deadline: '2022-07-23',
@@ -111,6 +112,7 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
                         {
                             id: '100',
                             type: 'stage',
+                            color: '#8189D6',
                             name: 'Stage 100',
                             start_at: '2022-07-18',
                             deadline: '2022-07-23',
@@ -119,6 +121,7 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
                         {
                             id: '101',
                             type: 'milestone',
+                            color: '#8189D6',
                             name: 'Milestone 101',
                             start_at: '2022-07-20',
                             deadline: '2022-07-20',
@@ -129,6 +132,7 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
                 {
                     id: '11',
                     type: 'stage',
+                    color: '#8189D6',
                     name: 'Stage 11',
                     start_at: '2022-07-23',
                     deadline: '2022-07-31',
@@ -136,6 +140,7 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
                         {
                             id: '111',
                             type: 'stage',
+                            color: '#8189D6',
                             name: 'Stage 100',
                             start_at: '2022-07-23',
                             deadline: '2022-07-25',
@@ -144,7 +149,8 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
                         {
                             id: '112',
                             type: 'stage',
-                            name: 'Stage ababa',
+                            color: '#8189D6',
+                            name: 'Stage 112',
                             start_at: '2022-07-25',
                             deadline: '2022-07-31',
                             stages: [],
@@ -156,7 +162,7 @@ export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
         {
             id: '2',
             type: 'stage',
-            color: '#ff0000',
+            color: '#aa5344',
             start_at: '2022-07-21',
             deadline: '2022-07-28',
             name: 'Main stage 5',
