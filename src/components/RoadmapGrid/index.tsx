@@ -11,10 +11,10 @@ import { RoadmapGridProps } from './types';
 import Konva from 'konva';
 import { KonvaMouseEvent, KonvaWheelEvent } from 'types/events';
 
-const RoadmapGrid = React.forwardRef<Konva.Stage, RoadmapGridProps>(function RoadmapGrid(
+const RoadmapGrid: React.ForwardRefRenderFunction<Konva.Stage, RoadmapGridProps> = (
     { scale, data, setData, dataRange, onCanvasScroll, visibleStages },
     ref
-) {
+) => {
     const crosshairLayerRef = useRef<Konva.Layer>(null); // Layer for moving crosshair onMouseMove
     const stageBoundsLayerRef = useRef<Konva.Layer>(null); // Layer for stage bounds display onMouseEnter
     const dragRangeBoundsLayerRef = useRef<Konva.Layer>(null); // Layer for display snappy gray rectangle while dragging a stage
@@ -191,8 +191,8 @@ const RoadmapGrid = React.forwardRef<Konva.Stage, RoadmapGridProps>(function Roa
                     ref={ref}
                 >
                     <Layer ref={stageBoundsLayerRef}>
-                        <Line id="startBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[14, 7]} />
-                        <Line id="endBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[14, 7]} />
+                        <Line id="startBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[3, 3]} />
+                        <Line id="endBound" strokeWidth={0.5} stroke="#666" dashEnabled dash={[3, 3]} />
                     </Layer>
                     <Layer ref={crosshairLayerRef}>
                         <Rect width={CELL_WIDTH} height={CANVAS_HEIGHT} fill="#ccc" opacity={0} />
@@ -215,6 +215,6 @@ const RoadmapGrid = React.forwardRef<Konva.Stage, RoadmapGridProps>(function Roa
             </div>
         </div>
     );
-});
+};
 
-export default RoadmapGrid;
+export default React.forwardRef(RoadmapGrid);

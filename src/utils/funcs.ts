@@ -46,6 +46,22 @@ export const getParentStageProps = (
     };
 };
 
+export const adaptStages = (stages: RoadmapStage[], scale: Scale) => {
+    return stages.map(function iter(s: RoadmapStage): RoadmapStage {
+        if (s.stages.length !== 0) {
+            const x = getParentStageProps(s.stages, scale);
+            const inner = s.stages.map(iter);
+            return {
+                ...s,
+                start_at: x.startAt.format('YYYY-MM-DD'),
+                deadline: x.deadline.format('YYYY-MM-DD'),
+                stages: inner,
+            };
+        }
+        return s;
+    });
+};
+
 export const flatInnerStages = (stagesArr: RoadmapStage[] = []): RoadmapStage[] => {
     const resArr = stagesArr.reduce((acc: RoadmapStage[], stage: RoadmapStage) => {
         const { stages } = stage;

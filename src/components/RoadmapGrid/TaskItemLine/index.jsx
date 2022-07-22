@@ -4,7 +4,7 @@ import { Group, Rect } from 'react-konva';
 import { CELL_HEIGHT, SCALING_VALUES, TASK_HEIGHT } from '../../../constants';
 import { getStageX, getScaledCellWidth, getStageProps, getDataOnStageEdit } from '../../../utils/funcs';
 
-export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTransformStart, data, setData }) => {
+export const TaskItemLine = ({ scale, task, stageId, line, data, setData }) => {
     const { id, percent = 0, start_at, deadline } = task;
     const shapeRef = React.useRef();
     const {
@@ -73,8 +73,8 @@ export const TaskItemLine = ({ scale, task, stageId, line, onTransformEnd, onTra
                 fill="#D7DADD"
                 cornerRadius={5}
                 strokeWidth={1}
-                onTransformEnd={onTransformEnd}
-                onTransformStart={onTransformStart}
+                // onTransformEnd={onTransformEnd}
+                // onTransformStart={onTransformStart}
             />
             <Rect
                 width={(scaledCellWidth * length * percent) / 100}

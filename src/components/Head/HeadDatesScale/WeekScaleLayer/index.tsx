@@ -4,11 +4,13 @@ import { Layer, Line, Group, Rect, Text } from 'react-konva';
 import { uniqWith, isEqual, range } from 'lodash';
 import { getDimensionsInRange } from '../../../../utils/funcs';
 import moment from 'moment';
+import { RoadmapDataRange } from 'types/roadmap';
 
-export const WeekScaleLayer = ({ dataRange }) => {
+export const WeekScaleLayer: React.FC<{ dataRange: RoadmapDataRange }> = ({ dataRange }) => {
     const { CELL_WIDTH, CELL_WIDTH_SUB } = SCALING_VALUES.WEEK;
     const [startPoint, endPoint] = dataRange;
     const today = moment();
+
     return (
         <Layer>
             <Line

@@ -3,11 +3,13 @@ import { SCALING_VALUES, HEADER_TOP_HEIGHT, CELL_HEIGHT, APPROX_DAYS_SCALE_COUNT
 import { Layer, Line, Group, Rect, Text } from 'react-konva';
 import { range } from 'lodash';
 import moment from 'moment';
+import { RoadmapDataRange } from 'types/roadmap';
 
-export const YearScaleLayer = ({ dataRange }) => {
+export const YearScaleLayer: React.FC<{ dataRange: RoadmapDataRange }> = ({ dataRange }) => {
     const { CELL_WIDTH } = SCALING_VALUES.MONTH;
-    const [startPoint, endPoint] = dataRange;
+    const [startPoint, endPoint] = dataRange || [];
     const today = moment();
+
     return (
         <Layer>
             {range(startPoint * CELL_WIDTH, endPoint * CELL_WIDTH, CELL_WIDTH).map((n) => {

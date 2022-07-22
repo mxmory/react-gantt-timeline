@@ -5,8 +5,9 @@ import { uniqWith, isEqual, range } from 'lodash';
 import { getDimensionsInRange, clipRect } from '../../../../utils/funcs';
 import { HolidayHighlight } from '../../../RoadmapGrid/HolidayHighlight';
 import moment from 'moment';
+import { RoadmapDataRange } from 'types/roadmap';
 
-export const DayScaleLayer = ({ dataRange }) => {
+export const DayScaleLayer: React.FC<{ dataRange: RoadmapDataRange }> = ({ dataRange }) => {
     const [startPoint, endPoint] = dataRange;
     const { CELL_WIDTH } = SCALING_VALUES.DAY;
     const today = moment();
