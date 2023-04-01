@@ -6,7 +6,7 @@ import { Scale, RoadmapStage } from 'types/roadmap';
 export interface StageLineProps {
     scale: Scale;
     data: RoadmapStage[];
-    setData: Dispatch<SetStateAction<RoadmapStage[]>>;
+    // setData: Dispatch<SetStateAction<RoadmapStage[]>>;
     select: Dispatch<SetStateAction<string | null>>;
     id: string;
     line: number;

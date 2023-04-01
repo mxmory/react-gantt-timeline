@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction } from 'react';
 export interface StageSectionProps {
     visibleStages: RoadmapStageVisibility;
     data: RoadmapStage[];
-    setData: Dispatch<SetStateAction<RoadmapStage[]>>;
+    // setData: Dispatch<SetStateAction<RoadmapStage[]>>;
     scale: Scale;
     stage: RoadmapStage;
     allSiblingStages: RoadmapStage[];

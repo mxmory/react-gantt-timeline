@@ -6,9 +6,12 @@ export interface RoadmapStage {
     duration?: number;
     type: StageType;
     color?: string | undefined;
-    stages: RoadmapStage[] | [];
     tasks?: RoadmapTask[] | [];
+    stages: RoadmapStage[];
+    parentStageId: RoadmapStage['id'] | null;
 }
+
+export type InitialRoadmapStage = Omit<RoadmapStage, 'stages'>;
 
 export interface RoadmapTask {
     id: string;

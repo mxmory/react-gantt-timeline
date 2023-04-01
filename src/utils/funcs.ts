@@ -46,6 +46,7 @@ export const getParentStageProps = (
     };
 };
 
+// TODO: избавиться от рекурсии
 export const adaptStages = (stages: RoadmapStage[], scale: Scale) => {
     return stages.map(function iter(s: RoadmapStage): RoadmapStage {
         if (s.stages.length !== 0) {

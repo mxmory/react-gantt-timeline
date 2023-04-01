@@ -16,7 +16,6 @@ import { StageSectionProps } from 'components/RoadmapGrid/StageSection/types';
 export const StageSection: React.FC<StageSectionProps> = ({
     visibleStages,
     data,
-    setData,
     scale,
     stage,
     index,
@@ -66,7 +65,7 @@ export const StageSection: React.FC<StageSectionProps> = ({
         const newData = getDataOnStageEdit(data, { ...editingStage, deadline: newDeadline });
 
         node.width(width * getScaledCellWidth(scale));
-        setData(newData);
+        // setData(newData);
         setIsTransforming(false);
         select(null);
     };
@@ -76,7 +75,7 @@ export const StageSection: React.FC<StageSectionProps> = ({
             <StageLine
                 scale={scale}
                 data={data}
-                setData={setData}
+                // setData={setData}
                 select={select}
                 id={stage.id}
                 line={currentLine + prevItemsCount}
@@ -101,7 +100,7 @@ export const StageSection: React.FC<StageSectionProps> = ({
                             task={task}
                             line={currentLine + prevItemsCount + taskIdx + 1}
                             data={data}
-                            setData={setData}
+                            // setData={setData}
                         />
                     );
                 })}
@@ -114,7 +113,7 @@ export const StageSection: React.FC<StageSectionProps> = ({
                             visibleStages={visibleStages}
                             scale={scale}
                             data={data}
-                            setData={setData}
+                            // setData={setData}
                             select={select}
                             color={core ? increaseColorBrightness(color, 40) : color}
                             key={s.id}

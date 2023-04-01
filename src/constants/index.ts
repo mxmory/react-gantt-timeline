@@ -1,4 +1,5 @@
-import { Scale, RoadmapStage, DurationScaleValues, ScaleMomentDimensions, ScalingValues } from 'types/roadmap';
+import { InitialRoadmapStage } from './../types/roadmap';
+import { Scale, DurationScaleValues, ScaleMomentDimensions, ScalingValues } from 'types/roadmap';
 
 export const width = 300;
 export const CANVAS_WIDTH = 3000;
@@ -89,84 +90,80 @@ export const SCALING_VALUES: ScalingValues = {
     },
 };
 
+// Кастомные выходные (по умолчанию выходные - только сб/вс). Можно прикрутить выбор из календаря на беке.
 export const HOLIDAYS = ['2022-06-23', '2022-06-28'];
 
-export const ACTUAL_DATA: { [key: string]: RoadmapStage[] } = {
-    stages: [
-        {
-            id: '1',
-            type: 'stage',
-            color: '#8189D6',
-            start_at: '2022-07-18',
-            deadline: '2022-07-30',
-            name: 'Stage 1',
-            stages: [
-                {
-                    id: '10',
-                    type: 'stage',
-                    color: '#8189D6',
-                    name: 'Stage 10',
-                    start_at: '2022-07-18',
-                    deadline: '2022-07-23',
-                    stages: [
-                        {
-                            id: '100',
-                            type: 'stage',
-                            color: '#8189D6',
-                            name: 'Stage 100',
-                            start_at: '2022-07-18',
-                            deadline: '2022-07-23',
-                            stages: [],
-                        },
-                        {
-                            id: '101',
-                            type: 'milestone',
-                            color: '#8189D6',
-                            name: 'Milestone 101',
-                            start_at: '2022-07-20',
-                            deadline: '2022-07-20',
-                            stages: [],
-                        },
-                    ],
-                },
-                {
-                    id: '11',
-                    type: 'stage',
-                    color: '#8189D6',
-                    name: 'Stage 11',
-                    start_at: '2022-07-23',
-                    deadline: '2022-07-31',
-                    stages: [
-                        {
-                            id: '111',
-                            type: 'stage',
-                            color: '#8189D6',
-                            name: 'Stage 100',
-                            start_at: '2022-07-23',
-                            deadline: '2022-07-25',
-                            stages: [],
-                        },
-                        {
-                            id: '112',
-                            type: 'stage',
-                            color: '#8189D6',
-                            name: 'Stage 112',
-                            start_at: '2022-07-25',
-                            deadline: '2022-07-31',
-                            stages: [],
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: '2',
-            type: 'stage',
-            color: '#aa5344',
-            start_at: '2022-07-21',
-            deadline: '2022-07-28',
-            name: 'Main stage 5',
-            stages: [],
-        },
-    ],
-};
+export const ACTUAL_DATA: InitialRoadmapStage[] = [
+    {
+        id: '1',
+        type: 'stage',
+        color: '#8189D6',
+        start_at: '2023-03-18',
+        deadline: '2023-03-30',
+        name: 'Stage 1',
+        parentStageId: null,
+    },
+    {
+        id: '10',
+        type: 'stage',
+        color: '#8189D6',
+        name: 'Stage 10',
+        start_at: '2023-03-18',
+        deadline: '2023-03-23',
+        parentStageId: '1',
+    },
+    {
+        id: '100',
+        type: 'stage',
+        color: '#8189D6',
+        name: 'Stage 100',
+        start_at: '2023-03-18',
+        deadline: '2023-03-23',
+        parentStageId: '10',
+    },
+    {
+        id: '101',
+        type: 'milestone',
+        color: '#8189D6',
+        name: 'Milestone 101',
+        start_at: '2023-03-20',
+        deadline: '2023-03-20',
+        parentStageId: '10',
+    },
+    {
+        id: '11',
+        type: 'stage',
+        color: '#8189D6',
+        name: 'Stage 11',
+        start_at: '2023-03-23',
+        deadline: '2023-03-31',
+        parentStageId: '1',
+    },
+    {
+        id: '111',
+        type: 'stage',
+        color: '#8189D6',
+        name: 'Stage 100',
+        start_at: '2023-03-23',
+        deadline: '2023-03-25',
+        parentStageId: '11',
+    },
+    {
+        id: '112',
+        type: 'stage',
+        color: '#8189D6',
+        name: 'Stage 112',
+        start_at: '2023-03-25',
+        deadline: '2023-03-31',
+        parentStageId: '11',
+    },
+    {
+        id: '2',
+        type: 'stage',
+        color: '#aa5344',
+        name: 'Main stage 5',
+        start_at: '2023-03-21',
+        deadline: '2023-03-28',
+        parentStageId: null,
+    },
+];

@@ -12,7 +12,7 @@ import Konva from 'konva';
 import { KonvaMouseEvent, KonvaWheelEvent } from 'types/events';
 
 const RoadmapGrid: React.ForwardRefRenderFunction<Konva.Stage, RoadmapGridProps> = (
-    { scale, data, setData, dataRange, onCanvasScroll, visibleStages },
+    { scale, data, dataRange, onCanvasScroll, visibleStages },
     ref
 ) => {
     const crosshairLayerRef = useRef<Konva.Layer>(null); // Layer for moving crosshair onMouseMove
@@ -210,7 +210,7 @@ const RoadmapGrid: React.ForwardRefRenderFunction<Konva.Stage, RoadmapGridProps>
                         <Text opacity={0} fontFamily="Montserrat" fontSize={10} />
                         <Text opacity={0} fontFamily="Montserrat" fontSize={10} />
                     </Layer>
-                    <DataLayer scale={scale} data={data} setData={setData} visibleStages={visibleStages} />
+                    <DataLayer scale={scale} data={data} visibleStages={visibleStages} />
                 </Stage>
             </div>
         </div>

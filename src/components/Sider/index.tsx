@@ -7,7 +7,7 @@ import { RoadmapSiderProps } from './types';
 export const Sider: React.FC<RoadmapSiderProps> = ({
     moveToDate,
     data,
-    setData,
+    // setData,
     toggleStageCollapse,
     visibleStages,
     siderExpanded,
@@ -25,7 +25,7 @@ export const Sider: React.FC<RoadmapSiderProps> = ({
                             key={stage.id}
                             stage={stage}
                             data={data}
-                            setData={setData}
+                            // setData={setData}
                             visibleStages={visibleStages}
                             siderExpanded={siderExpanded}
                             toggleStageCollapse={toggleStageCollapse}

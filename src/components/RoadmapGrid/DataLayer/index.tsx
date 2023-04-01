@@ -4,7 +4,7 @@ import { getPrevVisibleItems } from '../../../utils/funcs';
 import { StageSection } from '../StageSection';
 import { DataLayerProps } from './types';
 
-export const DataLayer: React.FC<DataLayerProps> = ({ scale, data, setData, visibleStages }) => {
+export const DataLayer: React.FC<DataLayerProps> = ({ scale, data, visibleStages }) => {
     const [selectedId, selectShape] = useState<string | null>(null);
     const [isTransforming, setIsTransforming] = useState(false);
 
@@ -26,7 +26,6 @@ export const DataLayer: React.FC<DataLayerProps> = ({ scale, data, setData, visi
                         key={id}
                         visibleStages={visibleStages}
                         data={data}
-                        setData={setData}
                         scale={scale}
                         setIsTransforming={setIsTransforming}
                         select={selectShape}

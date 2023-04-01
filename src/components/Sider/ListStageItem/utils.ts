@@ -24,8 +24,8 @@ export const onDragEnd = (e: React.DragEvent<HTMLDivElement>, ref: React.RefObje
 export const onDrop = (
     e: React.DragEvent<HTMLDivElement>,
     ref: React.RefObject<HTMLDivElement>,
-    data: RoadmapStage[],
-    setData: Dispatch<SetStateAction<RoadmapStage[]>>
+    data: RoadmapStage[]
+    // setData: Dispatch<SetStateAction<RoadmapStage[]>>
 ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -67,7 +67,7 @@ export const onDrop = (
                 ...newParentStage,
                 stages: newParentStageStages,
             });
-            setData(res);
+            // setData(res);
         }
     }
 };
@@ -75,8 +75,8 @@ export const onDrop = (
 export const onNestedDrop = (
     e: React.DragEvent<HTMLDivElement>,
     ref: React.RefObject<HTMLDivElement>,
-    data: RoadmapStage[],
-    setData: Dispatch<SetStateAction<RoadmapStage[]>>
+    data: RoadmapStage[]
+    // setData: Dispatch<SetStateAction<RoadmapStage[]>>
 ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -115,7 +115,7 @@ export const onNestedDrop = (
 
     if (newMovedStage) {
         const newStages = getDataOnStageAdd(newStagesWithoutMoved, targetStageId, newMovedStage);
-        setData(newStages);
+        // setData(newStages);
     }
 };
 

@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 import moment from 'moment';
 import { SCALING_VALUES } from '../../../constants';
 
-export const StageContextMenu = ({ scale, stage, data, setData, setMenuVisible, moveToDate }) => {
+export const StageContextMenu = ({ scale, stage, data, setMenuVisible, moveToDate }) => {
     const [addModalVisible, setAddModalVisible] = useState(false);
 
     const {
@@ -14,7 +14,7 @@ export const StageContextMenu = ({ scale, stage, data, setData, setMenuVisible, 
 
     const editStage = () => {
         const newStages = getDataOnStageEdit(data, { ...stage, name: 'EDITED NAME' });
-        setData(newStages);
+        // setData(newStages);
         setMenuVisible(false);
     };
 
@@ -30,14 +30,14 @@ export const StageContextMenu = ({ scale, stage, data, setData, setMenuVisible, 
             id: '' + Math.floor(10 + Math.random() * (10000 - 10 + 1)),
         };
         const newStages = getDataOnStageAdd(data, stage.id, newStage);
-        setData(newStages);
+        // setData(newStages);
         setAddModalVisible(false);
         setMenuVisible(false);
     };
 
     const deleteStage = () => {
         const newStages = getDataOnStageDelete(data, stage.id);
-        setData(newStages);
+        // setData(newStages);
         setMenuVisible(false);
     };
 

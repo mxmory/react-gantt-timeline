@@ -4,6 +4,5 @@ import { RoadmapStage, RoadmapStageVisibility, Scale } from '../../../types/road
 export interface DataLayerProps {
     scale: Scale;
     data: RoadmapStage[];
-    setData: Dispatch<SetStateAction<RoadmapStage[]>>;
     visibleStages: RoadmapStageVisibility;
 }

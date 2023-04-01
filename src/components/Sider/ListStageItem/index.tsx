@@ -24,7 +24,7 @@ export const ListStageItem: React.FC<ListStageItemProps> = ({
     moveToDate,
     stage,
     data,
-    setData,
+    // setData,
     toggleStageCollapse,
     visibleStages,
     scale,
@@ -79,7 +79,7 @@ export const ListStageItem: React.FC<ListStageItemProps> = ({
             <div
                 data-dropzone-id={stage.id}
                 className={styles.dropZone}
-                onDrop={(e) => onDrop(e, nestAreaRef, data, setData)}
+                onDrop={(e) => onDrop(e, nestAreaRef, data)}
                 onDragOver={onDragOver}
                 onDragEnter={(e) => onDragEnter(e, nestAreaRef, data)}
                 onDragLeave={(e) => onDragLeave(e, nestAreaRef)}
@@ -90,7 +90,7 @@ export const ListStageItem: React.FC<ListStageItemProps> = ({
                         className={styles.nestDropZone}
                         data-nesting-id={stage.id}
                         id={`nest_control_${stage.id}`}
-                        onDrop={(e) => onNestedDrop(e, nestAreaRef, data, setData)}
+                        onDrop={(e) => onNestedDrop(e, nestAreaRef, data)}
                         onDragEnter={() => onNestedDragEnter(nestAreaRef)}
                         onDragLeave={() => onNestedDragLeave(nestAreaRef)}
                     >
@@ -135,7 +135,7 @@ export const ListStageItem: React.FC<ListStageItemProps> = ({
                         scale={scale}
                         stage={stage}
                         data={data}
-                        setData={setData}
+                        // setData={setData}
                         setMenuVisible={setMenuVisible}
                         moveToDate={moveToDate}
                     />
@@ -162,7 +162,7 @@ export const ListStageItem: React.FC<ListStageItemProps> = ({
                                         moveToDate={moveToDate}
                                         stage={s}
                                         data={data}
-                                        setData={setData}
+                                        // setData={setData}
                                         toggleStageCollapse={toggleStageCollapse}
                                         visibleStages={visibleStages}
                                         siderExpanded={siderExpanded}

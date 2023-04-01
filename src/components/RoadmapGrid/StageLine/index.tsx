@@ -10,7 +10,7 @@ import { StageLineProps } from './types';
 export const StageLine: React.FC<StageLineProps> = ({
     scale,
     data,
-    setData,
+    // setData,
     select,
     id,
     line,
@@ -46,8 +46,8 @@ export const StageLine: React.FC<StageLineProps> = ({
         const {
             attrs: { id },
         } = e.target;
-        const { name, start_at, deadline } = getStage(ACTUAL_DATA.stages, id) || {};
-        alert(`Stage name: ${name}\nStarted at: ${start_at}\nDeadline: ${deadline}`);
+        // const { name, start_at, deadline } = getStage(ACTUAL_DATA.stages, id) || {};
+        // alert(`Stage name: ${name}\nStarted at: ${start_at}\nDeadline: ${deadline}`);
     };
 
     const onDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
@@ -75,7 +75,7 @@ export const StageLine: React.FC<StageLineProps> = ({
         const newData = getDataOnStageEdit(data, editedStage);
 
         setTimeout(() => {
-            setData(newData);
+            // setData(newData);
         }, 200); // wait for tween to end to dismiss flickering
     };
 

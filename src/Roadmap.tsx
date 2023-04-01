@@ -2,7 +2,7 @@ import Konva from 'konva';
 import moment from 'moment';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { KonvaWheelEvent } from 'types/events';
 import styles from './Roadmap.module.scss';
 import Head from './components/Head';
@@ -10,15 +10,18 @@ import { MinusIcon, PlusIcon } from './components/Icons';
 import RoadmapGrid from './components/RoadmapGrid';
 import OffscreenStagesMarks from './components/RoadmapGrid/OffscreenStagesMarks';
 import { Sider } from './components/Sider';
-import TimelineGrid from './components/TimelineGrid';
-import { SCALING_VALUES, ACTUAL_DATA, SCALES } from './constants';
+import { SCALING_VALUES, SCALES } from './constants';
 import { adaptStages, getScaledCellWidth, reduceStagesToShow } from './utils/funcs';
+import { getNestedStagesTree } from './utils/getNestedStagesTree';
 import { RoadmapDataRange, RoadmapStage, RoadmapStageVisibility, Scale } from './types/roadmap';
 import { isEqual } from 'lodash';
+import { RoadmapProps } from './interfaces';
 
-const Roadmap = () => {
-    const [data, setData] = useState<RoadmapStage[]>(ACTUAL_DATA.stages);
-    const [visibleStages, setVisibleStages] = useState<RoadmapStageVisibility>(reduceStagesToShow(data));
+const Roadmap = ({ data }: RoadmapProps) => {
+    const treeData = useMemo(() => getNestedStagesTree(data), [data]);
+
+    const [displayData, setDisplayData] = useState<RoadmapStage[]>([]);
+    const [visibleStages, setVisibleStages] = useState<RoadmapStageVisibility>(reduceStagesToShow(treeData));
     const [dataRange, setDataRange] = useState<RoadmapDataRange>([0, 0]);
     const [siderExpanded, setSiderExpanded] = useState<boolean>(false);
     const [scale, setScale] = useState<number>(0); // day by default (REDUX)
@@ -33,41 +36,29 @@ const Roadmap = () => {
     const dataLayer = mainGridRef.current?.getChildren((el) => el.getAttr('id') === 'DATA_LAYER')[0];
 
     useEffect(() => {
-        // (reduceStagesToShow(data));
         moveToDate(moment());
     }, []);
 
     useEffect(() => {
-        mainGridRef.current?.draw();
-        // const redrawGrid = async () => {
-        // };
-
-        // redrawGrid().then(() => {
-        //     const items =
-        //         dataLayer?.getChildren(
-        //             (node) => node.getType() === 'Group' && node?.getAttrs().type === 'STAGE_LINE'
-        //         ) || [];
-        //     setOffscreenItems(items);
-        // });
         setTimeout(() => {
             const items =
                 (dataLayer?.getChildren(
                     (node) => node.getType() === 'Group' && node?.getAttrs().type === 'STAGE_LINE'
                 ) as Konva.Group[]) || [];
             setOffscreenItems(items);
-        }, 100); // Need to wait layer to redraw itself. Maybe todo.
-    }, [visibleStages, data]);
+        }, 100); // Need to wait layer to redraw itself. Maybe needs to be redone.
+    }, [data]);
 
     const toggleStageCollapse = (stageId: string) => {
         setVisibleStages((prev) => ({ ...prev, [stageId]: !prev[stageId] }));
     };
 
     useEffect(() => {
-        const adaptedData = adaptStages(data, SCALES[scale]);
+        const adaptedData = adaptStages(treeData, SCALES[scale]);
         if (!isEqual(adaptedData, data)) {
-            setData(adaptedData);
+            setDisplayData(adaptedData);
         }
-    }, [data]);
+    }, [treeData]);
 
     useEffect(() => {
         const stage = mainGridRef.current;
@@ -82,7 +73,6 @@ const Roadmap = () => {
 
     const onCanvasScroll = (e: KonvaWheelEvent): void => {
         const { evt } = e;
-        console.log(evt.shiftKey, evt.wheelDeltaX);
         if (evt.shiftKey || evt.wheelDeltaX !== 0) {
             evt.preventDefault();
             headDatesScaleRef.current?.x(
@@ -145,8 +135,8 @@ const Roadmap = () => {
                     scale={SCALES[scale]}
                     moveToDate={moveToDate}
                     siderExpanded={siderExpanded}
-                    data={data}
-                    setData={setData}
+                    data={displayData}
+                    // setData={setData}
                     toggleStageCollapse={toggleStageCollapse}
                     visibleStages={visibleStages}
                     durationScale={SCALES[durationScale]}
@@ -156,13 +146,13 @@ const Roadmap = () => {
                         visibleStages={visibleStages}
                         scale={SCALES[scale]}
                         ref={mainGridRef}
-                        data={data}
-                        setData={setData}
+                        data={displayData}
+                        // setData={setData}
                         dataRange={dataRange}
                         onCanvasScroll={onCanvasScroll}
                     />
                     <OffscreenStagesMarks marks={offscreenItems} ref={mainGridRef} />
-                    <TimelineGrid siderExpanded={siderExpanded} />
+                    {/* <TimelineGrid siderExpanded={siderExpanded} /> */}
                 </div>
 
                 <div className={styles.scalePanel}>
