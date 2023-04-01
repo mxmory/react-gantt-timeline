@@ -21,6 +21,7 @@ export const onDragEnd = (e: React.DragEvent<HTMLDivElement>, ref: React.RefObje
     }
 };
 
+// TODO: call utils in component and return value there there, don't pass setData argument
 export const onDrop = (
     e: React.DragEvent<HTMLDivElement>,
     ref: React.RefObject<HTMLDivElement>,
